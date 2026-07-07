@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { requestGQL } from '../lib/graphql-client';
 import { REGISTER_MUTATION, LOGIN_MUTATION, ME_QUERY } from '../graphql/operations';
 import { Button } from '../components/ui/button';
-import { LogIn, UserPlus, LogOut, User as UserIcon, Mail, Lock } from 'lucide-react';
+import { LogIn, UserPlus, LogOut, User as UserIcon, Mail, Lock, Sparkles } from 'lucide-react';
 
 interface User {
   id: string;
@@ -270,6 +271,16 @@ export default function Home() {
             </form>
           </div>
         )}
+
+        <div className="text-center pt-4">
+          <Link
+            href="/components"
+            className="inline-flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-300 font-semibold transition-all border border-indigo-500/20 hover:border-indigo-500/40 bg-indigo-950/20 hover:bg-indigo-950/40 py-2.5 px-5 rounded-xl shadow-lg shadow-indigo-500/5"
+          >
+            <Sparkles size={16} />
+            Explore Components Library
+          </Link>
+        </div>
       </div>
     </div>
   );
