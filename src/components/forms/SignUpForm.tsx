@@ -79,7 +79,7 @@ export default function SignUpForm() {
             label="First name"
             type="text"
             placeholder="Amélie"
-            className="rounded-full bg-zinc-900 border-zinc-800 focus-visible:ring-2 focus-visible:ring-indigo-500/50 text-white"
+            className="rounded-full bg-background border-border text-foreground"
             required
           />
           <InputWrapper
@@ -88,7 +88,7 @@ export default function SignUpForm() {
             label="Last name"
             type="text"
             placeholder="Laurent"
-            className="rounded-full bg-zinc-900 border-zinc-800 focus-visible:ring-2 focus-visible:ring-indigo-500/50 text-white"
+            className="rounded-full bg-background border-border text-foreground"
             required
           />
         </div>
@@ -99,7 +99,7 @@ export default function SignUpForm() {
           label="Username"
           type="text"
           placeholder="amelielaurent"
-          className="rounded-full bg-zinc-900 border-zinc-800 focus-visible:ring-2 focus-visible:ring-indigo-500/50 text-white"
+          className="rounded-full bg-background border-border text-foreground"
           required
         />
 
@@ -109,7 +109,7 @@ export default function SignUpForm() {
           label="Email"
           type="email"
           placeholder="amelielaurent7622@gmail.com"
-          className="rounded-full bg-zinc-900 border-zinc-800 focus-visible:ring-2 focus-visible:ring-indigo-500/50 text-white"
+          className="rounded-full bg-background border-border text-foreground"
           required
         />
 
@@ -119,7 +119,7 @@ export default function SignUpForm() {
           label="Password"
           type="password"
           placeholder="•••••••••••••••••"
-          className="rounded-full bg-zinc-900 border-zinc-800 focus-visible:ring-2 focus-visible:ring-indigo-500/50 text-white"
+          className="rounded-full bg-background border-border text-foreground"
           required
         />
 
@@ -129,14 +129,14 @@ export default function SignUpForm() {
           label="Confirm Password"
           type="password"
           placeholder="•••••••••••••••••"
-          className="rounded-full bg-zinc-900 border-zinc-800 focus-visible:ring-2 focus-visible:ring-indigo-500/50 text-white"
+          className="rounded-full bg-background border-border text-foreground"
           required
         />
 
         <Button
           type="submit"
           disabled={form.formState.isSubmitting}
-          className="w-full rounded-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold h-12 mt-2 shadow-md transition-colors"
+          className="w-full rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-12 mt-2 shadow-md transition-colors"
         >
           {form.formState.isSubmitting ? 'Creating account...' : 'Sign Up'}
         </Button>
