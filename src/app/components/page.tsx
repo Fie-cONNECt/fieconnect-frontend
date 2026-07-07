@@ -2,21 +2,10 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Slider } from '@/components/ui/slider';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { Spinner } from '@/components/ui/spinner';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -24,13 +13,50 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Sparkles, Check, Info, ChevronDownIcon } from 'lucide-react';
+import { Form } from '@/components/ui/form';
+import {
+  InputWrapper,
+  TextareaWrapper,
+  SwitchWrapper,
+  CheckboxWrapper,
+  SliderWrapper,
+  SelectWrapper,
+  DatePickerWrapper,
+  FileUploadWrapper,
+} from '@/components/ui/form-wrappers';
+import { ArrowLeft, Sparkles, Info, ChevronDownIcon, FileCode } from 'lucide-react';
 
 export default function ComponentsShowcase() {
-  const [sliderValue, setSliderValue] = useState([50]);
-  const [switchState, setSwitchState] = useState(true);
   const [progressValue, setProgressValue] = useState(65);
+
+  const form = useForm({
+    defaultValues: {
+      username: 'downspice',
+      bio: 'Software engineer and fullstack developer',
+      notifications: true,
+      agreeTerms: true,
+      difficulty: 50,
+      role: 'developer',
+      birthdate: '2026-07-07T09:00:00.000Z',
+      avatar: null as File | null,
+    },
+  });
+
+  const formValues = form.watch();
+
+  const getSerializableValues = (values: typeof formValues) => {
+    return {
+      ...values,
+      avatar:
+        values.avatar instanceof File
+          ? `${values.avatar.name} (${(values.avatar.size / 1024).toFixed(1)} KB)`
+          : null,
+    };
+  };
+
+  const onSubmit = (data: any) => {
+    alert(JSON.stringify(getSerializableValues(data), null, 2));
+  };
 
   return (
     <TooltipProvider>
@@ -71,6 +97,115 @@ export default function ComponentsShowcase() {
             </div>
           </div>
 
+          {/* Form Wrappers Showcase Section */}
+          <Card className="bg-zinc-900/40 border-zinc-800 backdrop-blur-md">
+            <CardHeader className="border-b border-zinc-800/50 pb-6">
+              <CardTitle className="text-zinc-100 flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                Live Form Wrappers Showcase
+              </CardTitle>
+              <p className="text-sm text-zinc-400 mt-1">
+                Demonstrating all custom wrappers in a unified React Hook Form context.
+              </p>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+                >
+                  {/* Left Column: Input controls */}
+                  <div className="lg:col-span-2 space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <InputWrapper
+                        control={form.control as any}
+                        name="username"
+                        label="Username"
+                        type="text"
+                        required
+                        placeholder="Enter nickname"
+                      />
+                      <SelectWrapper
+                        control={form.control as any}
+                        name="role"
+                        label="Primary Role"
+                        required
+                        options={[
+                          { label: 'Developer', value: 'developer' },
+                          { label: 'Designer', value: 'designer' },
+                          { label: 'Product Manager', value: 'pm' },
+                          { label: 'QA Engineer', value: 'qa' },
+                        ]}
+                      />
+                    </div>
+
+                    <DatePickerWrapper
+                      control={form.control as any}
+                      name="birthdate"
+                      label="Birth Date"
+                      required
+                    />
+
+                    <TextareaWrapper
+                      control={form.control as any}
+                      name="bio"
+                      label="Biography Summary"
+                      rows={2}
+                      warning="Keep it brief and professional."
+                    />
+
+                    <SliderWrapper
+                      control={form.control as any}
+                      name="difficulty"
+                      label="Skill Experience Level"
+                      min={0}
+                      max={100}
+                    />
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <SwitchWrapper
+                        control={form.control as any}
+                        name="notifications"
+                        label="Enable Email Alerts"
+                      />
+                      <CheckboxWrapper
+                        control={form.control as any}
+                        name="agreeTerms"
+                        label="I accept terms and guidelines"
+                        required
+                      />
+                    </div>
+
+                    <FileUploadWrapper
+                      control={form.control as any}
+                      name="avatar"
+                      label="User Profile Attachment"
+                      accept=".jpg,.jpeg,.png,.pdf"
+                    />
+
+                    <Button
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white"
+                    >
+                      Submit Form Data
+                    </Button>
+                  </div>
+
+                  {/* Right Column: Live values observer */}
+                  <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-6 flex flex-col h-full">
+                    <div className="flex items-center gap-2 mb-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                      <FileCode size={16} className="text-indigo-400" />
+                      <span>Observer: Live State Values</span>
+                    </div>
+                    <pre className="flex-1 overflow-auto bg-black p-4 rounded-lg font-mono text-[11px] text-indigo-300 border border-zinc-900 leading-normal max-h-[480px]">
+                      {JSON.stringify(getSerializableValues(formValues), null, 2)}
+                    </pre>
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+
           {/* Grid layout for showcase categories */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Category: Primitives */}
@@ -80,9 +215,7 @@ export default function ComponentsShowcase() {
                   <span className="h-2 w-2 rounded-full bg-indigo-500" />
                   Primitives & Badges
                 </CardTitle>
-                <CardDescription className="text-zinc-500">
-                  Buttons, tags, tooltips, and alerts.
-                </CardDescription>
+                <p className="text-xs text-zinc-500">Buttons, tags, tooltips, and alerts.</p>
               </CardHeader>
               <CardContent className="space-y-6 text-zinc-300">
                 {/* Buttons Row */}
@@ -149,84 +282,6 @@ export default function ComponentsShowcase() {
               </CardContent>
             </Card>
 
-            {/* Category: Form Elements */}
-            <Card className="bg-zinc-900/40 border-zinc-800 backdrop-blur-md">
-              <CardHeader>
-                <CardTitle className="text-zinc-100 flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                  Form & Control Elements
-                </CardTitle>
-                <CardDescription className="text-zinc-500">
-                  Inputs, switches, sliders, and checkboxes.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6 text-zinc-300">
-                {/* Text Input & Area */}
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="demo-input" className="text-zinc-300">
-                      Label & Text Input
-                    </Label>
-                    <Input
-                      id="demo-input"
-                      placeholder="Type something here..."
-                      className="bg-zinc-950 border-zinc-800 text-zinc-100 placeholder-zinc-700 focus:ring-indigo-500/50"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="demo-textarea" className="text-zinc-300">
-                      Textarea
-                    </Label>
-                    <Textarea
-                      id="demo-textarea"
-                      placeholder="Longer text description..."
-                      rows={3}
-                      className="bg-zinc-950 border-zinc-800 text-zinc-100 placeholder-zinc-700"
-                    />
-                  </div>
-                </div>
-
-                {/* Switch & Checkbox */}
-                <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="demo-switch"
-                      checked={switchState}
-                      onCheckedChange={setSwitchState}
-                    />
-                    <Label htmlFor="demo-switch" className="text-zinc-300">
-                      Switch: {switchState ? 'ON' : 'OFF'}
-                    </Label>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="demo-checkbox" defaultChecked />
-                    <Label htmlFor="demo-checkbox" className="text-zinc-300">
-                      Checkbox (Checked)
-                    </Label>
-                  </div>
-                </div>
-
-                {/* Slider */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs text-zinc-400 font-medium">
-                    <span>Slider Value</span>
-                    <span>{sliderValue}%</span>
-                  </div>
-                  <Slider
-                    defaultValue={[50]}
-                    max={100}
-                    step={1}
-                    value={sliderValue}
-                    onValueChange={(val) => {
-                      setSliderValue(Array.isArray(val) ? (val as number[]) : [val as number]);
-                    }}
-                    className="w-full"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
             {/* Category: Status / Feedback */}
             <Card className="bg-zinc-900/40 border-zinc-800 backdrop-blur-md">
               <CardHeader>
@@ -234,9 +289,9 @@ export default function ComponentsShowcase() {
                   <span className="h-2 w-2 rounded-full bg-pink-500" />
                   Status & Feedback
                 </CardTitle>
-                <CardDescription className="text-zinc-500">
+                <p className="text-xs text-zinc-500">
                   Progress, Spinners, Skeletons, and Separators.
-                </CardDescription>
+                </p>
               </CardHeader>
               <CardContent className="space-y-6 text-zinc-300">
                 {/* Progress */}
@@ -280,13 +335,13 @@ export default function ComponentsShowcase() {
             </Card>
 
             {/* Category: Layout & Navigation */}
-            <Card className="bg-zinc-900/40 border-zinc-800 backdrop-blur-md">
+            <Card className="bg-zinc-900/40 border-zinc-800 backdrop-blur-md md:col-span-2">
               <CardHeader>
                 <CardTitle className="text-zinc-100 flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-purple-500" />
-                  Layout & Containers
+                  Layout, Containers & Details
                 </CardTitle>
-                <CardDescription className="text-zinc-500">Tabs and Accordions.</CardDescription>
+                <p className="text-xs text-zinc-500">Tabs, Separators, and Accordions.</p>
               </CardHeader>
               <CardContent className="space-y-6 text-zinc-300">
                 {/* Tabs */}
