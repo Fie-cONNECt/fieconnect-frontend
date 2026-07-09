@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { InputWrapper, CheckboxWrapper, PasswordWrapper } from '@/components/ui/form-wrappers';
+import { InputWrapper, CheckboxWrapper, PasswordWrapper, NativeSelectWrapper } from '@/components/ui/form-wrappers';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -46,6 +46,13 @@ const signUpSchema = z
   });
 
 export type SignUpFormValues = z.infer<typeof signUpSchema>;
+
+const countryOptions = [
+  { label: '+233 🇬🇭', value: '+233' },
+  { label: '+1 🇺🇸', value: '+1' },
+  { label: '+44 🇬🇧', value: '+44' },
+  { label: '+234 🇳🇬', value: '+234' },
+];
 
 export default function SignUpForm() {
   const router = useRouter();
@@ -134,7 +141,8 @@ export default function SignUpForm() {
 
         {/* Name Fields */}
         <div className="grid grid-cols-2 gap-4">
-          <InputWrapper
+          <div>
+            <InputWrapper
             control={form.control as any}
             name="firstName"
             label="First Name"
@@ -143,6 +151,8 @@ export default function SignUpForm() {
             className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/50 text-white"
             required
           />
+          </div>
+          <div>
           <InputWrapper
             control={form.control as any}
             name="lastName"
@@ -152,6 +162,7 @@ export default function SignUpForm() {
             className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/50 text-white"
             required
           />
+          </div>
         </div>
 
         {/* Email Field */}
@@ -172,25 +183,10 @@ export default function SignUpForm() {
           </label>
           <div className="grid grid-cols-[110px_1fr] gap-3">
             {/* Country code selector */}
-            <FormField
-              control={form.control}
+            <NativeSelectWrapper
+              control={form.control as any}
               name="countryCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <select
-                      {...field}
-                      className="w-full h-10 rounded-xl bg-zinc-950/40 border border-zinc-800 text-sm px-3 text-white focus:outline-hidden focus:ring-2 focus:ring-primary/50 cursor-pointer"
-                    >
-                      <option value="+233">+233 🇬🇭</option>
-                      <option value="+1">+1 🇺🇸</option>
-                      <option value="+44">+44 🇬🇧</option>
-                      <option value="+234">+234 🇳🇬</option>
-                    </select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              options={countryOptions}
             />
 
             {/* Phone digits input */}
