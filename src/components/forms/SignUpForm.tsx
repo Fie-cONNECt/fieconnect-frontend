@@ -133,7 +133,7 @@ export default function SignUpForm() {
         </div>
 
         {/* Name Fields */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <InputWrapper
             control={form.control as any}
             name="firstName"
