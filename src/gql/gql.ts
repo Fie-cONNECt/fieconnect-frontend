@@ -17,6 +17,7 @@ type Documents = {
   '\n  mutation Register(\n    $firstName: String!\n    $lastName: String!\n    $email: String!\n    $password: String!\n    $userType: String!\n    $phone: String!\n  ) {\n    register(\n      firstName: $firstName\n      lastName: $lastName\n      email: $email\n      password: $password\n      userType: $userType\n      phone: $phone\n    ) {\n      token\n      user {\n        id\n        firstName\n        lastName\n        email\n        userType\n        phone\n        createdAt\n      }\n    }\n  }\n': typeof types.RegisterDocument;
   '\n  mutation Login($email: String!, $password: String!) {\n    login(email: $email, password: $password) {\n      token\n      user {\n        id\n        firstName\n        lastName\n        email\n        userType\n        phone\n        createdAt\n      }\n    }\n  }\n': typeof types.LoginDocument;
   '\n  query Me {\n    me {\n      id\n      firstName\n      lastName\n      email\n      userType\n      phone\n      createdAt\n    }\n  }\n': typeof types.MeDocument;
+  '\n  mutation Logout {\n    logout\n  }\n': typeof types.LogoutDocument;
 };
 const documents: Documents = {
   '\n  mutation Register(\n    $firstName: String!\n    $lastName: String!\n    $email: String!\n    $password: String!\n    $userType: String!\n    $phone: String!\n  ) {\n    register(\n      firstName: $firstName\n      lastName: $lastName\n      email: $email\n      password: $password\n      userType: $userType\n      phone: $phone\n    ) {\n      token\n      user {\n        id\n        firstName\n        lastName\n        email\n        userType\n        phone\n        createdAt\n      }\n    }\n  }\n':
@@ -25,6 +26,7 @@ const documents: Documents = {
     types.LoginDocument,
   '\n  query Me {\n    me {\n      id\n      firstName\n      lastName\n      email\n      userType\n      phone\n      createdAt\n    }\n  }\n':
     types.MeDocument,
+  '\n  mutation Logout {\n    logout\n  }\n': types.LogoutDocument,
 };
 
 /**
@@ -59,6 +61,12 @@ export function graphql(
 export function graphql(
   source: '\n  query Me {\n    me {\n      id\n      firstName\n      lastName\n      email\n      userType\n      phone\n      createdAt\n    }\n  }\n',
 ): (typeof documents)['\n  query Me {\n    me {\n      id\n      firstName\n      lastName\n      email\n      userType\n      phone\n      createdAt\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  mutation Logout {\n    logout\n  }\n',
+): (typeof documents)['\n  mutation Logout {\n    logout\n  }\n'];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

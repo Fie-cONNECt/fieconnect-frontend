@@ -19,6 +19,7 @@ export async function requestGQL<TResult, TVariables>(
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
+    credentials: 'include',
     body: JSON.stringify({
       query: queryBody,
       variables,

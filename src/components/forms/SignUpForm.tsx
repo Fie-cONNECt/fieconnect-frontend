@@ -4,7 +4,12 @@ import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { InputWrapper, CheckboxWrapper, PasswordWrapper, NativeSelectWrapper } from '@/components/ui/form-wrappers';
+import {
+  InputWrapper,
+  CheckboxWrapper,
+  PasswordWrapper,
+  NativeSelectWrapper,
+} from '@/components/ui/form-wrappers';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -87,8 +92,15 @@ export default function SignUpForm() {
         throw new Error('Registration failed');
       }
 
-      toast.success('Account created successfully! Please log in.');
-      router.push('/login');
+      const { token, user } = response.register;
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+
+      toast.success('Registration successful! Welcome to FieConnect.');
+      router.push('/');
     } catch (error: any) {
       console.error('Signup error:', error);
       toast.error(error.message || 'Signup failed. Please try again.');
@@ -143,25 +155,25 @@ export default function SignUpForm() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <InputWrapper
-            control={form.control as any}
-            name="firstName"
-            label="First Name"
-            type="text"
-            placeholder="John"
-            className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/50 text-white"
-            required
-          />
+              control={form.control as any}
+              name="firstName"
+              label="First Name"
+              type="text"
+              placeholder="John"
+              className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/50 text-white"
+              required
+            />
           </div>
           <div>
-          <InputWrapper
-            control={form.control as any}
-            name="lastName"
-            label="Last Name"
-            type="text"
-            placeholder="Doe"
-            className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/50 text-white"
-            required
-          />
+            <InputWrapper
+              control={form.control as any}
+              name="lastName"
+              label="Last Name"
+              type="text"
+              placeholder="Doe"
+              className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/50 text-white"
+              required
+            />
           </div>
         </div>
 

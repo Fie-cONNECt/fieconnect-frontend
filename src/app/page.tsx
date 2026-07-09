@@ -3,7 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { requestGQL } from '../lib/graphql-client';
-import { REGISTER_MUTATION, LOGIN_MUTATION, ME_QUERY } from '../graphql/operations';
+import {
+  REGISTER_MUTATION,
+  LOGIN_MUTATION,
+  ME_QUERY,
+  LOGOUT_MUTATION,
+} from '../graphql/operations';
 import { Button } from '../components/ui/button';
 import { LogIn, UserPlus, LogOut, User as UserIcon, Mail, Lock, Sparkles } from 'lucide-react';
 
@@ -28,21 +33,16 @@ export default function Home() {
   // Check if user is logged in on mount
   useEffect(() => {
     const fetchMe = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setInitLoading(false);
-        return;
-      }
       try {
         const data = await requestGQL(ME_QUERY);
         if (data.me) {
           setUser(data.me);
         } else {
-          localStorage.removeItem('token');
+          setUser(null);
         }
       } catch (err) {
         console.error('Failed to load user info:', err);
-        localStorage.removeItem('token');
+        setUser(null);
       } finally {
         setInitLoading(false);
       }
@@ -91,7 +91,12 @@ export default function Home() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await requestGQL(LOGOUT_MUTATION);
+    } catch (e) {
+      console.error('Logout error:', e);
+    }
     localStorage.removeItem('token');
     setUser(null);
   };

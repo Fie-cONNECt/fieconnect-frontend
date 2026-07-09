@@ -2,8 +2,18 @@
 
 import SignUpForm from '@/components/forms/SignUpForm';
 import Link from 'next/link';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function SignUpPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (token) {
+      router.push('/');
+    }
+  }, [router]);
   return (
     <div className="flex flex-col gap-6 animate-in fade-in zoom-in duration-500">
       <div className="text-center mb-4">
