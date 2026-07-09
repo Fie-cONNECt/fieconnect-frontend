@@ -2,17 +2,26 @@ import { graphql } from '../gql';
 
 export const REGISTER_MUTATION = graphql(`
   mutation Register(
-    $name: String!
+    $firstName: String!
+    $lastName: String!
     $email: String!
     $password: String!
     $userType: String!
     $phone: String!
   ) {
-    register(name: $name, email: $email, password: $password, userType: $userType, phone: $phone) {
+    register(
+      firstName: $firstName
+      lastName: $lastName
+      email: $email
+      password: $password
+      userType: $userType
+      phone: $phone
+    ) {
       token
       user {
         id
-        name
+        firstName
+        lastName
         email
         userType
         phone
@@ -28,7 +37,8 @@ export const LOGIN_MUTATION = graphql(`
       token
       user {
         id
-        name
+        firstName
+        lastName
         email
         userType
         phone
@@ -42,7 +52,8 @@ export const ME_QUERY = graphql(`
   query Me {
     me {
       id
-      name
+      firstName
+      lastName
       email
       userType
       phone

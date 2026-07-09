@@ -38,7 +38,8 @@ export type MutationLoginArgs = {
 
 export type MutationRegisterArgs = {
   email: Scalars['String']['input'];
-  name: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
   password: Scalars['String']['input'];
   phone: Scalars['String']['input'];
   userType: Scalars['String']['input'];
@@ -53,15 +54,17 @@ export type User = {
   __typename?: 'User';
   createdAt: Scalars['String']['output'];
   email: Scalars['String']['output'];
+  firstName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
+  lastName: Scalars['String']['output'];
   phone: Scalars['String']['output'];
   updatedAt: Scalars['String']['output'];
   userType: Scalars['String']['output'];
 };
 
 export type RegisterMutationVariables = Exact<{
-  name: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
   userType: Scalars['String']['input'];
@@ -76,7 +79,8 @@ export type RegisterMutation = {
     user: {
       __typename?: 'User';
       id: string;
-      name: string;
+      firstName: string;
+      lastName: string;
       email: string;
       userType: string;
       phone: string;
@@ -98,7 +102,8 @@ export type LoginMutation = {
     user: {
       __typename?: 'User';
       id: string;
-      name: string;
+      firstName: string;
+      lastName: string;
       email: string;
       userType: string;
       phone: string;
@@ -114,7 +119,8 @@ export type MeQuery = {
   me?: {
     __typename?: 'User';
     id: string;
-    name: string;
+    firstName: string;
+    lastName: string;
     email: string;
     userType: string;
     phone: string;
@@ -132,7 +138,15 @@ export const RegisterDocument = {
       variableDefinitions: [
         {
           kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'name' } },
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'firstName' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'lastName' } },
           type: {
             kind: 'NonNullType',
             type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
@@ -180,8 +194,13 @@ export const RegisterDocument = {
             arguments: [
               {
                 kind: 'Argument',
-                name: { kind: 'Name', value: 'name' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'name' } },
+                name: { kind: 'Name', value: 'firstName' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'firstName' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'lastName' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'lastName' } },
               },
               {
                 kind: 'Argument',
@@ -215,7 +234,8 @@ export const RegisterDocument = {
                     kind: 'SelectionSet',
                     selections: [
                       { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'firstName' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'lastName' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'email' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'userType' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'phone' } },
@@ -285,7 +305,8 @@ export const LoginDocument = {
                     kind: 'SelectionSet',
                     selections: [
                       { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'firstName' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'lastName' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'email' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'userType' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'phone' } },
@@ -318,7 +339,8 @@ export const MeDocument = {
               kind: 'SelectionSet',
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'firstName' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'lastName' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'email' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'userType' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'phone' } },

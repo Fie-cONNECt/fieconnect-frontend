@@ -23,7 +23,8 @@ import { User, Home, Eye, EyeOff, Check } from 'lucide-react';
 const signUpSchema = z
   .object({
     userType: z.enum(['TENANT', 'LANDLORD']),
-    name: z.string().min(1, 'Full name is required'),
+    firstName: z.string().min(1, 'First name is required'),
+    lastName: z.string().min(1, 'Last name is required'),
     email: z.string().email('Invalid email address'),
     countryCode: z.string().min(1, 'Required'),
     phoneNumber: z.string().min(8, 'Phone number must be at least 8 digits'),
@@ -53,7 +54,8 @@ export default function SignUpForm() {
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       userType: 'TENANT',
-      name: '',
+      firstName: '',
+      lastName: '',
       email: '',
       countryCode: '+233',
       phoneNumber: '',
@@ -66,7 +68,8 @@ export default function SignUpForm() {
   const onSubmit = async (data: SignUpFormValues) => {
     try {
       const response = await requestGQL<any, any>(REGISTER_MUTATION as any, {
-        name: data.name,
+        firstName: data.firstName,
+        lastName: data.lastName,
         email: data.email,
         password: data.password,
         userType: data.userType,
@@ -129,27 +132,38 @@ export default function SignUpForm() {
           </button>
         </div>
 
-        {/* Name & Email Fields */}
+        {/* Name Fields */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <InputWrapper
             control={form.control as any}
-            name="name"
-            label="Full Name"
+            name="firstName"
+            label="First Name"
             type="text"
-            placeholder="John Doe"
+            placeholder="John"
             className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/50 text-white"
             required
           />
           <InputWrapper
             control={form.control as any}
-            name="email"
-            label="Email Address"
-            type="email"
-            placeholder="john@example.com"
+            name="lastName"
+            label="Last Name"
+            type="text"
+            placeholder="Doe"
             className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/50 text-white"
             required
           />
         </div>
+
+        {/* Email Field */}
+        <InputWrapper
+          control={form.control as any}
+          name="email"
+          label="Email Address"
+          type="email"
+          placeholder="john@example.com"
+          className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/50 text-white"
+          required
+        />
 
         {/* Phone Number Field */}
         <div className="space-y-2">

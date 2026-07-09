@@ -9,7 +9,8 @@ import { LogIn, UserPlus, LogOut, User as UserIcon, Mail, Lock, Sparkles } from 
 
 interface User {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   createdAt: string;
 }
@@ -62,8 +63,13 @@ export default function Home() {
           setUser(data.login.user);
         }
       } else {
+        const spaceIndex = name.trim().indexOf(' ');
+        const firstName = spaceIndex !== -1 ? name.trim().substring(0, spaceIndex) : name.trim();
+        const lastName = spaceIndex !== -1 ? name.trim().substring(spaceIndex + 1) : '';
+
         const data = await requestGQL<any, any>(REGISTER_MUTATION as any, {
-          name,
+          firstName,
+          lastName,
           email,
           password,
           userType: 'TENANT',
@@ -128,7 +134,9 @@ export default function Home() {
                 <UserIcon size={24} />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-zinc-100">{user.name}</h2>
+                <h2 className="text-xl font-bold text-zinc-100">
+                  {user.firstName} {user.lastName}
+                </h2>
                 <p className="text-sm text-zinc-400">{user.email}</p>
               </div>
             </div>
