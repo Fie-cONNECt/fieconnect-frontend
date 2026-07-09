@@ -3,13 +3,19 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { requestGQL } from '../lib/graphql-client';
-import { REGISTER_MUTATION, LOGIN_MUTATION, ME_QUERY } from '../graphql/operations';
+import {
+  REGISTER_MUTATION,
+  LOGIN_MUTATION,
+  ME_QUERY,
+  LOGOUT_MUTATION,
+} from '../graphql/operations';
 import { Button } from '../components/ui/button';
 import { LogIn, UserPlus, LogOut, User as UserIcon, Mail, Lock, Sparkles } from 'lucide-react';
 
 interface User {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   createdAt: string;
 }
@@ -27,21 +33,16 @@ export default function Home() {
   // Check if user is logged in on mount
   useEffect(() => {
     const fetchMe = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setInitLoading(false);
-        return;
-      }
       try {
         const data = await requestGQL(ME_QUERY);
         if (data.me) {
           setUser(data.me);
         } else {
-          localStorage.removeItem('token');
+          setUser(null);
         }
       } catch (err) {
         console.error('Failed to load user info:', err);
-        localStorage.removeItem('token');
+        setUser(null);
       } finally {
         setInitLoading(false);
       }
@@ -62,7 +63,18 @@ export default function Home() {
           setUser(data.login.user);
         }
       } else {
-        const data = await requestGQL(REGISTER_MUTATION, { name, email, password });
+        const spaceIndex = name.trim().indexOf(' ');
+        const firstName = spaceIndex !== -1 ? name.trim().substring(0, spaceIndex) : name.trim();
+        const lastName = spaceIndex !== -1 ? name.trim().substring(spaceIndex + 1) : '';
+
+        const data = await requestGQL<any, any>(REGISTER_MUTATION as any, {
+          firstName,
+          lastName,
+          email,
+          password,
+          userType: 'TENANT',
+          phone: '+233 240000000',
+        });
         if (data.register) {
           localStorage.setItem('token', data.register.token);
           setUser(data.register.user);
@@ -79,7 +91,12 @@ export default function Home() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await requestGQL(LOGOUT_MUTATION);
+    } catch (e) {
+      console.error('Logout error:', e);
+    }
     localStorage.removeItem('token');
     setUser(null);
   };
@@ -122,7 +139,9 @@ export default function Home() {
                 <UserIcon size={24} />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-zinc-100">{user.name}</h2>
+                <h2 className="text-xl font-bold text-zinc-100">
+                  {user.firstName} {user.lastName}
+                </h2>
                 <p className="text-sm text-zinc-400">{user.email}</p>
               </div>
             </div>
