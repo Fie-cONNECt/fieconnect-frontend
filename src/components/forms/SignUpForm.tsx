@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { InputWrapper, CheckboxWrapper } from '@/components/ui/form-wrappers';
+import { InputWrapper, CheckboxWrapper, PasswordWrapper } from '@/components/ui/form-wrappers';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -30,10 +30,11 @@ const signUpSchema = z
     phoneNumber: z.string().min(8, 'Phone number must be at least 8 digits'),
     password: z
       .string()
-      .min(8, 'Password must be at least 8 characters long')
+      .min(9, 'Password must be more than 8 characters long')
       .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
       .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-      .regex(/[0-9]/, 'Password must contain at least one number'),
+      .regex(/[0-9]/, 'Password must contain at least one number')
+      .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
     confirmPassword: z.string(),
     agreeTerms: z.boolean().refine((val) => val === true, {
       message: 'You must agree to the terms and privacy policy',
@@ -48,7 +49,6 @@ export type SignUpFormValues = z.infer<typeof signUpSchema>;
 
 export default function SignUpForm() {
   const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -216,54 +216,23 @@ export default function SignUpForm() {
 
         {/* Password & Confirm Password Fields */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Password with Show/Hide toggle */}
-          <FormField
-            control={form.control}
+          <PasswordWrapper
+            control={form.control as any}
             name="password"
-            render={({ field }) => (
-              <FormItem className="relative">
-                <FormLabel>
-                  <span className="text-red-500 mr-1">*</span> Password
-                </FormLabel>
-                <div className="relative">
-                  <input
-                    {...field}
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="••••••••"
-                    className="w-full h-10 rounded-xl bg-zinc-950/40 border border-zinc-800 text-sm pl-4 pr-10 text-white focus:outline-hidden focus:ring-2 focus:ring-primary/50"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
-                  >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Password"
+            placeholder="••••••••"
+            className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/50 text-white"
+            required
+            showStrength={true}
           />
 
-          <FormField
-            control={form.control}
+          <PasswordWrapper
+            control={form.control as any}
             name="confirmPassword"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  <span className="text-red-500 mr-1">*</span> Confirm Password
-                </FormLabel>
-                <FormControl>
-                  <input
-                    {...field}
-                    type="password"
-                    placeholder="••••••••"
-                    className="w-full h-10 rounded-xl bg-zinc-950/40 border border-zinc-800 text-sm px-4 text-white focus:outline-hidden focus:ring-2 focus:ring-primary/50"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Confirm Password"
+            placeholder="••••••••"
+            className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/50 text-white"
+            required
           />
         </div>
 
