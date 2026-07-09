@@ -62,7 +62,13 @@ export default function Home() {
           setUser(data.login.user);
         }
       } else {
-        const data = await requestGQL(REGISTER_MUTATION, { name, email, password });
+        const data = await requestGQL<any, any>(REGISTER_MUTATION as any, {
+          name,
+          email,
+          password,
+          userType: 'TENANT',
+          phone: '+233 240000000',
+        });
         if (data.register) {
           localStorage.setItem('token', data.register.token);
           setUser(data.register.user);
