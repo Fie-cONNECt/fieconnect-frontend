@@ -95,13 +95,13 @@ export default function SignUpForm() {
             onClick={() => form.setValue('userType', 'TENANT')}
             className={`flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-all cursor-pointer ${
               form.watch('userType') === 'TENANT'
-                ? 'border-[#045e45] bg-[#045e45]/5 text-[#045e45] shadow-sm'
+                ? 'border-primary bg-primary/5 text-primary shadow-sm'
                 : 'border-zinc-800 bg-zinc-950/20 text-zinc-400 hover:border-zinc-700'
             }`}
           >
             <div
               className={`p-2 rounded-full ${
-                form.watch('userType') === 'TENANT' ? 'bg-[#045e45]/10' : 'bg-zinc-900'
+                form.watch('userType') === 'TENANT' ? 'bg-primary/10' : 'bg-zinc-900'
               }`}
             >
               <User size={24} />
@@ -114,13 +114,13 @@ export default function SignUpForm() {
             onClick={() => form.setValue('userType', 'LANDLORD')}
             className={`flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-all cursor-pointer ${
               form.watch('userType') === 'LANDLORD'
-                ? 'border-[#045e45] bg-[#045e45]/5 text-[#045e45] shadow-sm'
+                ? 'border-primary bg-primary/5 text-primary shadow-sm'
                 : 'border-zinc-800 bg-zinc-950/20 text-zinc-400 hover:border-zinc-700'
             }`}
           >
             <div
               className={`p-2 rounded-full ${
-                form.watch('userType') === 'LANDLORD' ? 'bg-[#045e45]/10' : 'bg-zinc-900'
+                form.watch('userType') === 'LANDLORD' ? 'bg-primary/10' : 'bg-zinc-900'
               }`}
             >
               <Home size={24} />
@@ -137,7 +137,7 @@ export default function SignUpForm() {
             label="Full Name"
             type="text"
             placeholder="John Doe"
-            className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-[#045e45]/50 text-white"
+            className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/50 text-white"
             required
           />
           <InputWrapper
@@ -146,7 +146,7 @@ export default function SignUpForm() {
             label="Email Address"
             type="email"
             placeholder="john@example.com"
-            className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-[#045e45]/50 text-white"
+            className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/50 text-white"
             required
           />
         </div>
@@ -166,7 +166,7 @@ export default function SignUpForm() {
                   <FormControl>
                     <select
                       {...field}
-                      className="w-full h-10 rounded-xl bg-zinc-950/40 border border-zinc-800 text-sm px-3 text-white focus:outline-hidden focus:ring-2 focus:ring-[#045e45]/50 cursor-pointer"
+                      className="w-full h-10 rounded-xl bg-zinc-950/40 border border-zinc-800 text-sm px-3 text-white focus:outline-hidden focus:ring-2 focus:ring-primary/50 cursor-pointer"
                     >
                       <option value="+233">+233 🇬🇭</option>
                       <option value="+1">+1 🇺🇸</option>
@@ -190,7 +190,7 @@ export default function SignUpForm() {
                       {...field}
                       type="tel"
                       placeholder="24 123 4567"
-                      className="w-full h-10 rounded-xl bg-zinc-950/40 border border-zinc-800 text-sm px-4 text-white focus:outline-hidden focus:ring-2 focus:ring-[#045e45]/50"
+                      className="w-full h-10 rounded-xl bg-zinc-950/40 border border-zinc-800 text-sm px-4 text-white focus:outline-hidden focus:ring-2 focus:ring-primary/50"
                     />
                   </FormControl>
                   <FormMessage />
@@ -216,7 +216,7 @@ export default function SignUpForm() {
                     {...field}
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
-                    className="w-full h-10 rounded-xl bg-zinc-950/40 border border-zinc-800 text-sm pl-4 pr-10 text-white focus:outline-hidden focus:ring-2 focus:ring-[#045e45]/50"
+                    className="w-full h-10 rounded-xl bg-zinc-950/40 border border-zinc-800 text-sm pl-4 pr-10 text-white focus:outline-hidden focus:ring-2 focus:ring-primary/50"
                   />
                   <button
                     type="button"
@@ -244,7 +244,7 @@ export default function SignUpForm() {
                     {...field}
                     type="password"
                     placeholder="••••••••"
-                    className="w-full h-10 rounded-xl bg-zinc-950/40 border border-zinc-800 text-sm px-4 text-white focus:outline-hidden focus:ring-2 focus:ring-[#045e45]/50"
+                    className="w-full h-10 rounded-xl bg-zinc-950/40 border border-zinc-800 text-sm px-4 text-white focus:outline-hidden focus:ring-2 focus:ring-primary/50"
                   />
                 </FormControl>
                 <FormMessage />
@@ -264,7 +264,7 @@ export default function SignUpForm() {
                   type="checkbox"
                   checked={field.value}
                   onChange={(e) => field.onChange(e.target.checked)}
-                  className="mt-1 h-4 w-4 rounded-sm border border-zinc-850 bg-zinc-950 text-[#045e45] focus:ring-2 focus:ring-[#045e45]/50 cursor-pointer"
+                  className="mt-1 h-4 w-4 rounded-sm border border-zinc-850 bg-zinc-950 text-primary focus:ring-2 focus:ring-primary/50 cursor-pointer"
                 />
               </FormControl>
               <div className="space-y-1 leading-none text-zinc-400 text-xs">
@@ -294,7 +294,7 @@ export default function SignUpForm() {
         <Button
           type="submit"
           disabled={form.formState.isSubmitting}
-          className="w-full rounded-xl bg-[#045e45] hover:bg-[#034e3a] text-white font-semibold h-11 mt-2 shadow-md transition-colors cursor-pointer"
+          className="w-full rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-11 mt-2 shadow-md transition-colors cursor-pointer"
         >
           {form.formState.isSubmitting ? 'Creating account...' : 'Create Account'}
         </Button>
