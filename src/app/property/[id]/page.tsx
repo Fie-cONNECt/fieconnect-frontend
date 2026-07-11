@@ -28,6 +28,7 @@ import {
   ArrowLeft,
   X,
 } from 'lucide-react';
+import { Skeleton } from '../../../components/ui/skeleton';
 
 interface User {
   id: string;
@@ -237,11 +238,63 @@ export default function PropertyPage() {
 
   if (initLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background text-foreground animate-pulse">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-t-primary border-muted"></div>
-          <p className="text-muted-foreground font-medium text-xs">Loading property details...</p>
-        </div>
+      <div className="min-h-screen flex flex-col bg-background text-foreground font-sans animate-pulse">
+        {/* Header Skeleton */}
+        <header className="h-16 bg-white border-b border-zinc-100 px-6 flex items-center justify-between">
+          <Skeleton className="h-6 w-32 bg-zinc-200" />
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-8 w-24 bg-zinc-200/80 rounded-full" />
+          </div>
+        </header>
+
+        {/* Main Details page Skeleton */}
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8 sm:px-6 lg:px-8 space-y-8">
+          {/* Back link and actions skeleton */}
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-4 w-24 bg-zinc-200" />
+            <div className="flex gap-2">
+              <Skeleton className="h-8 w-8 bg-zinc-200 rounded-lg" />
+              <Skeleton className="h-8 w-8 bg-zinc-200 rounded-lg" />
+            </div>
+          </div>
+
+          {/* Grid Layout: Left Content, Right Protection Box */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-6">
+              {/* Main title + Price */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-2">
+                  <Skeleton className="h-8 w-64 bg-zinc-200 rounded-lg" />
+                  <Skeleton className="h-4 w-48 bg-zinc-200/70" />
+                </div>
+                <Skeleton className="h-8 w-32 bg-zinc-200 rounded-xl" />
+              </div>
+
+              {/* Gallery skeleton */}
+              <div className="grid grid-cols-1 md:grid-cols-[1fr_200px] gap-4">
+                <Skeleton className="h-96 bg-zinc-200 rounded-2xl" />
+                <div className="hidden md:flex flex-col gap-3">
+                  <Skeleton className="h-28 bg-zinc-200 rounded-xl" />
+                  <Skeleton className="h-28 bg-zinc-200 rounded-xl" />
+                  <Skeleton className="h-28 bg-zinc-200 rounded-xl" />
+                </div>
+              </div>
+
+              {/* Specs cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <Skeleton className="h-20 bg-zinc-100 rounded-xl" />
+                <Skeleton className="h-20 bg-zinc-100 rounded-xl" />
+                <Skeleton className="h-20 bg-zinc-100 rounded-xl" />
+                <Skeleton className="h-20 bg-zinc-100 rounded-xl" />
+              </div>
+            </div>
+
+            <div className="lg:col-span-1 space-y-6">
+              <Skeleton className="h-72 w-full bg-zinc-200 rounded-2xl" />
+              <Skeleton className="h-48 w-full bg-zinc-200 rounded-2xl" />
+            </div>
+          </div>
+        </main>
       </div>
     );
   }
