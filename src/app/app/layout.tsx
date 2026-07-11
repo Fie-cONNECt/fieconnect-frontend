@@ -19,9 +19,11 @@ import {
   Bell,
   Menu,
   X,
+  Plus,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Skeleton } from '../../components/ui/skeleton';
+import { isLandlord } from '../../lib/utils';
 
 export interface AuthenticatedUser {
   id: string;
@@ -210,6 +212,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Footer Navigation section */}
       <div className="border-t border-zinc-200/75 pt-4 space-y-1.5">
+        {isLandlord(user) && (
+          <button
+            onClick={() => toast.success('Add New Listing flow triggered!')}
+            className="flex w-full items-center justify-center gap-1.5 px-3.5 py-2.5 mb-2 rounded-xl text-xs font-black bg-[#05432b] hover:bg-[#043320] text-white transition-all cursor-pointer h-10 shadow-xs border border-[#043d26]"
+          >
+            <Plus size={14} strokeWidth={3} />
+            Add New Listing
+          </button>
+        )}
         {bottomItems.map((item) => {
           const Icon = item.icon;
           return (
@@ -270,34 +281,57 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Content Container Area */}
         <div className="lg:pl-64 flex flex-col flex-1">
           {/* Sticky Header */}
-          <header className="sticky top-0 z-30 h-16 bg-white/85 backdrop-blur-md border-b border-zinc-100 px-4 sm:px-6 flex items-center justify-between">
+          <header
+            className={`sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b border-zinc-100 px-4 sm:px-6 flex items-center justify-between transition-all ${isLandlord(user) ? 'h-20' : 'h-16'}`}
+          >
             {/* Left Header Section */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setMobileMenuOpen(true)}
-                className="lg:hidden p-2 rounded-xl text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors cursor-pointer"
-              >
-                <Menu size={20} />
-              </button>
-              <h1 className="text-lg sm:text-xl font-extrabold tracking-tight text-slate-800">
-                Dashboard
-              </h1>
-            </div>
+            {isLandlord(user) ? (
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setMobileMenuOpen(true)}
+                  className="lg:hidden p-2 rounded-xl text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors cursor-pointer"
+                >
+                  <Menu size={20} />
+                </button>
+                <div className="flex flex-col text-left">
+                  <h1 className="text-lg sm:text-xl font-black text-slate-800 tracking-tight">
+                    Hello, Mr. {user?.lastName}!
+                  </h1>
+                  <span className="text-[10px] sm:text-[11px] text-zinc-400 font-bold tracking-wide mt-0.5">
+                    Welcome back to your property portfolio overview.
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setMobileMenuOpen(true)}
+                  className="lg:hidden p-2 rounded-xl text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors cursor-pointer"
+                >
+                  <Menu size={20} />
+                </button>
+                <h1 className="text-lg sm:text-xl font-extrabold tracking-tight text-slate-800">
+                  Dashboard
+                </h1>
+              </div>
+            )}
 
             {/* Right Header Controls */}
             <div className="flex items-center gap-3 sm:gap-4">
-              {/* Search Bar Input */}
-              <div className="relative hidden sm:block w-48 md:w-64">
-                <Search
-                  size={14}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"
-                />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="w-full h-9 pl-9 pr-4 rounded-full bg-zinc-100/80 border border-transparent text-xs text-slate-700 placeholder-zinc-400 focus:outline-hidden focus:bg-white focus:border-zinc-200 transition-all font-medium"
-                />
-              </div>
+              {/* Search Bar Input (Only for Tenants) */}
+              {!isLandlord(user) && (
+                <div className="relative hidden sm:block w-48 md:w-64">
+                  <Search
+                    size={14}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    className="w-full h-9 pl-9 pr-4 rounded-full bg-zinc-100/80 border border-transparent text-xs text-slate-700 placeholder-zinc-400 focus:outline-hidden focus:bg-white focus:border-zinc-200 transition-all font-medium"
+                  />
+                </div>
+              )}
 
               {/* Notification icon button */}
               <button className="relative p-2 text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50 rounded-xl transition-colors cursor-pointer">
