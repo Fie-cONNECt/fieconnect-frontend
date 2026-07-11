@@ -21,6 +21,7 @@ import {
   X,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Skeleton } from '../../components/ui/skeleton';
 
 export interface AuthenticatedUser {
   id: string;
@@ -93,10 +94,61 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-zinc-50">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-t-[#0f573f] border-zinc-200"></div>
-          <p className="text-xs font-semibold text-zinc-500 tracking-wider">VERIFYING SESSION...</p>
+      <div className="min-h-screen bg-zinc-50 flex flex-col font-sans animate-pulse">
+        {/* Desktop Sidebar Skeleton */}
+        <aside className="hidden lg:block fixed top-0 bottom-0 left-0 w-64 border-r border-zinc-200 bg-zinc-50 px-5 py-6 flex flex-col z-20 justify-between">
+          <div className="space-y-6">
+            <div className="space-y-2 px-2 mb-8">
+              <Skeleton className="h-6 w-32 bg-zinc-200" />
+              <Skeleton className="h-3 w-24 bg-zinc-200/80" />
+            </div>
+            <div className="space-y-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-10 w-full bg-zinc-200/70 rounded-xl" />
+              ))}
+            </div>
+          </div>
+          <div className="border-t border-zinc-200/75 pt-4 space-y-3">
+            <Skeleton className="h-10 w-full bg-zinc-200/70 rounded-xl" />
+            <Skeleton className="h-10 w-full bg-zinc-200/70 rounded-xl" />
+          </div>
+        </aside>
+
+        {/* Content Container Skeleton */}
+        <div className="lg:pl-64 flex flex-col flex-1">
+          {/* Header Skeleton */}
+          <header className="h-16 bg-white border-b border-zinc-100 px-6 flex items-center justify-between">
+            <Skeleton className="h-6 w-32 bg-zinc-200" />
+            <div className="flex items-center gap-4">
+              <Skeleton className="hidden sm:block h-9 w-48 bg-zinc-200/80 rounded-full" />
+              <Skeleton className="h-9 w-9 bg-zinc-200/80 rounded-xl" />
+              <Skeleton className="h-8 w-24 bg-zinc-200/80 rounded-full" />
+            </div>
+          </header>
+
+          {/* Main workspace Skeleton */}
+          <main className="flex-1 p-6 space-y-6">
+            {/* Welcome banner shape */}
+            <Skeleton className="h-32 w-full bg-zinc-200 rounded-2xl" />
+
+            {/* Summary cards grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <Skeleton className="h-20 w-full bg-zinc-200 rounded-2xl" />
+              <Skeleton className="h-20 w-full bg-zinc-200 rounded-2xl" />
+              <Skeleton className="h-20 w-full bg-zinc-200 rounded-2xl" />
+            </div>
+
+            {/* Content columns */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <Skeleton className="h-80 w-full bg-zinc-200 rounded-2xl" />
+              </div>
+              <div className="lg:col-span-1 space-y-6">
+                <Skeleton className="h-56 w-full bg-zinc-200 rounded-2xl" />
+                <Skeleton className="h-36 w-full bg-zinc-200 rounded-2xl" />
+              </div>
+            </div>
+          </main>
         </div>
       </div>
     );
