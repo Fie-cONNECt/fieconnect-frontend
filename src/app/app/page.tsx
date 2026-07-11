@@ -314,7 +314,7 @@ export default function DashboardPage() {
         </div>
 
         {/* 3. Footer Banner */}
-        <footer className="w-full pt-10 border-t border-zinc-200/75 flex flex-col md:flex-row md:items-center justify-between gap-4 text-left">
+        {/* <footer className="w-full pt-10 border-t border-zinc-200/75 flex flex-col md:flex-row md:items-center justify-between gap-4 text-left">
           <div className="space-y-1">
             <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
               FieConnect
@@ -337,7 +337,7 @@ export default function DashboardPage() {
               Careers
             </Link>
           </div>
-        </footer>
+        </footer> */}
       </div>
     );
   }
