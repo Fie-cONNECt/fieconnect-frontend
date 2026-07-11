@@ -7,6 +7,13 @@ import { requestGQL } from '../lib/graphql-client';
 import { ME_QUERY, LOGOUT_MUTATION } from '../graphql/operations';
 import { Button } from '../components/ui/button';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
+import {
   MapPin,
   Search,
   Building2,
@@ -278,32 +285,34 @@ export default function Home() {
               <label className="text-[10px] font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-1">
                 <MapPin size={10} className="text-primary" /> Region
               </label>
-              <select
-                value={region}
-                onChange={(e) => setRegion(e.target.value)}
-                className="w-full h-11 rounded-xl bg-white/10 border border-white/10 text-white text-xs px-3 focus:outline-hidden focus:ring-2 focus:ring-primary/50 cursor-pointer"
-              >
-                <option value="Greater Accra">Greater Accra 🇬🇭</option>
-                <option value="Ashanti">Ashanti</option>
-                <option value="Western">Western</option>
-                <option value="Eastern">Eastern</option>
-              </select>
+              <Select value={region} onValueChange={(val) => setRegion(val || '')}>
+                <SelectTrigger className="!w-full !h-11 rounded-xl bg-white/10 border border-white/10 text-white text-xs px-3 focus:outline-hidden focus:ring-2 focus:ring-primary/50 cursor-pointer flex items-center justify-between">
+                  <SelectValue placeholder="Select region" />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-950 border border-zinc-800 text-white max-h-60 overflow-y-auto">
+                  <SelectItem value="Greater Accra">Greater Accra 🇬🇭</SelectItem>
+                  <SelectItem value="Ashanti">Ashanti</SelectItem>
+                  <SelectItem value="Western">Western</SelectItem>
+                  <SelectItem value="Eastern">Eastern</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-1.5 text-left">
               <label className="text-[10px] font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-1">
                 <Building2 size={10} className="text-primary" /> Property Type
               </label>
-              <select
-                value={propertyType}
-                onChange={(e) => setPropertyType(e.target.value)}
-                className="w-full h-11 rounded-xl bg-white/10 border border-white/10 text-white text-xs px-3 focus:outline-hidden focus:ring-2 focus:ring-primary/50 cursor-pointer"
-              >
-                <option value="Apartment">Apartment</option>
-                <option value="Studio">Studio</option>
-                <option value="Townhouse">Townhouse</option>
-                <option value="Penthouse">Penthouse</option>
-              </select>
+              <Select value={propertyType} onValueChange={(val) => setPropertyType(val || '')}>
+                <SelectTrigger className="!w-full !h-11 rounded-xl bg-white/10 border border-white/10 text-white text-xs px-3 focus:outline-hidden focus:ring-2 focus:ring-primary/50 cursor-pointer flex items-center justify-between">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-950 border border-zinc-800 text-white max-h-60 overflow-y-auto">
+                  <SelectItem value="Apartment">Apartment</SelectItem>
+                  <SelectItem value="Studio">Studio</SelectItem>
+                  <SelectItem value="Townhouse">Townhouse</SelectItem>
+                  <SelectItem value="Penthouse">Penthouse</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <Button className="h-11 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold flex items-center justify-center gap-2 shadow-md transition-colors cursor-pointer w-full sm:w-auto">
