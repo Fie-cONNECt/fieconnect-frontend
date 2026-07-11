@@ -1,50 +1,83 @@
 /**
- * Reusable helper client for uploading files to Supabase Storage.
- * If NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY are not present,
- * it returns a simulated mock URL for local development/testing.
+ * Supabase client and file upload helper.
+ * Uses the official @supabase/supabase-js client for reliable storage uploads.
+ * Falls back to a mock URL if env vars are missing (local dev without Supabase).
  */
-export async function uploadToSupabase(file: File, bucket: string = 'properties'): Promise<string> {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+import { createClient } from '@supabase/supabase-js';
 
-  if (!supabaseUrl || !supabaseKey) {
-    console.warn('Supabase environment variables are missing. Using mock simulated file upload.');
-    // Simulate slight network delay
-    await new Promise((resolve) => setTimeout(resolve, 800));
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
-    // Return a clean local object URL or realistic mock URL
-    // For images, we can return the native browser object URL so it shows up in preview,
-    // or a realistic mock path.
-    const uniqueName = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
-    if (file.type.startsWith('image/')) {
-      // In the browser, we can generate a temporary URL that works in the active session:
-      try {
-        return URL.createObjectURL(file);
-      } catch (e) {
-        return `https://supabase.co/storage/v1/object/public/${bucket}/${uniqueName}`;
-      }
-    }
-    return `https://supabase.co/storage/v1/object/public/${bucket}/${uniqueName}`;
+// Lazily created client — only instantiated when env vars are present
+let _client: ReturnType<typeof createClient> | null = null;
+
+function getClient() {
+  if (!supabaseUrl || !supabaseKey) return null;
+  if (!_client) {
+    _client = createClient(supabaseUrl, supabaseKey);
   }
+  return _client;
+}
 
-  // Sanitize file path
-  const sanitizedFileName = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
-  const uploadUrl = `${supabaseUrl}/storage/v1/object/${bucket}/${sanitizedFileName}`;
+// Track buckets we've already verified to avoid redundant API calls
+const _verifiedBuckets = new Set<string>();
 
-  const response = await fetch(uploadUrl, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${supabaseKey}`,
-      'Content-Type': file.type,
-    },
-    body: file,
+/**
+ * Ensures the given bucket exists and is public.
+ * Creates it if it doesn't exist yet (idempotent).
+ */
+async function ensureBucket(client: ReturnType<typeof createClient>, bucket: string) {
+  if (_verifiedBuckets.has(bucket)) return;
+
+  const { error } = await client.storage.createBucket(bucket, {
+    public: true,
+    allowedMimeTypes: ['image/*', 'application/pdf'],
+    fileSizeLimit: 10485760, // 10MB
   });
 
-  if (!response.ok) {
-    const errorMsg = await response.text();
-    throw new Error(`Failed to upload to Supabase: ${errorMsg}`);
+  // "already exists" is not an error we care about
+  if (error && !error.message.toLowerCase().includes('already exists')) {
+    console.warn(`Could not create bucket "${bucket}": ${error.message}`);
   }
 
-  // Return the public URL for the uploaded object
-  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${sanitizedFileName}`;
+  _verifiedBuckets.add(bucket);
+}
+
+export async function uploadToSupabase(file: File, bucket: string = 'properties'): Promise<string> {
+  const client = getClient();
+
+  // ── Mock fallback for local dev without Supabase ────────────────────────────
+  if (!client) {
+    console.warn('Supabase env vars missing — using mock file URL.');
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    if (file.type.startsWith('image/')) {
+      try {
+        return URL.createObjectURL(file);
+      } catch {
+        // fall through
+      }
+    }
+    const name = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
+    return `https://supabase.co/storage/v1/object/public/${bucket}/${name}`;
+  }
+
+  // ── Ensure bucket exists ─────────────────────────────────────────────────────
+  await ensureBucket(client, bucket);
+
+  // ── Real upload via Supabase SDK ─────────────────────────────────────────────
+  const sanitizedFileName = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
+
+  const { error } = await client.storage.from(bucket).upload(sanitizedFileName, file, {
+    cacheControl: '3600',
+    upsert: false,
+    contentType: file.type,
+  });
+
+  if (error) {
+    throw new Error(`Supabase upload failed: ${error.message}`);
+  }
+
+  // Return the public URL
+  const { data } = client.storage.from(bucket).getPublicUrl(sanitizedFileName);
+  return data.publicUrl;
 }
