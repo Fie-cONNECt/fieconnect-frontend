@@ -371,12 +371,14 @@ export default function Home() {
                   </div>
                 </div>
 
-                <Button
-                  variant="outline"
-                  className="w-full text-xs rounded-xl hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all font-semibold"
-                >
-                  View Details
-                </Button>
+                <Link href={`/property/${prop.id}`} className="w-full">
+                  <Button
+                    variant="outline"
+                    className="w-full text-xs rounded-xl hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all font-semibold cursor-pointer"
+                  >
+                    View Details
+                  </Button>
+                </Link>
               </div>
             </div>
           ))}
