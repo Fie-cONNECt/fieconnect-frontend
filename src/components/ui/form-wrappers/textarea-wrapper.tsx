@@ -34,26 +34,24 @@ export default function TextareaWrapper({
       control={control}
       name={name}
       render={({ field }) => (
-        <>
-          <FormItem className="w-full">
-            <FormLabel>
-              {required && <span className="text-red-500 mr-1">*</span>}
-              {label}
-            </FormLabel>
-            <FormControl>
-              <Textarea
-                placeholder={placeholder || `Enter ${label.toLowerCase()}`}
-                className={className}
-                disabled={disabled}
-                readOnly={readonly}
-                rows={rows}
-                {...field}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-          <span className="font-light">{warning}</span>
-        </>
+        <FormItem className="w-full">
+          <FormLabel>
+            {required && <span className="text-red-500 mr-1">*</span>}
+            {label}
+          </FormLabel>
+          <FormControl>
+            <Textarea
+              placeholder={placeholder || `Enter ${label.toLowerCase()}`}
+              className={className}
+              disabled={disabled}
+              readOnly={readonly}
+              rows={rows}
+              {...field}
+            />
+          </FormControl>
+          <FormMessage />
+          {warning && <span className="text-xs font-light text-muted-foreground">{warning}</span>}
+        </FormItem>
       )}
     />
   );

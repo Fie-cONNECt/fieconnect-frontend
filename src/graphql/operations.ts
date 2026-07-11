@@ -67,3 +67,67 @@ export const LOGOUT_MUTATION = graphql(`
     logout
   }
 `);
+
+export const MY_PROPERTIES_QUERY = graphql(`
+  query MyProperties {
+    myProperties {
+      id
+      title
+      type
+      location
+      region
+      district
+      price
+      verified
+      bedrooms
+      bathrooms
+      size
+      parking
+      about
+      amenities
+      lat
+      lng
+      image
+      images {
+        main
+        kitchen
+        bedroom
+        bathroom
+      }
+      agreementUrl
+      createdAt
+    }
+  }
+`);
+
+export const CREATE_PROPERTY_MUTATION = graphql(`
+  mutation CreateProperty($input: CreatePropertyInput!) {
+    createProperty(input: $input) {
+      id
+      title
+      type
+      location
+      region
+      district
+      price
+      verified
+      bedrooms
+      bathrooms
+      size
+      parking
+      about
+      amenities
+      lat
+      lng
+      image
+      images {
+        main
+        kitchen
+        bedroom
+        bathroom
+      }
+      agreementUrl
+      createdAt
+    }
+  }
+`);

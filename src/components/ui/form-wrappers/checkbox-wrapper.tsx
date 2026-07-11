@@ -28,26 +28,24 @@ export default function CheckboxWrapper({
       control={control}
       name={name}
       render={({ field }) => (
-        <>
-          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 bg-zinc-950/40 border-zinc-800">
-            <FormControl>
-              <Checkbox
-                checked={field.value}
-                onCheckedChange={field.onChange}
-                disabled={disabled}
-                className={className}
-              />
-            </FormControl>
-            <div className="space-y-1 leading-none">
-              <FormLabel>
-                {required && <span className="text-red-500 mr-1">*</span>}
-                {label}
-              </FormLabel>
-            </div>
-            <FormMessage />
-          </FormItem>
-          <span className="font-light">{warning}</span>
-        </>
+        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 bg-zinc-950/40 border-zinc-800">
+          <FormControl>
+            <Checkbox
+              checked={field.value}
+              onCheckedChange={field.onChange}
+              disabled={disabled}
+              className={className}
+            />
+          </FormControl>
+          <div className="space-y-1 leading-none">
+            <FormLabel>
+              {required && <span className="text-red-500 mr-1">*</span>}
+              {label}
+            </FormLabel>
+          </div>
+          <FormMessage />
+          {warning && <span className="text-xs font-light text-muted-foreground">{warning}</span>}
+        </FormItem>
       )}
     />
   );

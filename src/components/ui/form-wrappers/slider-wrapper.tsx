@@ -36,33 +36,31 @@ export default function SliderWrapper({
       render={({ field }) => {
         const val = typeof field.value === 'number' ? field.value : min;
         return (
-          <>
-            <FormItem className="w-full">
-              <div className="flex justify-between items-center mb-2">
-                <FormLabel>
-                  {required && <span className="text-red-500 mr-1">*</span>}
-                  {label}
-                </FormLabel>
-                <span className="text-xs text-zinc-400 font-semibold">{val}</span>
-              </div>
-              <FormControl>
-                <Slider
-                  min={min}
-                  max={max}
-                  step={step}
-                  value={[val]}
-                  onValueChange={(valArray) => {
-                    const nextVal = Array.isArray(valArray) ? valArray[0] : valArray;
-                    field.onChange(nextVal);
-                  }}
-                  disabled={disabled}
-                  className={className}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-            <span className="font-light">{warning}</span>
-          </>
+          <FormItem className="w-full">
+            <div className="flex justify-between items-center mb-2">
+              <FormLabel>
+                {required && <span className="text-red-500 mr-1">*</span>}
+                {label}
+              </FormLabel>
+              <span className="text-xs text-zinc-400 font-semibold">{val}</span>
+            </div>
+            <FormControl>
+              <Slider
+                min={min}
+                max={max}
+                step={step}
+                value={[val]}
+                onValueChange={(valArray) => {
+                  const nextVal = Array.isArray(valArray) ? valArray[0] : valArray;
+                  field.onChange(nextVal);
+                }}
+                disabled={disabled}
+                className={className}
+              />
+            </FormControl>
+            <FormMessage />
+            {warning && <span className="text-xs font-light text-muted-foreground">{warning}</span>}
+          </FormItem>
         );
       }}
     />
