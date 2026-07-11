@@ -37,35 +37,9 @@ interface User {
   createdAt: string;
 }
 
-const featuredProperties = [
-  {
-    id: 1,
-    title: 'Modern 3-Bedroom Apartment',
-    type: 'Apartment',
-    location: 'East Legon, Greater Accra',
-    verified: true,
-    image:
-      'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=800&auto=format&fit=crop',
-  },
-  {
-    id: 2,
-    title: 'Executive Studio',
-    type: 'Studio',
-    location: 'Kumasi, Ashanti',
-    verified: false,
-    image:
-      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=800&auto=format&fit=crop',
-  },
-  {
-    id: 3,
-    title: 'Spacious Townhouse',
-    type: 'Townhouse',
-    location: 'Tema, Greater Accra',
-    verified: false,
-    image:
-      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=800&auto=format&fit=crop',
-  },
-];
+import { propertiesDb } from '../data/properties';
+
+const featuredProperties = propertiesDb.filter((p) => [1, 6, 11].includes(p.id));
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
@@ -75,6 +49,25 @@ export default function Home() {
   // Search filter states
   const [region, setRegion] = useState('Greater Accra');
   const [propertyType, setPropertyType] = useState('Apartment');
+  const [properties, setProperties] = useState(featuredProperties);
+  const [isSearched, setIsSearched] = useState(false);
+
+  const handleSearch = () => {
+    const results = propertiesDb.filter((prop) => {
+      const matchRegion = prop.location.toLowerCase().includes(region.toLowerCase());
+      const matchType = prop.type === propertyType;
+      return matchRegion && matchType;
+    });
+    setProperties(results);
+    setIsSearched(true);
+  };
+
+  const handleReset = () => {
+    setProperties(featuredProperties);
+    setIsSearched(false);
+    setRegion('Greater Accra');
+    setPropertyType('Apartment');
+  };
 
   // Check if user is logged in on mount
   useEffect(() => {
@@ -315,7 +308,10 @@ export default function Home() {
               </Select>
             </div>
 
-            <Button className="h-11 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold flex items-center justify-center gap-2 shadow-md transition-colors cursor-pointer w-full sm:w-auto">
+            <Button
+              onClick={handleSearch}
+              className="h-11 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold flex items-center justify-center gap-2 shadow-md transition-colors cursor-pointer w-full sm:w-auto"
+            >
               <Search size={16} />
               Search
             </Button>
@@ -328,70 +324,101 @@ export default function Home() {
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div className="space-y-2">
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-              Featured Properties
+              {isSearched ? 'Search Results' : 'Featured Properties'}
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground font-medium">
-              Handpicked listings in Ghana&apos;s most sought-after locations.
+              {isSearched
+                ? `${properties.length} ${properties.length === 1 ? 'property' : 'properties'} found matching your filters`
+                : "Handpicked listings in Ghana's most sought-after locations."}
             </p>
           </div>
-          <Link
-            href="#"
-            className="group text-xs font-bold text-primary hover:opacity-85 transition-opacity flex items-center gap-1"
-          >
-            View All Properties
-            <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
-          </Link>
+          {isSearched ? (
+            <button
+              onClick={handleReset}
+              className="text-xs font-bold text-primary hover:opacity-85 transition-opacity"
+            >
+              Reset Filters
+            </button>
+          ) : (
+            <Link
+              href="#"
+              className="group text-xs font-bold text-primary hover:opacity-85 transition-opacity flex items-center gap-1"
+            >
+              View All Properties
+              <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          )}
         </div>
 
-        {/* Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featuredProperties.map((prop) => (
-            <div
-              key={prop.id}
-              className="group flex flex-col rounded-2xl bg-card border border-border overflow-hidden shadow-xs hover:shadow-lg hover:border-primary/20 transition-all duration-300"
+        {properties.length === 0 ? (
+          <div className="flex flex-col items-center justify-center p-12 text-center rounded-2xl border border-dashed border-border bg-card/50 space-y-4 max-w-lg mx-auto animate-in fade-in duration-300">
+            <div className="p-3 bg-muted rounded-full text-muted-foreground">
+              <Building2 size={32} />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-base font-bold text-foreground">No Properties Found</h3>
+              <p className="text-xs text-muted-foreground font-semibold">
+                We couldn&apos;t find any {propertyType.toLowerCase()}s matching your search in{' '}
+                {region}. Try adjusting your filters.
+              </p>
+            </div>
+            <Button
+              onClick={handleReset}
+              className="text-xs bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl px-4 py-2 cursor-pointer shadow-xs"
             >
-              {/* Image box */}
-              <div className="relative h-48 w-full overflow-hidden bg-muted">
-                <Image
-                  src={prop.image}
-                  alt={prop.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                {prop.verified && (
-                  <span className="absolute top-3 left-3 bg-emerald-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full tracking-wider uppercase shadow-xs">
-                    Verified
-                  </span>
-                )}
-              </div>
-
-              {/* Card info */}
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-2">
-                  <div className="text-[10px] font-bold uppercase text-primary tracking-wider">
-                    {prop.type}
-                  </div>
-                  <h3 className="text-sm font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
-                    {prop.title}
-                  </h3>
-                  <div className="flex items-center gap-1 text-[11px] text-muted-foreground font-medium">
-                    <MapPin size={12} className="text-muted-foreground/80" />
-                    {prop.location}
-                  </div>
+              Reset Filters
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {properties.map((prop) => (
+              <div
+                key={prop.id}
+                className="group flex flex-col rounded-2xl bg-card border border-border overflow-hidden shadow-xs hover:shadow-lg hover:border-primary/20 transition-all duration-300 animate-in fade-in duration-500"
+              >
+                {/* Image box */}
+                <div className="relative h-48 w-full overflow-hidden bg-muted">
+                  <Image
+                    src={prop.image}
+                    alt={prop.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  {prop.verified && (
+                    <span className="absolute top-3 left-3 bg-emerald-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full tracking-wider uppercase shadow-xs">
+                      Verified
+                    </span>
+                  )}
                 </div>
 
-                <Link href={`/property/${prop.id}`} className="w-full">
-                  <Button
-                    variant="outline"
-                    className="w-full text-xs rounded-xl hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all font-semibold cursor-pointer"
-                  >
-                    View Details
-                  </Button>
-                </Link>
+                {/* Card info */}
+                <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                  <div className="space-y-2">
+                    <div className="text-[10px] font-bold uppercase text-primary tracking-wider">
+                      {prop.type}
+                    </div>
+                    <h3 className="text-sm font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+                      {prop.title}
+                    </h3>
+                    <div className="flex items-center gap-1 text-[11px] text-muted-foreground font-medium">
+                      <MapPin size={12} className="text-muted-foreground/80" />
+                      {prop.location}
+                    </div>
+                  </div>
+
+                  <Link href={`/property/${prop.id}`} className="w-full">
+                    <Button
+                      variant="outline"
+                      className="w-full text-xs rounded-xl hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all font-semibold cursor-pointer"
+                    >
+                      View Details
+                    </Button>
+                  </Link>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* 4. Stats Section Banner */}

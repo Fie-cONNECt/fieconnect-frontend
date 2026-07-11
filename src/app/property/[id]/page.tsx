@@ -66,138 +66,13 @@ interface PropertyDetails {
   };
 }
 
-// Complete mock database for details
-const propertiesDb: Record<number, PropertyDetails> = {
-  1: {
-    id: 1,
-    title: 'Modern 3-Bedroom Apartment',
-    type: 'Apartment',
-    location: '12 Ringway Cres, Cantonments, Accra',
-    price: 'GHS 4,500',
-    verified: true,
-    bedrooms: '3 Rooms',
-    bathrooms: '3.5 Baths',
-    size: '2,400 sqft',
-    parking: '2 Spaces',
-    about:
-      'Nestled in the heart of Cantonments, this sophisticated 3-bedroom apartment offers a blend of modern elegance and functional luxury. The open-plan layout is designed for both entertaining and relaxation, featuring premium finishes, floor-to-ceiling windows, and abundant natural light throughout.',
-    amenities: [
-      '24/7 Security',
-      'Water Storage',
-      'Swimming Pool',
-      'Gym Facility',
-      'Back-up Power',
-      'Elevator',
-    ],
-    mapDescription:
-      'Located 5 minutes from the American Embassy. Close to premium schools and international restaurants.',
-    images: {
-      main: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop',
-      kitchen:
-        'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=600&auto=format&fit=crop',
-      bedroom:
-        'https://images.unsplash.com/photo-1505691938895-1758d7feb511?q=80&w=600&auto=format&fit=crop',
-      bathroom:
-        'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?q=80&w=600&auto=format&fit=crop',
-    },
-    landlord: {
-      name: 'Mr. Kofi Mensah',
-      phone: '+233 24 123 4567',
-      email: 'kofi.m@email.com',
-      avatar:
-        'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=200&auto=format&fit=crop',
-      verified: true,
-    },
-  },
-  2: {
-    id: 2,
-    title: 'Executive Studio',
-    type: 'Studio',
-    location: '45 Ahodwo Nhyiaeso, Kumasi',
-    price: 'GHS 2,200',
-    verified: true,
-    bedrooms: '1 Room',
-    bathrooms: '1 Bath',
-    size: '850 sqft',
-    parking: '1 Space',
-    about:
-      'An executive, modern studio apartment located in the prime residential hub of Kumasi. Offers absolute comfort, top-tier safety, and a beautifully optimized modern kitchen layout, perfect for single professionals or couples looking for a dynamic city hub.',
-    amenities: [
-      '24/7 Security',
-      'Water Storage',
-      'Back-up Power',
-      'Gym Facility',
-      'High-speed Fiber Internet',
-      'Private Balcony',
-    ],
-    mapDescription:
-      'Located 3 minutes from the Kumasi Royal Golf Club. Close to premium shopping centers and transit lines.',
-    images: {
-      main: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=1200&auto=format&fit=crop',
-      kitchen:
-        'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?q=80&w=600&auto=format&fit=crop',
-      bedroom:
-        'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?q=80&w=600&auto=format&fit=crop',
-      bathroom:
-        'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=600&auto=format&fit=crop',
-    },
-    landlord: {
-      name: 'Ms. Ama Serwaa',
-      phone: '+233 55 987 6543',
-      email: 'serwaa.a@email.com',
-      avatar:
-        'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop',
-      verified: true,
-    },
-  },
-  3: {
-    id: 3,
-    title: 'Spacious Townhouse',
-    type: 'Townhouse',
-    location: '22 Harbour View St, Tema Community 6',
-    price: 'GHS 6,000',
-    verified: true,
-    bedrooms: '4 Rooms',
-    bathrooms: '4.5 Baths',
-    size: '3,200 sqft',
-    parking: '3 Spaces',
-    about:
-      'This stunning multi-level family townhouse in Tema Community 6 provides high-end spatial efficiency, premium hardwood flooring, custom kitchen cabinets, and a private backyard garden area for family leisure and security.',
-    amenities: [
-      '24/7 Security',
-      'Back-up Power',
-      'Swimming Pool',
-      'Kids Play Area',
-      'Water Storage',
-      'Backup Gas Lines',
-    ],
-    mapDescription:
-      'Located 10 minutes from the Tema Harbour. Close to international schools, malls, and Tema Golf Club.',
-    images: {
-      main: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=1200&auto=format&fit=crop',
-      kitchen:
-        'https://images.unsplash.com/photo-1556912173-3bb406ef7e77?q=80&w=600&auto=format&fit=crop',
-      bedroom:
-        'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?q=80&w=600&auto=format&fit=crop',
-      bathroom:
-        'https://images.unsplash.com/photo-1620626011761-996317b69798?q=80&w=600&auto=format&fit=crop',
-    },
-    landlord: {
-      name: 'Mr. John Lamptey',
-      phone: '+233 20 444 5555',
-      email: 'lamptey.j@email.com',
-      avatar:
-        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&auto=format&fit=crop',
-      verified: true,
-    },
-  },
-};
+import { propertiesDb } from '../../../data/properties';
 
 export default function PropertyPage() {
   const params = useParams();
   const idStr = params?.id as string;
   const propertyId = parseInt(idStr || '1', 10);
-  const property = propertiesDb[propertyId] || propertiesDb[1];
+  const property = propertiesDb.find((p) => p.id === propertyId) || propertiesDb[0];
 
   const [user, setUser] = useState<User | null>(null);
   const [initLoading, setInitLoading] = useState(true);
@@ -260,15 +135,8 @@ export default function PropertyPage() {
       const L = (window as any).L;
       if (!L) return;
 
-      let lat = 5.5786;
-      let lng = -0.1704;
-      if (propertyId === 2) {
-        lat = 6.6666;
-        lng = -1.6244;
-      } else if (propertyId === 3) {
-        lat = 5.6494;
-        lng = -0.0175;
-      }
+      const lat = property.lat;
+      const lng = property.lng;
 
       const container = document.getElementById('property-map');
       if (!container) return;
