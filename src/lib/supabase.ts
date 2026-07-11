@@ -1,13 +1,13 @@
 /**
  * Reusable helper client for uploading files to Supabase Storage.
- * If NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are not present,
+ * If NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY are not present,
  * it returns a simulated mock URL for local development/testing.
  */
 export async function uploadToSupabase(file: File, bucket: string = 'properties'): Promise<string> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (!supabaseUrl || !supabaseKey) {
     console.warn('Supabase environment variables are missing. Using mock simulated file upload.');
     // Simulate slight network delay
     await new Promise((resolve) => setTimeout(resolve, 800));
@@ -34,7 +34,7 @@ export async function uploadToSupabase(file: File, bucket: string = 'properties'
   const response = await fetch(uploadUrl, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${supabaseAnonKey}`,
+      Authorization: `Bearer ${supabaseKey}`,
       'Content-Type': file.type,
     },
     body: file,
