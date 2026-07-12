@@ -111,7 +111,7 @@ export default function TenancyDetailsPage() {
   if (!tenancy) return null;
 
   // Calculate lease terms
-  const startDate = new Date(parseInt(tenancy.updatedAt) || tenancy.updatedAt);
+  const startDate = new Date(isNaN(Number(tenancy.updatedAt)) ? tenancy.updatedAt : parseInt(tenancy.updatedAt));
   
   // End date is 1 year from start date
   const endDate = new Date(startDate);

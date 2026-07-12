@@ -169,7 +169,7 @@ export default function TenanciesListPage() {
                       <Calendar size={13} className="text-zinc-400" />
                       <span>
                         Lease commenced:{' '}
-                        {new Date(parseInt(tenancy.updatedAt) || tenancy.updatedAt).toLocaleDateString()}
+                        {new Date(isNaN(Number(tenancy.updatedAt)) ? tenancy.updatedAt : parseInt(tenancy.updatedAt)).toLocaleDateString()}
                       </span>
                     </div>
                   </div>
