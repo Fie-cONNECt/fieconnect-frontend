@@ -5,7 +5,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { requestGQL } from '../../../lib/graphql-client';
-import { ME_QUERY, LOGOUT_MUTATION, PROPERTY_QUERY, TOGGLE_SAVE_PROPERTY_MUTATION, MY_APPLICATIONS_QUERY } from '../../../graphql/operations';
+import {
+  ME_QUERY,
+  LOGOUT_MUTATION,
+  PROPERTY_QUERY,
+  TOGGLE_SAVE_PROPERTY_MUTATION,
+  MY_APPLICATIONS_QUERY,
+} from '../../../graphql/operations';
 import { Button } from '../../../components/ui/button';
 import { toast } from 'sonner';
 import {
@@ -280,14 +286,18 @@ export default function PropertyPage() {
     try {
       const data = await requestGQL(TOGGLE_SAVE_PROPERTY_MUTATION, { propertyId: property.id });
       if (data.toggleSaveProperty) {
-        const saved = data.toggleSaveProperty.savedProperties.some((p: any) => p.id === property.id);
+        const saved = data.toggleSaveProperty.savedProperties.some(
+          (p: any) => p.id === property.id,
+        );
         setIsSaved(saved);
         if (saved) {
           toast.success('Property saved to your collection!');
         } else {
           toast.info('Property removed from your collection.');
         }
-        setUser((prev) => prev ? { ...prev, savedProperties: data.toggleSaveProperty.savedProperties } : null);
+        setUser((prev) =>
+          prev ? { ...prev, savedProperties: data.toggleSaveProperty.savedProperties } : null,
+        );
       }
     } catch (e: any) {
       console.error('Failed to toggle save property:', e);
@@ -770,14 +780,15 @@ export default function PropertyPage() {
                     </div>
                     <p className="text-[11px] leading-relaxed text-muted-foreground font-semibold">
                       You have already applied for this property. Your application is currently{' '}
-                      <span className="text-primary font-bold">{applicationStatus.toLowerCase()}</span> and waiting for approval or feedback.
+                      <span className="text-primary font-bold">
+                        {applicationStatus.toLowerCase()}
+                      </span>{' '}
+                      and waiting for approval or feedback.
                     </p>
                   </div>
                 ) : (
                   <Link href={`/property/${property.id}/apply`} className="w-full">
-                    <Button
-                      className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer text-xs"
-                    >
+                    <Button className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer text-xs">
                       Apply for this Property
                     </Button>
                   </Link>
@@ -848,7 +859,6 @@ export default function PropertyPage() {
           </div>
         </div>
       </footer>
-
     </div>
   );
 }
