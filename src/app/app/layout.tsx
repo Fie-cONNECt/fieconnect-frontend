@@ -3,7 +3,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { requestGQL } from '../../lib/graphql-client';
-import { ME_QUERY, LOGOUT_MUTATION, MY_NOTIFICATIONS_QUERY, MARK_NOTIFICATION_READ_MUTATION } from '../../graphql/operations';
+import {
+  ME_QUERY,
+  LOGOUT_MUTATION,
+  MY_NOTIFICATIONS_QUERY,
+  MARK_NOTIFICATION_READ_MUTATION,
+} from '../../graphql/operations';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -78,9 +83,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const handleMarkAsRead = async (id: string, link?: string | null) => {
     try {
       await requestGQL(MARK_NOTIFICATION_READ_MUTATION, { id });
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-      );
+      setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
       setNotificationsOpen(false);
       if (link) {
         router.push(link);
@@ -416,15 +419,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                             key={n.id}
                             onClick={() => handleMarkAsRead(n.id, n.link)}
                             className={`p-3.5 hover:bg-zinc-50 transition-colors cursor-pointer flex flex-col gap-1 text-left ${
-                              !n.read ? 'bg-primary/5 border-l-2 border-primary' : 'border-l-2 border-transparent'
+                              !n.read
+                                ? 'bg-primary/5 border-l-2 border-primary'
+                                : 'border-l-2 border-transparent'
                             }`}
                           >
-                            <span className="text-slate-800 font-extrabold text-[11px]">{n.title}</span>
+                            <span className="text-slate-800 font-extrabold text-[11px]">
+                              {n.title}
+                            </span>
                             <span className="text-[10px] text-zinc-500 font-medium leading-relaxed">
                               {n.message}
                             </span>
                             <span className="text-[9px] text-zinc-400 mt-0.5">
-                              {new Date(parseInt(n.createdAt) || n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              {new Date(parseInt(n.createdAt) || n.createdAt).toLocaleTimeString(
+                                [],
+                                { hour: '2-digit', minute: '2-digit' },
+                              )}
                             </span>
                           </div>
                         ))

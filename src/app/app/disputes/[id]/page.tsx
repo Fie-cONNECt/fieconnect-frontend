@@ -113,9 +113,7 @@ export default function DisputeDetailsPage() {
       });
       if (data.addDisputeComment?.comments) {
         setDispute((prev) =>
-          prev
-            ? { ...prev, comments: data.addDisputeComment.comments as Comment[] }
-            : null
+          prev ? { ...prev, comments: data.addDisputeComment.comments as Comment[] } : null,
         );
       }
       setCommentText('');
@@ -169,9 +167,7 @@ export default function DisputeDetailsPage() {
   const oppositeRoleName = landlordMode ? 'Tenant' : 'Landlord';
 
   // Determine Timeline stages
-  const firstOpposingComment = dispute.comments.find(
-    (c) => c.sender.id !== dispute.creator.id
-  );
+  const firstOpposingComment = dispute.comments.find((c) => c.sender.id !== dispute.creator.id);
 
   return (
     <div className="space-y-6 text-left">
@@ -301,11 +297,11 @@ export default function DisputeDetailsPage() {
                           ? 'You'
                           : `${comment.sender.firstName} ${comment.sender.lastName}`}
                       </p>
-                      <p className="text-slate-800 leading-relaxed font-medium">
-                        {comment.text}
-                      </p>
+                      <p className="text-slate-800 leading-relaxed font-medium">{comment.text}</p>
                       <p className="text-[9px] text-zinc-400 font-semibold self-end mt-1">
-                        {new Date(parseInt(comment.createdAt) || comment.createdAt).toLocaleTimeString([], {
+                        {new Date(
+                          parseInt(comment.createdAt) || comment.createdAt,
+                        ).toLocaleTimeString([], {
                           hour: '2-digit',
                           minute: '2-digit',
                         })}
@@ -344,7 +340,8 @@ export default function DisputeDetailsPage() {
               </form>
             ) : (
               <div className="p-4 bg-zinc-50 text-center rounded-xl text-xs font-semibold text-zinc-500 border border-zinc-200">
-                This dispute has been marked as resolved and closed. No further comments can be posted.
+                This dispute has been marked as resolved and closed. No further comments can be
+                posted.
               </div>
             )}
           </div>
@@ -373,7 +370,9 @@ export default function DisputeDetailsPage() {
                   <div className="flex items-center gap-1.5">
                     <h4 className="font-extrabold text-slate-800">Complaint Filed</h4>
                     <span className="text-[9px] text-zinc-400">
-                      {new Date(parseInt(dispute.createdAt) || dispute.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(
+                        parseInt(dispute.createdAt) || dispute.createdAt,
+                      ).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
                   <p className="text-[10px] text-zinc-500 font-semibold leading-relaxed mt-0.5">
@@ -384,21 +383,28 @@ export default function DisputeDetailsPage() {
 
               {/* Step 2: Response */}
               <div className="flex gap-3 items-start relative z-10 text-xs">
-                <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 border ${
-                  firstOpposingComment
-                    ? 'bg-amber-500 border-amber-500/20 text-white'
-                    : 'bg-zinc-100 border-zinc-200 text-zinc-400'
-                }`}>
+                <div
+                  className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 border ${
+                    firstOpposingComment
+                      ? 'bg-amber-500 border-amber-500/20 text-white'
+                      : 'bg-zinc-100 border-zinc-200 text-zinc-400'
+                  }`}
+                >
                   <MessageSquare size={14} />
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <h4 className={`font-extrabold ${firstOpposingComment ? 'text-slate-800' : 'text-zinc-450'}`}>
+                    <h4
+                      className={`font-extrabold ${firstOpposingComment ? 'text-slate-800' : 'text-zinc-450'}`}
+                    >
                       Response Filed
                     </h4>
                     {firstOpposingComment && (
                       <span className="text-[9px] text-zinc-400">
-                        {new Date(parseInt(firstOpposingComment.createdAt) || firstOpposingComment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {new Date(
+                          parseInt(firstOpposingComment.createdAt) ||
+                            firstOpposingComment.createdAt,
+                        ).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     )}
                   </div>
@@ -412,15 +418,19 @@ export default function DisputeDetailsPage() {
 
               {/* Step 3: Resolution */}
               <div className="flex gap-3 items-start relative z-10 text-xs">
-                <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 border ${
-                  dispute.status === 'RESOLVED'
-                    ? 'bg-emerald-500 border-emerald-500/20 text-white'
-                    : 'bg-zinc-100 border-zinc-200 text-zinc-400'
-                }`}>
+                <div
+                  className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 border ${
+                    dispute.status === 'RESOLVED'
+                      ? 'bg-emerald-500 border-emerald-500/20 text-white'
+                      : 'bg-zinc-100 border-zinc-200 text-zinc-400'
+                  }`}
+                >
                   <CheckCircle size={14} />
                 </div>
                 <div>
-                  <h4 className={`font-extrabold ${dispute.status === 'RESOLVED' ? 'text-slate-800' : 'text-zinc-450'}`}>
+                  <h4
+                    className={`font-extrabold ${dispute.status === 'RESOLVED' ? 'text-slate-800' : 'text-zinc-450'}`}
+                  >
                     Resolution / Closing
                   </h4>
                   <p className="text-[10px] text-zinc-500 font-semibold leading-relaxed mt-0.5">
@@ -448,7 +458,9 @@ export default function DisputeDetailsPage() {
             </div>
             <div>
               <p className="font-black text-slate-800">{dispute.tenancy.property.title}</p>
-              <p className="text-[10px] text-zinc-450 mt-0.5">{dispute.tenancy.property.location}</p>
+              <p className="text-[10px] text-zinc-450 mt-0.5">
+                {dispute.tenancy.property.location}
+              </p>
             </div>
             <div className="pt-2 border-t border-zinc-50">
               <Link href={`/app/tenancies/${dispute.tenancy.id}`}>

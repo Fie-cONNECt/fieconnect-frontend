@@ -478,8 +478,18 @@ export const DISPUTE_QUERY = graphql(`
 `);
 
 export const CREATE_DISPUTE_MUTATION = graphql(`
-  mutation CreateDispute($tenancyId: ID!, $title: String!, $description: String!, $evidenceUrl: String) {
-    createDispute(tenancyId: $tenancyId, title: $title, description: $description, evidenceUrl: $evidenceUrl) {
+  mutation CreateDispute(
+    $tenancyId: ID!
+    $title: String!
+    $description: String!
+    $evidenceUrl: String
+  ) {
+    createDispute(
+      tenancyId: $tenancyId
+      title: $title
+      description: $description
+      evidenceUrl: $evidenceUrl
+    ) {
       id
       status
     }

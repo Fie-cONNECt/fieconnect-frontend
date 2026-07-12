@@ -210,11 +210,13 @@ export default function ProfilePage() {
               <h2 className="text-2xl font-black tracking-tight">
                 {user.firstName} {user.lastName}
               </h2>
-              <span className={`inline-flex items-center gap-1 text-[10px] font-extrabold px-2.5 py-1 rounded-full border ${
-                landlordMode
-                  ? 'bg-amber-400/20 border-amber-300/30 text-amber-200'
-                  : 'bg-emerald-400/20 border-emerald-300/30 text-emerald-200'
-              }`}>
+              <span
+                className={`inline-flex items-center gap-1 text-[10px] font-extrabold px-2.5 py-1 rounded-full border ${
+                  landlordMode
+                    ? 'bg-amber-400/20 border-amber-300/30 text-amber-200'
+                    : 'bg-emerald-400/20 border-emerald-300/30 text-emerald-200'
+                }`}
+              >
                 {landlordMode ? <Building2 size={10} /> : <Home size={10} />}
                 {landlordMode ? 'Landlord' : 'Tenant'}
               </span>
@@ -266,7 +268,11 @@ export default function ProfilePage() {
                 disabled={uploadingAvatar}
                 className="flex items-center gap-1 text-[10px] font-bold text-primary hover:text-primary/80 cursor-pointer transition-colors disabled:opacity-50"
               >
-                {uploadingAvatar ? <Loader2 size={11} className="animate-spin" /> : <Camera size={11} />}
+                {uploadingAvatar ? (
+                  <Loader2 size={11} className="animate-spin" />
+                ) : (
+                  <Camera size={11} />
+                )}
                 {avatarUrl ? 'Change photo' : 'Upload photo'}
               </button>
             </div>
@@ -343,7 +349,11 @@ export default function ProfilePage() {
                   disabled={saving}
                   className="h-9 px-6 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
                 >
-                  {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle size={13} />}
+                  {saving ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <CheckCircle size={13} />
+                  )}
                   Save Changes
                 </Button>
               </div>
@@ -358,9 +368,21 @@ export default function ProfilePage() {
               <UserIcon size={12} /> Personal Information
             </h3>
             <div className="space-y-3">
-              <InfoRow icon={<Mail size={13} className="text-primary/70" />} label="Email" value={user.email} />
-              <InfoRow icon={<Phone size={13} className="text-primary/70" />} label="Phone" value={user.phone || '—'} />
-              <InfoRow icon={<Calendar size={13} className="text-primary/70" />} label="Member Since" value={memberSince} />
+              <InfoRow
+                icon={<Mail size={13} className="text-primary/70" />}
+                label="Email"
+                value={user.email}
+              />
+              <InfoRow
+                icon={<Phone size={13} className="text-primary/70" />}
+                label="Phone"
+                value={user.phone || '—'}
+              />
+              <InfoRow
+                icon={<Calendar size={13} className="text-primary/70" />}
+                label="Member Since"
+                value={memberSince}
+              />
             </div>
           </div>
 
@@ -370,7 +392,13 @@ export default function ProfilePage() {
             </h3>
             <div className="space-y-3">
               <InfoRow
-                icon={landlordMode ? <Building2 size={13} className="text-amber-500" /> : <Home size={13} className="text-emerald-500" />}
+                icon={
+                  landlordMode ? (
+                    <Building2 size={13} className="text-amber-500" />
+                  ) : (
+                    <Home size={13} className="text-emerald-500" />
+                  )
+                }
                 label="Account Type"
                 value={landlordMode ? 'Landlord' : 'Tenant'}
               />
@@ -415,7 +443,9 @@ export default function ProfilePage() {
               </p>
             </div>
           </div>
-          <span className={`text-[10px] font-black uppercase tracking-wider transition-colors ${showPasswordSection ? 'text-primary' : 'text-zinc-400'}`}>
+          <span
+            className={`text-[10px] font-black uppercase tracking-wider transition-colors ${showPasswordSection ? 'text-primary' : 'text-zinc-400'}`}
+          >
             {showPasswordSection ? 'Cancel' : 'Update →'}
           </span>
         </button>
@@ -423,7 +453,10 @@ export default function ProfilePage() {
         {showPasswordSection && (
           <div className="px-5 pb-6 border-t border-zinc-100 pt-5">
             <Form {...passwordForm}>
-              <form onSubmit={passwordForm.handleSubmit(handleChangePassword)} className="space-y-4 max-w-md">
+              <form
+                onSubmit={passwordForm.handleSubmit(handleChangePassword)}
+                className="space-y-4 max-w-md"
+              >
                 {/* Current password */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-zinc-700 block">Current Password</label>
@@ -466,7 +499,9 @@ export default function ProfilePage() {
 
                 {/* Confirm new password */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-zinc-700 block">Confirm New Password</label>
+                  <label className="text-xs font-bold text-zinc-700 block">
+                    Confirm New Password
+                  </label>
                   <div className="relative">
                     <input
                       type={showConfirm ? 'text' : 'password'}
@@ -490,7 +525,11 @@ export default function ProfilePage() {
                     disabled={changingPassword}
                     className="h-9 px-6 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
                   >
-                    {changingPassword ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle size={13} />}
+                    {changingPassword ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <CheckCircle size={13} />
+                    )}
                     Update Password
                   </Button>
                 </div>

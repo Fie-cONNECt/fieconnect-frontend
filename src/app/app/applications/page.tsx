@@ -363,7 +363,10 @@ export default function ApplicationsPage() {
                 <div className="flex items-center justify-between md:justify-end gap-3">
                   <div className="flex flex-col items-end gap-1">
                     <span className="text-[9px] text-zinc-400 font-semibold">
-                      Applied {new Date(isNaN(Number(app.createdAt)) ? app.createdAt : parseInt(app.createdAt)).toLocaleDateString()}
+                      Applied{' '}
+                      {new Date(
+                        isNaN(Number(app.createdAt)) ? app.createdAt : parseInt(app.createdAt),
+                      ).toLocaleDateString()}
                     </span>
                     {getStatusBadge(app.status)}
                   </div>
@@ -466,7 +469,9 @@ export default function ApplicationsPage() {
                               <FileText size={16} className="text-primary" />
                               <span className="font-bold">National ID (Ghanacard)</span>
                             </div>
-                            <span className="text-[10px] text-primary font-bold uppercase">View</span>
+                            <span className="text-[10px] text-primary font-bold uppercase">
+                              View
+                            </span>
                           </a>
                           {app.supportingDocsUrl && (
                             <a
@@ -479,7 +484,9 @@ export default function ApplicationsPage() {
                                 <FileText size={16} className="text-primary" />
                                 <span className="font-bold">Supporting Documents</span>
                               </div>
-                              <span className="text-[10px] text-primary font-bold uppercase">View</span>
+                              <span className="text-[10px] text-primary font-bold uppercase">
+                                View
+                              </span>
                             </a>
                           )}
                         </div>
@@ -505,7 +512,9 @@ export default function ApplicationsPage() {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-zinc-400">Employment Length:</span>
-                            <span className="font-bold text-zinc-800">{app.lengthOfEmployment}</span>
+                            <span className="font-bold text-zinc-800">
+                              {app.lengthOfEmployment}
+                            </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-zinc-400">Income Range:</span>
@@ -535,7 +544,9 @@ export default function ApplicationsPage() {
                             className="flex items-center justify-between p-3 bg-zinc-50 hover:bg-zinc-100 rounded-xl transition-all"
                           >
                             <span className="font-bold">Supporting Documents</span>
-                            <span className="text-primary uppercase text-[10px] font-bold">View</span>
+                            <span className="text-primary uppercase text-[10px] font-bold">
+                              View
+                            </span>
                           </a>
                         )}
                       </div>
@@ -560,7 +571,9 @@ export default function ApplicationsPage() {
                               <Download size={14} className="text-primary" />
                               <span>Agreement Template</span>
                             </div>
-                            <span className="text-[10px] text-primary uppercase font-bold">Download</span>
+                            <span className="text-[10px] text-primary uppercase font-bold">
+                              Download
+                            </span>
                           </a>
                         )}
 
@@ -575,7 +588,9 @@ export default function ApplicationsPage() {
                               <CheckCircle size={14} className="text-emerald-500" />
                               <span className="text-emerald-700">Signed Agreement</span>
                             </div>
-                            <span className="text-[10px] text-emerald-600 uppercase font-bold">View PDF</span>
+                            <span className="text-[10px] text-emerald-600 uppercase font-bold">
+                              View PDF
+                            </span>
                           </a>
                         )}
                       </div>
@@ -588,7 +603,7 @@ export default function ApplicationsPage() {
                       <div className="flex items-center gap-2 text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
                         <MessageSquare size={14} /> Information Request History
                       </div>
-                      
+
                       {app.furtherDetailsRequest && (
                         <div className="space-y-1 pl-6 relative before:absolute before:left-2 before:top-2 before:bottom-2 before:w-px before:bg-amber-200">
                           <p className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase">
@@ -693,7 +708,8 @@ export default function ApplicationsPage() {
                               Approve listing & send tenancy agreement
                             </h4>
                             <p className="text-[10px] text-zinc-500 font-semibold leading-relaxed">
-                              Upload the draft tenancy agreement PDF. The tenant must download, sign, and return this file to activate their tenancy.
+                              Upload the draft tenancy agreement PDF. The tenant must download,
+                              sign, and return this file to activate their tenancy.
                             </p>
                           </div>
 
@@ -723,7 +739,9 @@ export default function ApplicationsPage() {
                                 <Upload className="h-5 w-5" />
                               )}
                               <span className="text-[11px] font-bold text-slate-700">
-                                {uploadedAgreementUrl ? 'Tenancy Agreement Uploaded' : 'Upload Tenancy Agreement PDF'}
+                                {uploadedAgreementUrl
+                                  ? 'Tenancy Agreement Uploaded'
+                                  : 'Upload Tenancy Agreement PDF'}
                               </span>
                             </button>
                           </div>
@@ -813,7 +831,8 @@ export default function ApplicationsPage() {
                       {activeSignAppId !== app.id ? (
                         <div className="flex justify-between items-center gap-4 bg-primary/5 p-4 rounded-xl border border-primary/10">
                           <p className="text-[11px] text-zinc-500 font-semibold leading-relaxed">
-                            Your application is approved! Please download the Tenancy Agreement above, sign it, and upload the signed copy here to activate your lease.
+                            Your application is approved! Please download the Tenancy Agreement
+                            above, sign it, and upload the signed copy here to activate your lease.
                           </p>
                           <Button
                             onClick={() => setActiveSignAppId(app.id)}
@@ -832,7 +851,8 @@ export default function ApplicationsPage() {
                               Submit Signed Tenancy Agreement
                             </h4>
                             <p className="text-[10px] text-zinc-500 font-semibold leading-relaxed">
-                              Attach a scanned PDF copy of the fully signed tenancy agreement document.
+                              Attach a scanned PDF copy of the fully signed tenancy agreement
+                              document.
                             </p>
                           </div>
 
@@ -862,7 +882,9 @@ export default function ApplicationsPage() {
                                 <Upload className="h-5 w-5" />
                               )}
                               <span className="text-[11px] font-bold text-slate-700">
-                                {uploadedSignedUrl ? 'Signed Agreement Uploaded' : 'Click to Upload Signed PDF'}
+                                {uploadedSignedUrl
+                                  ? 'Signed Agreement Uploaded'
+                                  : 'Click to Upload Signed PDF'}
                               </span>
                             </button>
                           </div>
