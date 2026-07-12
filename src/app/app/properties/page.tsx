@@ -97,6 +97,7 @@ export default function TenantPropertiesPage() {
   const [appCount, setAppCount] = useState(0);
   const [tenancyCount, setTenancyCount] = useState(0);
   const [disputeCount, setDisputeCount] = useState(0);
+  const [showAll, setShowAll] = useState(false);
 
   const form = useForm<FilterFormValues>({
     defaultValues: {
@@ -152,15 +153,17 @@ export default function TenantPropertiesPage() {
     }
   }, [userLoading]);
 
-  const handleSearch = () =>
+  const handleSearch = () => {
+    setShowAll(true);
     fetchProperties(
       form.getValues('region'),
       form.getValues('propType'),
       parseInt(form.getValues('rentRange')) || 0,
     );
+  };
 
   // Derive sections from the flat list
-  const featured = properties.slice(0, 3);
+  const displayedProperties = showAll ? properties : properties.slice(0, 3);
   const recommended = properties.slice(3, 9);
   const recent = properties.slice(0, 5);
 
@@ -246,6 +249,7 @@ export default function TenantPropertiesPage() {
                     propType: 'All',
                     rentRange: '0',
                   });
+                  setShowAll(false);
                   fetchProperties('All', 'All', 0);
                 }}
                 className="h-10 px-4 border border-zinc-200 hover:bg-zinc-50 text-zinc-500 hover:text-zinc-700 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
@@ -284,12 +288,14 @@ export default function TenantPropertiesPage() {
       {/* ── Featured Properties ── */}
       <section className="px-4 sm:px-6 lg:px-8 space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-black text-slate-800">Featured Properties</h2>
+          <h2 className="text-sm font-black text-slate-800">
+            {showAll ? 'All Matching Properties' : 'Featured Properties'}
+          </h2>
           <button
-            onClick={handleSearch}
+            onClick={() => setShowAll(!showAll)}
             className="text-xs font-bold text-primary hover:underline cursor-pointer"
           >
-            View All
+            {showAll ? 'Show Featured Only' : 'View All'}
           </button>
         </div>
 
@@ -299,13 +305,13 @@ export default function TenantPropertiesPage() {
               <Skeleton key={i} className="h-64 rounded-2xl bg-zinc-200" />
             ))}
           </div>
-        ) : featured.length === 0 ? (
+        ) : displayedProperties.length === 0 ? (
           <div className="text-center py-12 text-xs text-zinc-400 font-semibold">
             No properties match your filters.
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {featured.map((p) => (
+            {displayedProperties.map((p) => (
               <FeaturedCard key={p.id} property={p} />
             ))}
           </div>
@@ -313,7 +319,7 @@ export default function TenantPropertiesPage() {
       </section>
 
       {/* ── Recommended ── */}
-      {recommended.length > 0 && (
+      {!showAll && recommended.length > 0 && (
         <section className="space-y-4">
           <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8">
             <h2 className="text-sm font-black text-slate-800">
@@ -347,7 +353,7 @@ export default function TenantPropertiesPage() {
       )}
 
       {/* ── Recent Listings ── */}
-      {recent.length > 0 && (
+      {!showAll && recent.length > 0 && (
         <section className="px-4 sm:px-6 lg:px-8 space-y-4">
           <h2 className="text-sm font-black text-slate-800">Recent Listings</h2>
           <div className="bg-white border border-zinc-200/85 rounded-2xl shadow-xs divide-y divide-zinc-100 overflow-hidden">

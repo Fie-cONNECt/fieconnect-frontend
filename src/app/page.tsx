@@ -344,7 +344,7 @@ export default function Home() {
             </button>
           ) : (
             <Link
-              href="#"
+              href="/app"
               className="group text-xs font-bold text-primary hover:opacity-85 transition-opacity flex items-center gap-1"
             >
               View All Properties
