@@ -331,3 +331,77 @@ export const SUBMIT_SIGNED_AGREEMENT_MUTATION = graphql(`
     }
   }
 `);
+
+export const MY_TENANCIES_QUERY = graphql(`
+  query MyTenancies {
+    myTenancies {
+      id
+      property {
+        id
+        title
+        image
+        location
+        price
+        bedrooms
+        bathrooms
+        size
+        landlord {
+          id
+          firstName
+          lastName
+          email
+          phone
+        }
+      }
+      tenant {
+        id
+        firstName
+        lastName
+        email
+        phone
+      }
+      status
+      agreementUrl
+      signedAgreementUrl
+      updatedAt
+      createdAt
+    }
+  }
+`);
+
+export const TENANCY_QUERY = graphql(`
+  query Tenancy($id: ID!) {
+    tenancy(id: $id) {
+      id
+      property {
+        id
+        title
+        image
+        location
+        price
+        bedrooms
+        bathrooms
+        size
+        landlord {
+          id
+          firstName
+          lastName
+          email
+          phone
+        }
+      }
+      tenant {
+        id
+        firstName
+        lastName
+        email
+        phone
+      }
+      status
+      agreementUrl
+      signedAgreementUrl
+      updatedAt
+      createdAt
+    }
+  }
+`);
