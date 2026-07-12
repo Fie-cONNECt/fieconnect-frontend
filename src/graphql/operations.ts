@@ -209,6 +209,13 @@ export const MY_APPLICATIONS_QUERY = graphql(`
         bedrooms
         bathrooms
       }
+      nationalIdUrl
+      supportingDocsUrl
+      employerName
+      jobTitle
+      monthlyIncome
+      lengthOfEmployment
+      personalStatement
       status
       furtherDetailsRequest
       furtherDetailsResponse

@@ -266,7 +266,7 @@ export default function ApplicationsPage() {
                 <div className="flex items-center justify-between md:justify-end gap-3">
                   <div className="flex flex-col items-end gap-1">
                     <span className="text-[9px] text-zinc-400 font-semibold">
-                      Applied {new Date(parseInt(app.createdAt) || app.createdAt).toLocaleDateString()}
+                      Applied {new Date(isNaN(Number(app.createdAt)) ? app.createdAt : parseInt(app.createdAt)).toLocaleDateString()}
                     </span>
                     {getStatusBadge(app.status)}
                   </div>
