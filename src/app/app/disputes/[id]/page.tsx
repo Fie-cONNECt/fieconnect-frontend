@@ -370,9 +370,10 @@ export default function DisputeDetailsPage() {
                   <div className="flex items-center gap-1.5">
                     <h4 className="font-extrabold text-slate-800">Complaint Filed</h4>
                     <span className="text-[9px] text-zinc-400">
-                      {new Date(
-                        parseInt(dispute.createdAt) || dispute.createdAt,
-                      ).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(dispute.createdAt).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
                     </span>
                   </div>
                   <p className="text-[10px] text-zinc-500 font-semibold leading-relaxed mt-0.5">
