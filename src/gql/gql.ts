@@ -40,6 +40,7 @@ type Documents = {
     "\n  mutation AddDisputeComment($id: ID!, $text: String!) {\n    addDisputeComment(id: $id, text: $text) {\n      id\n      comments {\n        id\n        sender {\n          id\n          firstName\n          lastName\n        }\n        text\n        createdAt\n      }\n    }\n  }\n": typeof types.AddDisputeCommentDocument,
     "\n  mutation ResolveDispute($id: ID!) {\n    resolveDispute(id: $id) {\n      id\n      status\n    }\n  }\n": typeof types.ResolveDisputeDocument,
     "\n  mutation UpdateProfile(\n    $firstName: String\n    $lastName: String\n    $phone: String\n    $bio: String\n    $avatarUrl: String\n  ) {\n    updateProfile(\n      firstName: $firstName\n      lastName: $lastName\n      phone: $phone\n      bio: $bio\n      avatarUrl: $avatarUrl\n    ) {\n      id\n      firstName\n      lastName\n      email\n      userType\n      phone\n      avatarUrl\n      bio\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.UpdateProfileDocument,
+    "\n  mutation ChangePassword($currentPassword: String!, $newPassword: String!) {\n    changePassword(currentPassword: $currentPassword, newPassword: $newPassword)\n  }\n": typeof types.ChangePasswordDocument,
 };
 const documents: Documents = {
     "\n  mutation Register(\n    $firstName: String!\n    $lastName: String!\n    $email: String!\n    $password: String!\n    $userType: String!\n    $phone: String!\n  ) {\n    register(\n      firstName: $firstName\n      lastName: $lastName\n      email: $email\n      password: $password\n      userType: $userType\n      phone: $phone\n    ) {\n      token\n      user {\n        id\n        firstName\n        lastName\n        email\n        userType\n        phone\n        createdAt\n      }\n    }\n  }\n": types.RegisterDocument,
@@ -68,6 +69,7 @@ const documents: Documents = {
     "\n  mutation AddDisputeComment($id: ID!, $text: String!) {\n    addDisputeComment(id: $id, text: $text) {\n      id\n      comments {\n        id\n        sender {\n          id\n          firstName\n          lastName\n        }\n        text\n        createdAt\n      }\n    }\n  }\n": types.AddDisputeCommentDocument,
     "\n  mutation ResolveDispute($id: ID!) {\n    resolveDispute(id: $id) {\n      id\n      status\n    }\n  }\n": types.ResolveDisputeDocument,
     "\n  mutation UpdateProfile(\n    $firstName: String\n    $lastName: String\n    $phone: String\n    $bio: String\n    $avatarUrl: String\n  ) {\n    updateProfile(\n      firstName: $firstName\n      lastName: $lastName\n      phone: $phone\n      bio: $bio\n      avatarUrl: $avatarUrl\n    ) {\n      id\n      firstName\n      lastName\n      email\n      userType\n      phone\n      avatarUrl\n      bio\n      createdAt\n      updatedAt\n    }\n  }\n": types.UpdateProfileDocument,
+    "\n  mutation ChangePassword($currentPassword: String!, $newPassword: String!) {\n    changePassword(currentPassword: $currentPassword, newPassword: $newPassword)\n  }\n": types.ChangePasswordDocument,
 };
 
 /**
@@ -188,6 +190,10 @@ export function graphql(source: "\n  mutation ResolveDispute($id: ID!) {\n    re
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation UpdateProfile(\n    $firstName: String\n    $lastName: String\n    $phone: String\n    $bio: String\n    $avatarUrl: String\n  ) {\n    updateProfile(\n      firstName: $firstName\n      lastName: $lastName\n      phone: $phone\n      bio: $bio\n      avatarUrl: $avatarUrl\n    ) {\n      id\n      firstName\n      lastName\n      email\n      userType\n      phone\n      avatarUrl\n      bio\n      createdAt\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateProfile(\n    $firstName: String\n    $lastName: String\n    $phone: String\n    $bio: String\n    $avatarUrl: String\n  ) {\n    updateProfile(\n      firstName: $firstName\n      lastName: $lastName\n      phone: $phone\n      bio: $bio\n      avatarUrl: $avatarUrl\n    ) {\n      id\n      firstName\n      lastName\n      email\n      userType\n      phone\n      avatarUrl\n      bio\n      createdAt\n      updatedAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation ChangePassword($currentPassword: String!, $newPassword: String!) {\n    changePassword(currentPassword: $currentPassword, newPassword: $newPassword)\n  }\n"): (typeof documents)["\n  mutation ChangePassword($currentPassword: String!, $newPassword: String!) {\n    changePassword(currentPassword: $currentPassword, newPassword: $newPassword)\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

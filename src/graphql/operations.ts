@@ -541,3 +541,9 @@ export const UPDATE_PROFILE_MUTATION = graphql(`
     }
   }
 `);
+
+export const CHANGE_PASSWORD_MUTATION = graphql(`
+  mutation ChangePassword($currentPassword: String!, $newPassword: String!) {
+    changePassword(currentPassword: $currentPassword, newPassword: $newPassword)
+  }
+`);
