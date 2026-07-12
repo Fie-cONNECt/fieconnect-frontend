@@ -103,11 +103,47 @@ export default function Home() {
 
   if (initLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background text-foreground animate-pulse">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-t-primary border-muted"></div>
-          <p className="text-muted-foreground font-medium text-xs">Initializing fieConnect...</p>
-        </div>
+      <div className="min-h-screen flex flex-col bg-background text-foreground font-sans">
+        {/* Header Skeleton */}
+        <header className="sticky top-0 z-50 w-full border-b border-border/80 bg-background/95 backdrop-blur-md">
+          <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center gap-6">
+              <div className="h-7 w-24 bg-muted animate-pulse rounded-lg" />
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="h-8 w-16 bg-muted animate-pulse rounded-lg" />
+              <div className="h-8 w-20 bg-muted animate-pulse rounded-lg" />
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content Skeletons */}
+        <main className="flex-1 space-y-12 pb-12">
+          {/* Hero Banner Skeleton */}
+          <section className="relative w-full h-[400px] bg-muted animate-pulse flex items-center justify-center">
+            <div className="max-w-xl mx-auto px-4 text-center space-y-4 w-full">
+              <div className="h-10 w-3/4 bg-zinc-350/20 mx-auto rounded-xl" />
+              <div className="h-5 w-1/2 bg-zinc-350/20 mx-auto rounded-lg" />
+              <div className="h-14 w-full bg-zinc-350/25 rounded-2xl max-w-lg mx-auto" />
+            </div>
+          </section>
+
+          {/* Cards Grid Skeleton */}
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            <div className="h-6 w-36 bg-muted animate-pulse rounded-lg" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="border border-border/50 rounded-2xl p-4 space-y-4">
+                  <div className="aspect-video w-full bg-muted animate-pulse rounded-xl" />
+                  <div className="space-y-2">
+                    <div className="h-5 w-2/3 bg-muted animate-pulse rounded-lg" />
+                    <div className="h-4 w-1/2 bg-muted animate-pulse rounded-md" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </main>
       </div>
     );
   }
