@@ -219,6 +219,8 @@ export const MY_APPLICATIONS_QUERY = graphql(`
       status
       furtherDetailsRequest
       furtherDetailsResponse
+      agreementUrl
+      signedAgreementUrl
       createdAt
     }
   }
@@ -252,6 +254,8 @@ export const RECEIVED_APPLICATIONS_QUERY = graphql(`
       status
       furtherDetailsRequest
       furtherDetailsResponse
+      agreementUrl
+      signedAgreementUrl
       createdAt
     }
   }
@@ -304,6 +308,100 @@ export const MARK_NOTIFICATION_READ_MUTATION = graphql(`
     markNotificationAsRead(id: $id) {
       id
       read
+    }
+  }
+`);
+
+export const APPROVE_APPLICATION_WITH_AGREEMENT_MUTATION = graphql(`
+  mutation ApproveApplicationWithAgreement($id: ID!, $agreementUrl: String!) {
+    approveApplicationWithAgreement(id: $id, agreementUrl: $agreementUrl) {
+      id
+      status
+      agreementUrl
+    }
+  }
+`);
+
+export const SUBMIT_SIGNED_AGREEMENT_MUTATION = graphql(`
+  mutation SubmitSignedAgreement($id: ID!, $signedAgreementUrl: String!) {
+    submitSignedAgreement(id: $id, signedAgreementUrl: $signedAgreementUrl) {
+      id
+      status
+      signedAgreementUrl
+    }
+  }
+`);
+
+export const MY_TENANCIES_QUERY = graphql(`
+  query MyTenancies {
+    myTenancies {
+      id
+      property {
+        id
+        title
+        image
+        location
+        price
+        bedrooms
+        bathrooms
+        size
+        landlord {
+          id
+          firstName
+          lastName
+          email
+          phone
+        }
+      }
+      tenant {
+        id
+        firstName
+        lastName
+        email
+        phone
+      }
+      status
+      agreementUrl
+      signedAgreementUrl
+      updatedAt
+      createdAt
+    }
+  }
+`);
+
+export const TENANCY_QUERY = graphql(`
+  query Tenancy($id: ID!) {
+    tenancy(id: $id) {
+      id
+      property {
+        id
+        title
+        image
+        location
+        price
+        bedrooms
+        bathrooms
+        size
+        landlord {
+          id
+          firstName
+          lastName
+          email
+          phone
+        }
+      }
+      tenant {
+        id
+        firstName
+        lastName
+        email
+        phone
+      }
+      status
+      agreementUrl
+      signedAgreementUrl
+      updatedAt
+      createdAt
     }
   }
 `);

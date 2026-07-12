@@ -202,7 +202,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { name: 'Home', href: '/app', icon: LayoutDashboard },
     { name: 'Properties', href: '/app/properties', icon: Building2 },
     { name: 'Applications', href: '/app/applications', icon: ClipboardList },
-    { name: 'Tenancies', href: '#', icon: Key },
+    { name: 'Tenancies', href: '/app/tenancies', icon: Key },
     { name: 'Disputes', href: '#', icon: AlertTriangle },
     { name: 'Profile', href: '#', icon: User },
   ];
