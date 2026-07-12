@@ -13,6 +13,7 @@ import {
   MY_TENANCIES_QUERY,
   MY_DISPUTES_QUERY,
   MY_NOTIFICATIONS_QUERY,
+  MARK_NOTIFICATION_READ_MUTATION,
 } from '../../graphql/operations';
 import { Button } from '../../components/ui/button';
 import { Skeleton } from '../../components/ui/skeleton';
@@ -35,6 +36,9 @@ import {
   Users,
   Building2,
   AlertTriangle,
+  X,
+  Check,
+  Loader2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { isLandlord } from '../../lib/utils';
@@ -58,6 +62,9 @@ export default function DashboardPage() {
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
   const [recentActivities, setRecentActivities] = useState<any[]>([]);
   const [currentTenancy, setCurrentTenancy] = useState<any>(null);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [showNotificationsModal, setShowNotificationsModal] = useState(false);
+  const [markingId, setMarkingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!userLoading && user) {
@@ -101,6 +108,7 @@ export default function DashboardPage() {
         setTenantActiveTenanciesCount(myTenancies.length);
         setTenantPendingApplicationsCount(myApps.filter((a: any) => a.status === 'PENDING').length);
         setUnreadNotificationsCount(myNotifications.filter((n: any) => !n.read).length);
+        setNotifications(myNotifications);
 
         if (myTenancies.length > 0) {
           setCurrentTenancy(myTenancies[0]);
@@ -144,6 +152,26 @@ export default function DashboardPage() {
 
   const handleQuickAction = (actionName: string) => {
     toast.info(`"${actionName}" is ready for you.`);
+  };
+
+  const handleMarkNotificationRead = async (notif: any) => {
+    setMarkingId(notif.id);
+    try {
+      await requestGQL(MARK_NOTIFICATION_READ_MUTATION, { id: notif.id });
+      toast.success('Notification marked as read.');
+      setNotifications((prev) => prev.map((n) => (n.id === notif.id ? { ...n, read: true } : n)));
+      setUnreadNotificationsCount((c) => Math.max(0, c - 1));
+
+      if (notif.link && notif.link !== '#') {
+        setShowNotificationsModal(false);
+        router.push(notif.link);
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error('Failed to mark notification as read.');
+    } finally {
+      setMarkingId(null);
+    }
   };
 
   if (userLoading || loading) {
@@ -429,7 +457,7 @@ export default function DashboardPage() {
 
         {/* Unread Notifications */}
         <div
-          onClick={() => handleQuickAction('Notifications')}
+          onClick={() => setShowNotificationsModal(true)}
           className="bg-white border border-zinc-200/80 rounded-2xl p-5 flex items-center gap-4 shadow-2xs hover:shadow-sm transition-all text-left cursor-pointer"
         >
           <div className="h-11 w-11 rounded-full bg-red-50 text-red-500 flex items-center justify-center shrink-0">
@@ -621,6 +649,71 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {showNotificationsModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-lg space-y-5 text-left border border-zinc-100">
+            <div className="flex justify-between items-center pb-3 border-b border-zinc-100">
+              <div>
+                <h3 className="text-sm font-black text-slate-800">Unread Notifications</h3>
+                <p className="text-[10px] text-zinc-400 font-bold mt-0.5">
+                  Click to view and mark as read.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowNotificationsModal(false)}
+                className="h-8 w-8 rounded-xl bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center text-zinc-500 cursor-pointer transition-colors"
+              >
+                <X size={14} />
+              </button>
+            </div>
+
+            <div className="max-h-[300px] overflow-y-auto space-y-2 pr-1 no-scrollbar">
+              {notifications.filter((n) => !n.read).length === 0 ? (
+                <div className="text-center py-8 text-xs text-zinc-400 font-semibold">
+                  All caught up! No unread notifications.
+                </div>
+              ) : (
+                notifications
+                  .filter((n) => !n.read)
+                  .map((n) => (
+                    <div
+                      key={n.id}
+                      onClick={() => handleMarkNotificationRead(n)}
+                      className="p-3.5 bg-primary/5 hover:bg-primary/10 border border-primary/20 rounded-xl transition-all cursor-pointer text-left flex flex-col gap-1 relative group"
+                    >
+                      <div className="flex justify-between items-start">
+                        <span className="text-slate-800 font-extrabold text-[11px] pr-6">
+                          {n.title}
+                        </span>
+                        {markingId === n.id ? (
+                          <Loader2 className="h-3 w-3 animate-spin text-primary" />
+                        ) : (
+                          <Check className="h-3 w-3 text-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        )}
+                      </div>
+                      <p className="text-[10px] text-zinc-500 font-medium leading-relaxed">
+                        {n.message}
+                      </p>
+                      <span className="text-[8px] text-zinc-400 mt-1">
+                        {new Date(parseInt(n.createdAt) || n.createdAt).toLocaleString()}
+                      </span>
+                    </div>
+                  ))
+              )}
+            </div>
+
+            <div className="flex justify-end pt-2 border-t border-zinc-100">
+              <button
+                onClick={() => setShowNotificationsModal(false)}
+                className="text-xs font-bold text-zinc-400 hover:text-zinc-700 cursor-pointer transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
