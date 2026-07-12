@@ -57,6 +57,9 @@ export const ME_QUERY = graphql(`
       email
       userType
       phone
+      savedProperties {
+        id
+      }
       createdAt
     }
   }
@@ -168,6 +171,17 @@ export const PROPERTY_QUERY = graphql(`
         phone
       }
       createdAt
+    }
+  }
+`);
+
+export const TOGGLE_SAVE_PROPERTY_MUTATION = graphql(`
+  mutation ToggleSaveProperty($propertyId: ID!) {
+    toggleSaveProperty(propertyId: $propertyId) {
+      id
+      savedProperties {
+        id
+      }
     }
   }
 `);

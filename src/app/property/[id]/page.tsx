@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { requestGQL } from '../../../lib/graphql-client';
-import { ME_QUERY, LOGOUT_MUTATION, PROPERTY_QUERY } from '../../../graphql/operations';
+import { ME_QUERY, LOGOUT_MUTATION, PROPERTY_QUERY, TOGGLE_SAVE_PROPERTY_MUTATION } from '../../../graphql/operations';
 import { Button } from '../../../components/ui/button';
 import { toast } from 'sonner';
 import {
@@ -35,6 +35,7 @@ interface User {
   firstName: string;
   lastName: string;
   email: string;
+  savedProperties: { id: string }[];
   createdAt: string;
 }
 
@@ -104,7 +105,7 @@ export default function PropertyPage() {
     const fetchMe = async () => {
       try {
         const data = await requestGQL(ME_QUERY);
-        if (data.me) setUser(data.me);
+        if (data.me) setUser(data.me as any);
       } catch (err) {
         console.error('Failed to load user:', err);
       } finally {
@@ -113,6 +114,14 @@ export default function PropertyPage() {
     };
     fetchMe();
   }, []);
+
+  // Check if property is saved by user
+  useEffect(() => {
+    if (user && property && user.savedProperties) {
+      const saved = user.savedProperties.some((p) => p.id === property.id);
+      setIsSaved(saved);
+    }
+  }, [user, property]);
 
   // Fetch property by ID from the real database
   useEffect(() => {
@@ -247,12 +256,28 @@ export default function PropertyPage() {
     setUser(null);
   };
 
-  const handleSaveToggle = () => {
-    setIsSaved(!isSaved);
-    if (!isSaved) {
-      toast.success('Property saved to your collection!');
-    } else {
-      toast.info('Property removed from your collection.');
+  const handleSaveToggle = async () => {
+    if (!user) {
+      toast.error('Please log in to save properties.');
+      return;
+    }
+    if (!property) return;
+
+    try {
+      const data = await requestGQL(TOGGLE_SAVE_PROPERTY_MUTATION, { propertyId: property.id });
+      if (data.toggleSaveProperty) {
+        const saved = data.toggleSaveProperty.savedProperties.some((p: any) => p.id === property.id);
+        setIsSaved(saved);
+        if (saved) {
+          toast.success('Property saved to your collection!');
+        } else {
+          toast.info('Property removed from your collection.');
+        }
+        setUser((prev) => prev ? { ...prev, savedProperties: data.toggleSaveProperty.savedProperties } : null);
+      }
+    } catch (e: any) {
+      console.error('Failed to toggle save property:', e);
+      toast.error(e.message || 'An error occurred while saving the property.');
     }
   };
 
