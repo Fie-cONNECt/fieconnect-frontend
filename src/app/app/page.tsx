@@ -54,9 +54,9 @@ export default function DashboardPage() {
               <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-none mb-2">
                 Total Properties
               </div>
-              <div className="text-3xl font-black text-emerald-700 leading-none">5</div>
+              <div className="text-3xl font-black text-primary leading-none">5</div>
             </div>
-            <div className="h-11 w-11 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+            <div className="h-11 w-11 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
               <Building2 size={20} />
             </div>
           </div>
@@ -80,9 +80,9 @@ export default function DashboardPage() {
               <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-none mb-2">
                 Active Tenancies
               </div>
-              <div className="text-3xl font-black text-emerald-600 leading-none">4</div>
+              <div className="text-3xl font-black text-primary leading-none">4</div>
             </div>
-            <div className="h-11 w-11 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+            <div className="h-11 w-11 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
               <Users size={20} />
             </div>
           </div>
@@ -96,7 +96,7 @@ export default function DashboardPage() {
               <h3 className="text-base font-bold text-slate-800">Recent Activity</h3>
               <button
                 onClick={() => handleQuickAction('View All Activity')}
-                className="text-xs font-bold text-emerald-600 hover:text-emerald-700 transition-colors flex items-center gap-1"
+                className="text-xs font-bold text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
               >
                 View All <ArrowRight size={12} />
               </button>
@@ -160,7 +160,7 @@ export default function DashboardPage() {
                     </td>
                     <td className="py-3.5 text-zinc-500 font-bold">Kofi Boateng</td>
                     <td className="py-3.5">
-                      <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">
+                      <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
                         Approved
                       </span>
                     </td>
@@ -214,7 +214,7 @@ export default function DashboardPage() {
                     </td>
                     <td className="py-3.5 text-zinc-500 font-bold">Kwame Nkrumah</td>
                     <td className="py-3.5">
-                      <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">
+                      <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
                         Approved
                       </span>
                     </td>
@@ -228,8 +228,8 @@ export default function DashboardPage() {
           {/* Right Column: Fast Actions & Upcoming Inspections */}
           <div className="space-y-6 text-left">
             {/* Card 1: Fast Actions */}
-            <div className="bg-[#0a583e] border border-[#095038] rounded-2xl p-5 shadow-2xs text-white space-y-4">
-              <h4 className="text-xs font-black uppercase tracking-wider text-emerald-200">
+            <div className="bg-secondary border border-primary/20 rounded-2xl p-5 shadow-2xs text-white space-y-4">
+              <h4 className="text-xs font-black uppercase tracking-wider text-primary">
                 Fast Actions
               </h4>
               <div className="grid grid-cols-2 gap-3">
@@ -238,7 +238,7 @@ export default function DashboardPage() {
                   onClick={() => handleQuickAction('Manage Invoices')}
                   className="flex flex-col items-center justify-center p-4 rounded-xl bg-white/10 hover:bg-white/15 transition-all gap-2 text-center border border-white/5 cursor-pointer"
                 >
-                  <FileText size={16} className="text-emerald-300" />
+                  <FileText size={16} className="text-primary" />
                   <span className="text-[10px] font-bold">Invoices</span>
                 </button>
 
@@ -247,7 +247,7 @@ export default function DashboardPage() {
                   onClick={() => handleQuickAction('Make Announcement')}
                   className="flex flex-col items-center justify-center p-4 rounded-xl bg-white/10 hover:bg-white/15 transition-all gap-2 text-center border border-white/5 cursor-pointer"
                 >
-                  <Megaphone size={16} className="text-emerald-300" />
+                  <Megaphone size={16} className="text-primary" />
                   <span className="text-[10px] font-bold">Announce</span>
                 </button>
 
@@ -256,7 +256,7 @@ export default function DashboardPage() {
                   onClick={() => handleQuickAction('View Reports')}
                   className="flex flex-col items-center justify-center p-4 rounded-xl bg-white/10 hover:bg-white/15 transition-all gap-2 text-center border border-white/5 cursor-pointer"
                 >
-                  <BarChart3 size={16} className="text-emerald-300" />
+                  <BarChart3 size={16} className="text-primary" />
                   <span className="text-[10px] font-bold">Reports</span>
                 </button>
 
@@ -265,7 +265,7 @@ export default function DashboardPage() {
                   onClick={() => handleQuickAction('Get Support')}
                   className="flex flex-col items-center justify-center p-4 rounded-xl bg-white/10 hover:bg-white/15 transition-all gap-2 text-center border border-white/5 cursor-pointer"
                 >
-                  <HelpCircle size={16} className="text-emerald-300" />
+                  <HelpCircle size={16} className="text-primary" />
                   <span className="text-[10px] font-bold">Support</span>
                 </button>
               </div>
@@ -346,22 +346,22 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto animate-in fade-in duration-500">
       {/* 1. Welcome Banner Card */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#03442d] to-[#0a583e] p-6 sm:p-8 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-6 border border-[#045037]">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-zinc-900 to-zinc-800 p-6 sm:p-8 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-6 border border-primary/20">
         {/* Abstract design elements */}
-        <div className="absolute right-0 top-0 -translate-y-12 translate-x-12 w-64 h-64 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute right-0 top-0 -translate-y-12 translate-x-12 w-64 h-64 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
         <div className="absolute left-1/3 bottom-0 translate-y-16 w-48 h-48 rounded-full bg-yellow-500/5 blur-2xl pointer-events-none" />
 
         <div className="space-y-2 z-10 text-left">
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
             Welcome, {userName}!
           </h2>
-          <p className="text-xs sm:text-sm text-emerald-100/90 font-medium">
+          <p className="text-xs sm:text-sm text-zinc-450 font-medium">
             Everything is looking good with your tenancies today.
           </p>
         </div>
 
         <Link href="/" className="z-10 self-start md:self-auto">
-          <Button className="h-11 px-5 rounded-xl bg-[#fbbd3f] hover:bg-[#eab335] text-slate-900 font-extrabold flex items-center justify-center gap-1.5 shadow-sm transition-all border border-[#f0af2f] cursor-pointer">
+          <Button className="h-11 px-5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-extrabold flex items-center justify-center gap-1.5 shadow-sm transition-all border border-primary/30 cursor-pointer">
             <Plus size={16} strokeWidth={3} />
             Find New Property
           </Button>
@@ -372,7 +372,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Card 1: Active Tenancy */}
         <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 flex items-center gap-4 shadow-2xs hover:shadow-sm transition-all text-left">
-          <div className="h-11 w-11 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+          <div className="h-11 w-11 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
             <Key size={20} />
           </div>
           <div>
@@ -419,7 +419,7 @@ export default function DashboardPage() {
               <h3 className="text-base font-bold text-slate-800">Recent Activity</h3>
               <button
                 onClick={() => handleQuickAction('View All Activity')}
-                className="text-xs font-bold text-emerald-600 hover:text-emerald-700 transition-colors"
+                className="text-xs font-bold text-primary hover:text-primary/80 transition-colors"
               >
                 View All
               </button>
@@ -474,7 +474,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">
+                  <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
                     Resolved
                   </span>
                   <ChevronRight
@@ -503,7 +503,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">
+                  <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
                     Successful
                   </span>
                   <ChevronRight
@@ -541,7 +541,7 @@ export default function DashboardPage() {
                 fill
                 className="object-cover"
               />
-              <span className="absolute top-3 left-3 bg-[#03442d] text-white text-[9px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
+              <span className="absolute top-3 left-3 bg-primary text-primary-foreground text-[9px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
                 Current Tenancy
               </span>
             </div>
@@ -561,7 +561,7 @@ export default function DashboardPage() {
                   <span className="text-[9px] font-bold uppercase text-zinc-400 tracking-wider">
                     Next Rent Due
                   </span>
-                  <div className="text-xs font-bold text-emerald-700 flex items-center gap-1">
+                  <div className="text-xs font-bold text-primary flex items-center gap-1">
                     <Calendar size={12} />
                     Nov 01, 2023
                   </div>
@@ -595,7 +595,7 @@ export default function DashboardPage() {
                 onClick={() => handleQuickAction('Pay Rent')}
                 className="flex flex-col items-center justify-center p-4 rounded-xl border border-zinc-100 bg-zinc-50/50 hover:bg-zinc-50 hover:border-zinc-200 transition-all gap-2 text-center group cursor-pointer"
               >
-                <div className="h-9 w-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <div className="h-9 w-9 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                   <CreditCard size={16} />
                 </div>
                 <span className="text-[10px] font-bold text-slate-700">Pay Rent</span>

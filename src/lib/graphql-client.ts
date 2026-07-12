@@ -73,6 +73,7 @@ export async function requestGQL<TResult, TVariables>(
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     credentials: 'include',
+    cache: 'no-store',
     body: JSON.stringify({
       query: queryBody,
       variables,

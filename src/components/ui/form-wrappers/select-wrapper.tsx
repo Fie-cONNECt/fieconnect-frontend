@@ -43,30 +43,28 @@ export default function SelectWrapper({
       control={control}
       name={name}
       render={({ field }) => (
-        <>
-          <FormItem className="w-full">
-            <FormLabel>
-              {required && <span className="text-red-500 mr-1">*</span>}
-              {label}
-            </FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-              <FormControl>
-                <SelectTrigger className={className} disabled={disabled}>
-                  <SelectValue placeholder={placeholder || `Select ${label.toLowerCase()}`} />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent className="bg-zinc-950 border border-zinc-800 text-white">
-                {options.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-          <span className="font-light">{warning}</span>
-        </>
+        <FormItem className="w-full">
+          <FormLabel>
+            {required && <span className="text-red-500 mr-1">*</span>}
+            {label}
+          </FormLabel>
+          <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+            <FormControl>
+              <SelectTrigger className={className} disabled={disabled}>
+                <SelectValue placeholder={placeholder || `Select ${label.toLowerCase()}`} />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent className="bg-zinc-950 border border-zinc-800 text-white">
+              {options.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <FormMessage />
+          {warning && <span className="text-xs font-light text-muted-foreground">{warning}</span>}
+        </FormItem>
       )}
     />
   );

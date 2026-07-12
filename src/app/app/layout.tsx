@@ -158,7 +158,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { name: 'Home', href: '/app', icon: LayoutDashboard },
-    { name: 'Properties', href: '#', icon: Building2 },
+    { name: 'Properties', href: '/app/properties', icon: Building2 },
     { name: 'Applications', href: '#', icon: ClipboardList },
     { name: 'Tenancies', href: '#', icon: Key },
     { name: 'Disputes', href: '#', icon: AlertTriangle },
@@ -179,7 +179,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="flex flex-col h-full bg-zinc-50 border-r border-zinc-200/80 px-5 py-6">
       {/* Branding Header */}
       <div className="flex flex-col mb-8 px-2">
-        <div className="text-xl font-black tracking-tight text-[#0f573f] flex items-center gap-2">
+        <div className="text-xl font-black tracking-tight text-primary flex items-center gap-2">
           FieConnect
         </div>
         <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-0.5">
@@ -199,11 +199,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               onClick={() => setMobileMenuOpen(false)}
               className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
                 active
-                  ? 'bg-[#fbbd3f] text-slate-900 shadow-sm border border-[#f0af2f]'
+                  ? 'bg-primary text-primary-foreground shadow-sm border border-primary/30'
                   : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100'
               }`}
             >
-              <Icon size={16} className={active ? 'text-slate-900' : 'text-zinc-400'} />
+              <Icon size={16} className={active ? 'text-primary-foreground' : 'text-zinc-400'} />
               {item.name}
             </Link>
           );
@@ -214,8 +214,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="border-t border-zinc-200/75 pt-4 space-y-1.5">
         {isLandlord(user) && (
           <button
-            onClick={() => toast.success('Add New Listing flow triggered!')}
-            className="flex w-full items-center justify-center gap-1.5 px-3.5 py-2.5 mb-2 rounded-xl text-xs font-black bg-[#05432b] hover:bg-[#043320] text-white transition-all cursor-pointer h-10 shadow-xs border border-[#043d26]"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              router.push('/app/properties/new');
+            }}
+            className="flex w-full items-center justify-center gap-1.5 px-3.5 py-2.5 mb-2 rounded-xl text-xs font-black bg-primary hover:bg-primary/90 text-primary-foreground transition-all cursor-pointer h-10 shadow-xs border border-primary/30"
           >
             <Plus size={14} strokeWidth={3} />
             Add New Listing

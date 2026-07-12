@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { requestGQL } from '../../../lib/graphql-client';
-import { ME_QUERY, LOGOUT_MUTATION } from '../../../graphql/operations';
+import { ME_QUERY, LOGOUT_MUTATION, PROPERTY_QUERY, TOGGLE_SAVE_PROPERTY_MUTATION, MY_APPLICATIONS_QUERY } from '../../../graphql/operations';
 import { Button } from '../../../components/ui/button';
 import { toast } from 'sonner';
 import {
@@ -35,15 +35,18 @@ interface User {
   firstName: string;
   lastName: string;
   email: string;
+  savedProperties: { id: string }[];
   createdAt: string;
 }
 
 interface PropertyDetails {
-  id: number;
+  id: string;
   title: string;
   type: string;
   location: string;
-  price: string;
+  region: string;
+  district: string;
+  price: number;
   verified: boolean;
   bedrooms: string;
   bathrooms: string;
@@ -51,75 +54,125 @@ interface PropertyDetails {
   parking: string;
   about: string;
   amenities: string[];
-  mapDescription: string;
+  mapDescription?: string | null;
+  lat?: number | null;
+  lng?: number | null;
   images: {
     main: string;
     kitchen: string;
     bedroom: string;
     bathroom: string;
   };
+  agreementUrl?: string | null;
   landlord: {
-    name: string;
+    id: string;
+    firstName: string;
+    lastName: string;
     phone: string;
     email: string;
-    avatar: string;
-    verified: boolean;
   };
+  createdAt: string;
 }
-
-import { propertiesDb } from '../../../data/properties';
 
 export default function PropertyPage() {
   const params = useParams();
   const idStr = params?.id as string;
-  const propertyId = parseInt(idStr || '1', 10);
-  const property = propertiesDb.find((p) => p.id === propertyId) || propertiesDb[0];
 
+  const [property, setProperty] = useState<PropertyDetails | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [initLoading, setInitLoading] = useState(true);
+  const [propertyLoading, setPropertyLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
   // Gallery Interactive State
   const [activeImageKey, setActiveImageKey] = useState<'main' | 'kitchen' | 'bedroom' | 'bathroom'>(
     'main',
   );
-  const [activeImageUrl, setActiveImageUrl] = useState(property.images.main);
+  const [activeImageUrl, setActiveImageUrl] = useState('');
 
   // Application Modal state
   const [isApplyOpen, setIsApplyOpen] = useState(false);
-  const [applyMessage, setApplyMessage] = useState(
-    `Dear ${property.landlord.name}, I am highly interested in renting your ${property.title} located at ${property.location}. Please get in touch to arrange a viewing.`,
-  );
+  const [applyMessage, setApplyMessage] = useState('');
   const [leaseTerm, setLeaseTerm] = useState('12');
   const [moveInDate, setMoveInDate] = useState('2026-08-01');
   const [isSubmittingApplication, setIsSubmittingApplication] = useState(false);
 
   // Saved bookmark state
   const [isSaved, setIsSaved] = useState(false);
+  const [hasApplied, setHasApplied] = useState(false);
+  const [applicationStatus, setApplicationStatus] = useState('');
 
+  // Fetch current user & applications
   useEffect(() => {
-    const fetchMe = async () => {
+    const fetchMeAndApps = async () => {
       try {
-        const data = await requestGQL(ME_QUERY);
-        if (data.me) {
-          setUser(data.me);
+        const [meData, appsData] = await Promise.all([
+          requestGQL(ME_QUERY),
+          requestGQL(MY_APPLICATIONS_QUERY).catch(() => ({ myApplications: [] })),
+        ]);
+        if (meData.me) {
+          setUser(meData.me as any);
+        }
+        if (appsData.myApplications && idStr) {
+          const application = appsData.myApplications.find((app: any) => app.property.id === idStr);
+          if (application) {
+            setHasApplied(true);
+            setApplicationStatus(application.status);
+          }
         }
       } catch (err) {
-        console.error('Failed to load user:', err);
+        console.error('Failed to load user info:', err);
       } finally {
         setInitLoading(false);
       }
     };
-    fetchMe();
-  }, []);
+    fetchMeAndApps();
+  }, [idStr]);
 
-  // Update active image when property changes
+  // Check if property is saved by user
   useEffect(() => {
-    setActiveImageUrl(property.images.main);
-    setActiveImageKey('main');
-  }, [propertyId, property]);
+    if (user && property && user.savedProperties) {
+      const saved = user.savedProperties.some((p) => p.id === property.id);
+      setIsSaved(saved);
+    }
+  }, [user, property]);
+
+  // Fetch property by ID from the real database
+  useEffect(() => {
+    if (!idStr) return;
+    const fetchProperty = async () => {
+      setPropertyLoading(true);
+      try {
+        const data = await requestGQL(PROPERTY_QUERY, { id: idStr });
+        if (data.property) {
+          setProperty(data.property as PropertyDetails);
+          setActiveImageUrl(data.property.images?.main || data.property.image || '');
+          setApplyMessage(
+            `Dear ${data.property.landlord?.firstName}, I am highly interested in renting your ${data.property.title} located at ${data.property.location}. Please get in touch to arrange a viewing.`,
+          );
+        } else {
+          setNotFound(true);
+        }
+      } catch (err) {
+        console.error('Failed to load property:', err);
+        setNotFound(true);
+      } finally {
+        setPropertyLoading(false);
+      }
+    };
+    fetchProperty();
+  }, [idStr]);
+
+  // Update active image when user switches gallery tab
+  useEffect(() => {
+    if (!property) return;
+    setActiveImageUrl(property.images[activeImageKey] || property.images.main);
+  }, [activeImageKey, property]);
 
   // Load Leaflet and render map dynamically on client side
   useEffect(() => {
+    if (!property || !property.lat || !property.lng) return;
+
     const cssId = 'leaflet-css';
     if (!document.getElementById(cssId)) {
       const link = document.createElement('link');
@@ -150,7 +203,7 @@ export default function PropertyPage() {
       const map = L.map('property-map', {
         zoomControl: true,
         scrollWheelZoom: false,
-      }).setView([lat, lng], 15);
+      }).setView([lat!, lng!], 15);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors',
@@ -172,7 +225,7 @@ export default function PropertyPage() {
         iconAnchor: [20, 20],
       });
 
-      L.marker([lat, lng], { icon: customIcon })
+      L.marker([lat!, lng!], { icon: customIcon })
         .addTo(map)
         .bindPopup(
           `<b style="font-family: inherit; font-size: 11px;">${property.title}</b><br/><span style="font-family: inherit; font-size: 10px; color: #666;">${property.location}</span>`,
@@ -204,7 +257,7 @@ export default function PropertyPage() {
         script.removeEventListener('load', initMap);
       }
     };
-  }, [propertyId, property]);
+  }, [idStr, property]);
 
   const handleLogout = async () => {
     try {
@@ -217,12 +270,28 @@ export default function PropertyPage() {
     setUser(null);
   };
 
-  const handleSaveToggle = () => {
-    setIsSaved(!isSaved);
-    if (!isSaved) {
-      toast.success('Property saved to your collection!');
-    } else {
-      toast.info('Property removed from your collection.');
+  const handleSaveToggle = async () => {
+    if (!user) {
+      toast.error('Please log in to save properties.');
+      return;
+    }
+    if (!property) return;
+
+    try {
+      const data = await requestGQL(TOGGLE_SAVE_PROPERTY_MUTATION, { propertyId: property.id });
+      if (data.toggleSaveProperty) {
+        const saved = data.toggleSaveProperty.savedProperties.some((p: any) => p.id === property.id);
+        setIsSaved(saved);
+        if (saved) {
+          toast.success('Property saved to your collection!');
+        } else {
+          toast.info('Property removed from your collection.');
+        }
+        setUser((prev) => prev ? { ...prev, savedProperties: data.toggleSaveProperty.savedProperties } : null);
+      }
+    } catch (e: any) {
+      console.error('Failed to toggle save property:', e);
+      toast.error(e.message || 'An error occurred while saving the property.');
     }
   };
 
@@ -236,7 +305,35 @@ export default function PropertyPage() {
     }, 1500);
   };
 
-  if (initLoading) {
+  if (notFound) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background text-foreground font-sans">
+        <header className="sticky top-0 z-50 w-full border-b border-border/80 bg-background/95 backdrop-blur-md">
+          <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+            <Link href="/" className="flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+                <Building2 size={14} />
+              </div>
+              <span className="text-base font-bold tracking-tight text-white">FieConnect</span>
+            </Link>
+          </div>
+        </header>
+        <main className="flex-1 flex flex-col items-center justify-center max-w-7xl mx-auto w-full px-4 py-16 text-center space-y-4">
+          <h2 className="text-2xl font-black text-foreground">Property Not Found</h2>
+          <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
+            The property listing you are trying to view does not exist or has been removed.
+          </p>
+          <Link href="/app/properties">
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl text-xs px-5 py-2 cursor-pointer">
+              Back to Properties
+            </Button>
+          </Link>
+        </main>
+      </div>
+    );
+  }
+
+  if (initLoading || propertyLoading || !property) {
     return (
       <div className="min-h-screen flex flex-col bg-background text-foreground font-sans animate-pulse">
         {/* Header Skeleton */}
@@ -421,12 +518,12 @@ export default function PropertyPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
           <div className="space-y-2">
             <div className="flex flex-wrap gap-2 items-center">
-              <span className="bg-emerald-600/10 text-emerald-600 dark:text-emerald-500 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+              <span className="bg-primary/10 text-primary border border-primary/20 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
                 Available Now
               </span>
               {property.verified && (
-                <span className="bg-primary/20 text-primary-foreground text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 border border-primary/30">
-                  <ShieldCheck size={12} className="text-primary-foreground" /> Verified Listing
+                <span className="bg-primary/20 text-primary text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 border border-primary/30">
+                  <ShieldCheck size={12} className="text-primary" /> Verified Listing
                 </span>
               )}
             </div>
@@ -444,8 +541,8 @@ export default function PropertyPage() {
             <div className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest">
               Monthly Rent
             </div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-500 mt-1">
-              {property.price}
+            <div className="text-2xl sm:text-3xl font-extrabold text-primary mt-1">
+              GH₵ {Number(property.price).toLocaleString()}
             </div>
           </div>
         </div>
@@ -470,7 +567,7 @@ export default function PropertyPage() {
           {/* Thumbnail Selector Stack */}
           <div className="grid grid-cols-3 lg:grid-cols-1 gap-3">
             {(['kitchen', 'bedroom', 'bathroom'] as const).map((key) => {
-              const url = property.images[key];
+              const url = property.images[key] || property.images.main;
               const isActive = activeImageKey === key;
               return (
                 <button
@@ -628,17 +725,15 @@ export default function PropertyPage() {
 
               {/* Landlord Profile details */}
               <div className="flex items-center gap-3.5 border-b border-border/60 pb-4">
-                <div className="relative h-12 w-12 rounded-full overflow-hidden border border-border">
-                  <Image
-                    src={property.landlord.avatar}
-                    alt={property.landlord.name}
-                    fill
-                    className="object-cover"
-                  />
+                <div className="h-12 w-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm border border-primary/20 shrink-0">
+                  {property.landlord.firstName?.[0] || 'L'}
+                  {property.landlord.lastName?.[0] || 'D'}
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-foreground">{property.landlord.name}</h4>
-                  <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 uppercase flex items-center gap-1">
+                  <h4 className="text-sm font-bold text-foreground">
+                    {property.landlord.firstName} {property.landlord.lastName}
+                  </h4>
+                  <p className="text-[10px] font-bold text-primary uppercase flex items-center gap-1">
                     <ShieldCheck size={11} /> Verified Owner
                   </p>
                 </div>
@@ -668,12 +763,25 @@ export default function PropertyPage() {
 
               {/* Action CTAs */}
               <div className="space-y-2 pt-4">
-                <Button
-                  onClick={() => setIsApplyOpen(true)}
-                  className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer text-xs"
-                >
-                  Apply for this Property
-                </Button>
+                {hasApplied ? (
+                  <div className="bg-primary/5 border border-primary/20 p-4 rounded-xl text-left space-y-2 mb-2">
+                    <div className="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-wider">
+                      <CheckCircle2 size={16} /> Application Submitted
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-muted-foreground font-semibold">
+                      You have already applied for this property. Your application is currently{' '}
+                      <span className="text-primary font-bold">{applicationStatus.toLowerCase()}</span> and waiting for approval or feedback.
+                    </p>
+                  </div>
+                ) : (
+                  <Link href={`/property/${property.id}/apply`} className="w-full">
+                    <Button
+                      className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer text-xs"
+                    >
+                      Apply for this Property
+                    </Button>
+                  </Link>
+                )}
                 <Button
                   onClick={handleSaveToggle}
                   variant="outline"
@@ -690,8 +798,8 @@ export default function PropertyPage() {
             </div>
 
             {/* Safe / Escrow highlight card */}
-            <div className="bg-emerald-600/5 dark:bg-emerald-600/10 border border-emerald-600/15 p-5 rounded-2xl space-y-2.5">
-              <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-500 uppercase tracking-wider">
+            <div className="bg-primary/5 dark:bg-primary/10 border border-primary/15 p-5 rounded-2xl space-y-2.5">
+              <div className="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-wider">
                 <ShieldCheck size={16} /> FieConnect Protection
               </div>
               <p className="text-[11px] leading-relaxed text-muted-foreground font-semibold">
@@ -741,89 +849,6 @@ export default function PropertyPage() {
         </div>
       </footer>
 
-      {/* Application overlay modal */}
-      {isApplyOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md bg-card border border-border rounded-3xl shadow-2xl p-6 space-y-4 animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
-            <button
-              onClick={() => setIsApplyOpen(false)}
-              className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-            >
-              <X size={16} />
-            </button>
-
-            <div className="space-y-1">
-              <h2 className="text-lg font-bold text-foreground">Apply for Tenancy</h2>
-              <p className="text-xs text-muted-foreground font-medium">
-                Submit an application to {property.landlord.name}
-              </p>
-            </div>
-
-            <form onSubmit={handleApplySubmit} className="space-y-4 pt-2">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                    <Calendar size={12} className="text-primary" /> Target Move-in
-                  </label>
-                  <input
-                    type="date"
-                    value={moveInDate}
-                    onChange={(e) => setMoveInDate(e.target.value)}
-                    className="w-full h-10 rounded-xl bg-background border border-border text-xs px-3 text-foreground focus:outline-hidden focus:ring-2 focus:ring-primary/50 cursor-pointer font-semibold"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                    <Clock size={12} className="text-primary" /> Lease Duration
-                  </label>
-                  <select
-                    value={leaseTerm}
-                    onChange={(e) => setLeaseTerm(e.target.value)}
-                    className="w-full h-10 rounded-xl bg-background border border-border text-xs px-3 text-foreground focus:outline-hidden focus:ring-2 focus:ring-primary/50 cursor-pointer font-semibold"
-                  >
-                    <option value="6">6 Months</option>
-                    <option value="12">12 Months (1 Year)</option>
-                    <option value="24">24 Months (2 Years)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Introduction Message
-                </label>
-                <textarea
-                  rows={4}
-                  value={applyMessage}
-                  onChange={(e) => setApplyMessage(e.target.value)}
-                  className="w-full rounded-xl bg-background border border-border text-xs p-3 text-foreground focus:outline-hidden focus:ring-2 focus:ring-primary/50 resize-none font-medium"
-                  required
-                />
-              </div>
-
-              <div className="pt-2 flex gap-3">
-                <Button
-                  type="button"
-                  onClick={() => setIsApplyOpen(false)}
-                  variant="outline"
-                  className="flex-1 h-10 border-border text-foreground hover:bg-muted font-semibold rounded-xl text-xs cursor-pointer"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isSubmittingApplication}
-                  className="flex-1 h-10 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl text-xs cursor-pointer"
-                >
-                  {isSubmittingApplication ? 'Sending...' : 'Submit Application'}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

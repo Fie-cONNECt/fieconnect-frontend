@@ -38,6 +38,10 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-brand-green: var(--brand-green);
+  --color-brand-green-dark: var(--brand-green-dark);
+  --color-brand-green-medium: var(--brand-green-medium);
+  --color-brand-green-light: var(--brand-green-light);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -47,6 +51,12 @@
 :root {
   /* Radius */
   --radius: 0.75rem;
+
+  /* Brand Green Colors */
+  --brand-green: #05432b;
+  --brand-green-dark: #043320;
+  --brand-green-medium: #0a583e;
+  --brand-green-light: rgba(5, 67, 43, 0.08);
 
   /* Background & Surfaces */
   --background: oklch(0.96 0.005 85); /* Soft cream/beige background */
@@ -100,6 +110,12 @@
 }
 
 .dark {
+  /* Brand Green Colors for Dark Mode */
+  --brand-green: #075a3a;
+  --brand-green-dark: #05432b;
+  --brand-green-medium: #0c6a4b;
+  --brand-green-light: rgba(7, 90, 58, 0.15);
+
   /* Dark mode would invert the color scheme */
   --background: oklch(0.2 0.01 280);
   --foreground: oklch(0.96 0.005 85);
