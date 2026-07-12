@@ -9,6 +9,7 @@ import { CREATE_PROPERTY_MUTATION } from '../../../../graphql/operations';
 import { uploadToSupabase } from '../../../../lib/supabase';
 import { Button } from '../../../../components/ui/button';
 import { toast } from 'sonner';
+import { REGIONS, PROPERTY_TYPES, PARKING_OPTIONS } from '../../../../lib/constants';
 import { useForm } from 'react-hook-form';
 import { Form } from '../../../../components/ui/form';
 import {
@@ -74,24 +75,9 @@ export default function NewPropertyPage() {
   const pdfInputRef = useRef<HTMLInputElement>(null);
 
   // Select dropdown arrays mapping
-  const regionOptions = [
-    { label: 'Greater Accra', value: 'Greater Accra' },
-    { label: 'Ashanti', value: 'Ashanti' },
-    { label: 'Western', value: 'Western' },
-    { label: 'Eastern', value: 'Eastern' },
-  ];
-
-  const typeOptions = [
-    { label: 'Apartment', value: 'Apartment' },
-    { label: 'Studio', value: 'Studio' },
-    { label: 'Townhouse', value: 'Townhouse' },
-    { label: 'Penthouse', value: 'Penthouse' },
-  ];
-
-  const parkingOptions = [
-    { label: 'Yes', value: 'Yes' },
-    { label: 'No', value: 'No' },
-  ];
+  const regionOptions = REGIONS.map((r) => ({ label: r, value: r }));
+  const typeOptions = PROPERTY_TYPES.map((t) => ({ label: t, value: t }));
+  const parkingOptions = PARKING_OPTIONS;
 
   const handleFileUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,

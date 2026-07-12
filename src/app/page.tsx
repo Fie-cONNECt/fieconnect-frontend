@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { requestGQL } from '../lib/graphql-client';
 import { ME_QUERY, LOGOUT_MUTATION } from '../graphql/operations';
 import { Button } from '../components/ui/button';
+import { REGIONS, PROPERTY_TYPES } from '../lib/constants';
 import {
   Select,
   SelectContent,
@@ -283,10 +284,11 @@ export default function Home() {
                   <SelectValue placeholder="Select region" />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-950 border border-zinc-800 text-white max-h-60 overflow-y-auto">
-                  <SelectItem value="Greater Accra">Greater Accra 🇬🇭</SelectItem>
-                  <SelectItem value="Ashanti">Ashanti</SelectItem>
-                  <SelectItem value="Western">Western</SelectItem>
-                  <SelectItem value="Eastern">Eastern</SelectItem>
+                  {REGIONS.map((r) => (
+                    <SelectItem key={r} value={r}>
+                      {r}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -300,10 +302,11 @@ export default function Home() {
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-950 border border-zinc-800 text-white max-h-60 overflow-y-auto">
-                  <SelectItem value="Apartment">Apartment</SelectItem>
-                  <SelectItem value="Studio">Studio</SelectItem>
-                  <SelectItem value="Townhouse">Townhouse</SelectItem>
-                  <SelectItem value="Penthouse">Penthouse</SelectItem>
+                  {PROPERTY_TYPES.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {t}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

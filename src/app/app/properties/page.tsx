@@ -14,6 +14,11 @@ import {
   MY_DISPUTES_QUERY,
 } from '../../../graphql/operations';
 import { isLandlord } from '../../../lib/utils';
+import {
+  SEARCH_REGIONS as REGIONS,
+  SEARCH_PROPERTY_TYPES as PROPERTY_TYPES,
+  RENT_RANGES,
+} from '../../../lib/constants';
 import { Button } from '../../../components/ui/button';
 import { Skeleton } from '../../../components/ui/skeleton';
 import {
@@ -50,17 +55,6 @@ interface PropertyItem {
   about: string;
   createdAt: string;
 }
-
-const REGIONS = ['All', 'Greater Accra', 'Ashanti', 'Western', 'Eastern', 'Northern', 'Central'];
-const PROPERTY_TYPES = ['All', 'Apartment', 'House', 'Studio', 'Villa', 'Townhouse', 'Duplex'];
-const RENT_RANGES = [
-  { label: 'Any Price', min: undefined, max: undefined },
-  { label: '1,000 – 3,000', min: 1000, max: 3000 },
-  { label: '3,000 – 5,000', min: 3000, max: 5000 },
-  { label: '5,000 – 10,000', min: 5000, max: 10000 },
-  { label: '10,000 – 20,000', min: 10000, max: 20000 },
-  { label: '20,000+', min: 20000, max: undefined },
-];
 
 const TYPE_COLORS: Record<string, string> = {
   Apartment: 'bg-amber-100 text-amber-700',
