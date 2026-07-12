@@ -202,9 +202,108 @@ export const MY_APPLICATIONS_QUERY = graphql(`
       id
       property {
         id
+        title
+        image
+        location
+        price
+        bedrooms
+        bathrooms
       }
+      nationalIdUrl
+      supportingDocsUrl
+      employerName
+      jobTitle
+      monthlyIncome
+      lengthOfEmployment
+      personalStatement
       status
+      furtherDetailsRequest
+      furtherDetailsResponse
       createdAt
+    }
+  }
+`);
+
+export const RECEIVED_APPLICATIONS_QUERY = graphql(`
+  query ReceivedApplications {
+    receivedApplications {
+      id
+      property {
+        id
+        title
+        image
+        location
+        price
+      }
+      tenant {
+        id
+        firstName
+        lastName
+        email
+        phone
+      }
+      nationalIdUrl
+      supportingDocsUrl
+      employerName
+      jobTitle
+      monthlyIncome
+      lengthOfEmployment
+      personalStatement
+      status
+      furtherDetailsRequest
+      furtherDetailsResponse
+      createdAt
+    }
+  }
+`);
+
+export const UPDATE_APPLICATION_STATUS_MUTATION = graphql(`
+  mutation UpdateApplicationStatus($id: ID!, $status: String!) {
+    updateApplicationStatus(id: $id, status: $status) {
+      id
+      status
+    }
+  }
+`);
+
+export const REQUEST_FURTHER_DETAILS_MUTATION = graphql(`
+  mutation RequestFurtherDetails($id: ID!, $message: String!) {
+    requestFurtherDetails(id: $id, message: $message) {
+      id
+      status
+      furtherDetailsRequest
+    }
+  }
+`);
+
+export const SUBMIT_FURTHER_DETAILS_MUTATION = graphql(`
+  mutation SubmitFurtherDetails($id: ID!, $response: String!) {
+    submitFurtherDetails(id: $id, response: $response) {
+      id
+      status
+      furtherDetailsResponse
+    }
+  }
+`);
+
+export const MY_NOTIFICATIONS_QUERY = graphql(`
+  query MyNotifications {
+    myNotifications {
+      id
+      title
+      message
+      read
+      link
+      createdAt
+    }
+  }
+`);
+
+export const MARK_NOTIFICATION_READ_MUTATION = graphql(`
+  mutation MarkNotificationAsRead($id: ID!) {
+    markNotificationAsRead(id: $id) {
+      id
+      read
     }
   }
 `);

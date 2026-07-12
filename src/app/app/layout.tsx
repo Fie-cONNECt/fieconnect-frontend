@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { requestGQL } from '../../lib/graphql-client';
-import { ME_QUERY, LOGOUT_MUTATION } from '../../graphql/operations';
+import { ME_QUERY, LOGOUT_MUTATION, MY_NOTIFICATIONS_QUERY, MARK_NOTIFICATION_READ_MUTATION } from '../../graphql/operations';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -58,6 +58,38 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Notification states
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+
+  const loadNotifications = async () => {
+    try {
+      const data = await requestGQL(MY_NOTIFICATIONS_QUERY);
+      if (data.myNotifications) {
+        setNotifications(data.myNotifications);
+      }
+    } catch (e) {
+      console.error('Failed to load notifications:', e);
+    }
+  };
+
+  const handleMarkAsRead = async (id: string, link?: string | null) => {
+    try {
+      await requestGQL(MARK_NOTIFICATION_READ_MUTATION, { id });
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+      );
+      setNotificationsOpen(false);
+      if (link) {
+        router.push(link);
+      }
+    } catch (e) {
+      console.error('Failed to mark notification as read:', e);
+    }
+  };
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
   // Authenticate user on mount
   useEffect(() => {
     const checkAuth = async () => {
@@ -65,6 +97,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         const data = await requestGQL(ME_QUERY);
         if (data.me) {
           setUser(data.me);
+          // Load notifications upon auth success
+          loadNotifications();
         } else {
           // If no active session, redirect to login
           toast.error('Session expired. Please log in again.');
@@ -78,6 +112,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       }
     };
     checkAuth();
+
+    // Poll notifications every 8 seconds
+    const interval = setInterval(() => {
+      if (localStorage.getItem('token')) {
+        loadNotifications();
+      }
+    }, 8000);
+    return () => clearInterval(interval);
   }, [router]);
 
   const handleLogout = async () => {
@@ -159,7 +201,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navItems = [
     { name: 'Home', href: '/app', icon: LayoutDashboard },
     { name: 'Properties', href: '/app/properties', icon: Building2 },
-    { name: 'Applications', href: '#', icon: ClipboardList },
+    { name: 'Applications', href: '/app/applications', icon: ClipboardList },
     { name: 'Tenancies', href: '#', icon: Key },
     { name: 'Disputes', href: '#', icon: AlertTriangle },
     { name: 'Profile', href: '#', icon: User },
@@ -336,13 +378,59 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </div>
               )}
 
-              {/* Notification icon button */}
-              <button className="relative p-2 text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50 rounded-xl transition-colors cursor-pointer">
-                <Bell size={18} />
-                <span className="absolute top-1.5 right-1.5 h-4 w-4 rounded-full bg-red-500 border-2 border-white text-[8px] font-black text-white flex items-center justify-center shadow-xs">
-                  5
-                </span>
-              </button>
+              {/* Notification icon button & dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setNotificationsOpen(!notificationsOpen)}
+                  className="relative p-2 text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50 rounded-xl transition-colors cursor-pointer"
+                >
+                  <Bell size={18} />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1.5 right-1.5 h-4 w-4 rounded-full bg-red-500 border-2 border-white text-[8px] font-black text-white flex items-center justify-center shadow-xs">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
+
+                {/* Notifications Dropdown Panel */}
+                {notificationsOpen && (
+                  <div className="absolute right-0 mt-2 w-80 bg-white border border-zinc-200 rounded-2xl shadow-xl z-50 overflow-hidden text-left animate-in fade-in duration-200">
+                    <div className="p-3 border-b border-zinc-100 flex justify-between items-center bg-zinc-50/50">
+                      <span className="text-xs font-black text-slate-800">Notifications</span>
+                      {unreadCount > 0 && (
+                        <span className="text-[9px] bg-primary/20 text-primary font-bold px-2 py-0.5 rounded-full">
+                          {unreadCount} new
+                        </span>
+                      )}
+                    </div>
+                    <div className="max-h-72 overflow-y-auto divide-y divide-zinc-50 font-semibold text-xs">
+                      {notifications.length === 0 ? (
+                        <div className="p-6 text-center text-zinc-400 text-xs">
+                          No notifications yet
+                        </div>
+                      ) : (
+                        notifications.map((n) => (
+                          <div
+                            key={n.id}
+                            onClick={() => handleMarkAsRead(n.id, n.link)}
+                            className={`p-3.5 hover:bg-zinc-50 transition-colors cursor-pointer flex flex-col gap-1 text-left ${
+                              !n.read ? 'bg-primary/5 border-l-2 border-primary' : 'border-l-2 border-transparent'
+                            }`}
+                          >
+                            <span className="text-slate-800 font-extrabold text-[11px]">{n.title}</span>
+                            <span className="text-[10px] text-zinc-500 font-medium leading-relaxed">
+                              {n.message}
+                            </span>
+                            <span className="text-[9px] text-zinc-400 mt-0.5">
+                              {new Date(parseInt(n.createdAt) || n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {/* Profile Avatar Card */}
               <div className="flex items-center gap-2 pl-1 border-l border-zinc-100">
