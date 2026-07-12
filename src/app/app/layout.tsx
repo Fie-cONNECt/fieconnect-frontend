@@ -431,10 +431,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                               {n.message}
                             </span>
                             <span className="text-[9px] text-zinc-400 mt-0.5">
-                              {new Date(n.createdAt).toLocaleTimeString(
-                                [],
-                                { hour: '2-digit', minute: '2-digit' },
-                              )}
+                              {new Date(n.createdAt).toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
                             </span>
                           </div>
                         ))
