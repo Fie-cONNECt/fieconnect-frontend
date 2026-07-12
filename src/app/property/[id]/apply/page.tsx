@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { requestGQL } from '../../../../lib/graphql-client';
-import { ME_QUERY, PROPERTY_QUERY, CREATE_APPLICATION_MUTATION } from '../../../../graphql/operations';
+import { ME_QUERY, PROPERTY_QUERY, CREATE_APPLICATION_MUTATION, MY_APPLICATIONS_QUERY } from '../../../../graphql/operations';
 import { Button } from '../../../../components/ui/button';
 import { toast } from 'sonner';
 import { uploadToSupabase } from '../../../../lib/supabase';
@@ -57,6 +57,8 @@ export default function TenantApplicationPage() {
   const [property, setProperty] = useState<PropertyDetails | null>(null);
   const [initLoading, setInitLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [hasApplied, setHasApplied] = useState(false);
+  const [applicationStatus, setApplicationStatus] = useState('');
 
   // File states
   const [nationalIdUrl, setNationalIdUrl] = useState('');
@@ -87,9 +89,10 @@ export default function TenantApplicationPage() {
     if (!idStr) return;
     const loadData = async () => {
       try {
-        const [meData, propData] = await Promise.all([
+        const [meData, propData, appsData] = await Promise.all([
           requestGQL(ME_QUERY),
           requestGQL(PROPERTY_QUERY, { id: idStr }),
+          requestGQL(MY_APPLICATIONS_QUERY).catch(() => ({ myApplications: [] })),
         ]);
 
         if (meData.me) {
@@ -105,6 +108,15 @@ export default function TenantApplicationPage() {
         } else {
           toast.error('Property not found.');
           router.push('/app/properties');
+          return;
+        }
+
+        if (appsData.myApplications) {
+          const application = appsData.myApplications.find((app: any) => app.property.id === idStr);
+          if (application) {
+            setHasApplied(true);
+            setApplicationStatus(application.status);
+          }
         }
       } catch (err) {
         console.error('Failed to load application data:', err);
@@ -318,8 +330,29 @@ export default function TenantApplicationPage() {
 
           {/* Right Column - Main Form */}
           <div className="lg:col-span-3">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {hasApplied ? (
+              <div className="bg-card border border-border rounded-2xl p-8 shadow-xs text-center space-y-5">
+                <div className="h-16 w-16 bg-primary/10 text-primary flex items-center justify-center rounded-full mx-auto border border-primary/25">
+                  <CheckCircle2 size={32} />
+                </div>
+                <div className="space-y-2">
+                  <h2 className="text-lg font-black text-foreground">Application Already Submitted</h2>
+                  <p className="text-xs text-muted-foreground max-w-md mx-auto leading-relaxed font-semibold">
+                    You have already applied for this property. Your application is currently{' '}
+                    <span className="text-primary font-black uppercase tracking-wider">{applicationStatus.toLowerCase()}</span> and waiting for approval or feedback.
+                  </p>
+                </div>
+                <div className="pt-3">
+                  <Link href={`/property/${property.id}`}>
+                    <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl text-xs px-5 py-2 cursor-pointer">
+                      Back to Property
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 {/* Step 1: Supporting Documents */}
                 <div className="bg-card border border-border rounded-2xl p-6 shadow-xs text-left space-y-5">
                   <div className="border-b border-border/60 pb-3">
@@ -499,6 +532,7 @@ export default function TenantApplicationPage() {
                 </div>
               </form>
             </Form>
+          )}
           </div>
         </div>
       </main>

@@ -195,3 +195,16 @@ export const CREATE_APPLICATION_MUTATION = graphql(`
     }
   }
 `);
+
+export const MY_APPLICATIONS_QUERY = graphql(`
+  query MyApplications {
+    myApplications {
+      id
+      property {
+        id
+      }
+      status
+      createdAt
+    }
+  }
+`);

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { requestGQL } from '../../../lib/graphql-client';
-import { ME_QUERY, LOGOUT_MUTATION, PROPERTY_QUERY, TOGGLE_SAVE_PROPERTY_MUTATION } from '../../../graphql/operations';
+import { ME_QUERY, LOGOUT_MUTATION, PROPERTY_QUERY, TOGGLE_SAVE_PROPERTY_MUTATION, MY_APPLICATIONS_QUERY } from '../../../graphql/operations';
 import { Button } from '../../../components/ui/button';
 import { toast } from 'sonner';
 import {
@@ -99,21 +99,35 @@ export default function PropertyPage() {
 
   // Saved bookmark state
   const [isSaved, setIsSaved] = useState(false);
+  const [hasApplied, setHasApplied] = useState(false);
+  const [applicationStatus, setApplicationStatus] = useState('');
 
-  // Fetch current user
+  // Fetch current user & applications
   useEffect(() => {
-    const fetchMe = async () => {
+    const fetchMeAndApps = async () => {
       try {
-        const data = await requestGQL(ME_QUERY);
-        if (data.me) setUser(data.me as any);
+        const [meData, appsData] = await Promise.all([
+          requestGQL(ME_QUERY),
+          requestGQL(MY_APPLICATIONS_QUERY).catch(() => ({ myApplications: [] })),
+        ]);
+        if (meData.me) {
+          setUser(meData.me as any);
+        }
+        if (appsData.myApplications && idStr) {
+          const application = appsData.myApplications.find((app: any) => app.property.id === idStr);
+          if (application) {
+            setHasApplied(true);
+            setApplicationStatus(application.status);
+          }
+        }
       } catch (err) {
-        console.error('Failed to load user:', err);
+        console.error('Failed to load user info:', err);
       } finally {
         setInitLoading(false);
       }
     };
-    fetchMe();
-  }, []);
+    fetchMeAndApps();
+  }, [idStr]);
 
   // Check if property is saved by user
   useEffect(() => {
@@ -749,13 +763,25 @@ export default function PropertyPage() {
 
               {/* Action CTAs */}
               <div className="space-y-2 pt-4">
-                <Link href={`/property/${property.id}/apply`} className="w-full">
-                  <Button
-                    className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer text-xs"
-                  >
-                    Apply for this Property
-                  </Button>
-                </Link>
+                {hasApplied ? (
+                  <div className="bg-primary/5 border border-primary/20 p-4 rounded-xl text-left space-y-2 mb-2">
+                    <div className="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-wider">
+                      <CheckCircle2 size={16} /> Application Submitted
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-muted-foreground font-semibold">
+                      You have already applied for this property. Your application is currently{' '}
+                      <span className="text-primary font-bold">{applicationStatus.toLowerCase()}</span> and waiting for approval or feedback.
+                    </p>
+                  </div>
+                ) : (
+                  <Link href={`/property/${property.id}/apply`} className="w-full">
+                    <Button
+                      className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer text-xs"
+                    >
+                      Apply for this Property
+                    </Button>
+                  </Link>
+                )}
                 <Button
                   onClick={handleSaveToggle}
                   variant="outline"

@@ -23,6 +23,7 @@ type Documents = {
     "\n  query Property($id: ID!) {\n    property(id: $id) {\n      id\n      title\n      type\n      location\n      region\n      district\n      price\n      verified\n      bedrooms\n      bathrooms\n      size\n      parking\n      about\n      amenities\n      mapDescription\n      lat\n      lng\n      image\n      images {\n        main\n        kitchen\n        bedroom\n        bathroom\n      }\n      agreementUrl\n      landlord {\n        id\n        firstName\n        lastName\n        email\n        phone\n      }\n      createdAt\n    }\n  }\n": typeof types.PropertyDocument,
     "\n  mutation ToggleSaveProperty($propertyId: ID!) {\n    toggleSaveProperty(propertyId: $propertyId) {\n      id\n      savedProperties {\n        id\n      }\n    }\n  }\n": typeof types.ToggleSavePropertyDocument,
     "\n  mutation CreateApplication($input: CreateApplicationInput!) {\n    createApplication(input: $input) {\n      id\n      status\n      createdAt\n    }\n  }\n": typeof types.CreateApplicationDocument,
+    "\n  query MyApplications {\n    myApplications {\n      id\n      property {\n        id\n      }\n      status\n      createdAt\n    }\n  }\n": typeof types.MyApplicationsDocument,
 };
 const documents: Documents = {
     "\n  mutation Register(\n    $firstName: String!\n    $lastName: String!\n    $email: String!\n    $password: String!\n    $userType: String!\n    $phone: String!\n  ) {\n    register(\n      firstName: $firstName\n      lastName: $lastName\n      email: $email\n      password: $password\n      userType: $userType\n      phone: $phone\n    ) {\n      token\n      user {\n        id\n        firstName\n        lastName\n        email\n        userType\n        phone\n        createdAt\n      }\n    }\n  }\n": types.RegisterDocument,
@@ -34,6 +35,7 @@ const documents: Documents = {
     "\n  query Property($id: ID!) {\n    property(id: $id) {\n      id\n      title\n      type\n      location\n      region\n      district\n      price\n      verified\n      bedrooms\n      bathrooms\n      size\n      parking\n      about\n      amenities\n      mapDescription\n      lat\n      lng\n      image\n      images {\n        main\n        kitchen\n        bedroom\n        bathroom\n      }\n      agreementUrl\n      landlord {\n        id\n        firstName\n        lastName\n        email\n        phone\n      }\n      createdAt\n    }\n  }\n": types.PropertyDocument,
     "\n  mutation ToggleSaveProperty($propertyId: ID!) {\n    toggleSaveProperty(propertyId: $propertyId) {\n      id\n      savedProperties {\n        id\n      }\n    }\n  }\n": types.ToggleSavePropertyDocument,
     "\n  mutation CreateApplication($input: CreateApplicationInput!) {\n    createApplication(input: $input) {\n      id\n      status\n      createdAt\n    }\n  }\n": types.CreateApplicationDocument,
+    "\n  query MyApplications {\n    myApplications {\n      id\n      property {\n        id\n      }\n      status\n      createdAt\n    }\n  }\n": types.MyApplicationsDocument,
 };
 
 /**
@@ -86,6 +88,10 @@ export function graphql(source: "\n  mutation ToggleSaveProperty($propertyId: ID
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation CreateApplication($input: CreateApplicationInput!) {\n    createApplication(input: $input) {\n      id\n      status\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  mutation CreateApplication($input: CreateApplicationInput!) {\n    createApplication(input: $input) {\n      id\n      status\n      createdAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query MyApplications {\n    myApplications {\n      id\n      property {\n        id\n      }\n      status\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  query MyApplications {\n    myApplications {\n      id\n      property {\n        id\n      }\n      status\n      createdAt\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
