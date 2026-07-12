@@ -436,13 +436,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
               {/* Profile Avatar Card */}
               <div className="flex items-center gap-2 pl-1 border-l border-zinc-100">
-                <div className="relative h-8 w-8 rounded-full overflow-hidden bg-zinc-200 border border-zinc-300">
-                  <Image
-                    src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=200&auto=format&fit=crop"
-                    alt="Kwesi Profile"
-                    fill
-                    className="object-cover"
-                  />
+                <div className="relative h-8 w-8 rounded-full overflow-hidden bg-zinc-200 border border-zinc-300 shrink-0">
+                  {user?.avatarUrl ? (
+                    <Image
+                      src={user.avatarUrl}
+                      alt={`${user.firstName} ${user.lastName}`}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center text-[10px] font-black text-zinc-600 bg-zinc-100">
+                      {`${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase()}
+                    </div>
+                  )}
                 </div>
                 <div className="hidden md:flex flex-col text-left">
                   <span className="text-xs font-bold text-slate-700 leading-tight">
