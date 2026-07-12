@@ -5,7 +5,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { requestGQL } from '../../../../lib/graphql-client';
-import { ME_QUERY, PROPERTY_QUERY, CREATE_APPLICATION_MUTATION, MY_APPLICATIONS_QUERY } from '../../../../graphql/operations';
+import {
+  ME_QUERY,
+  PROPERTY_QUERY,
+  CREATE_APPLICATION_MUTATION,
+  MY_APPLICATIONS_QUERY,
+} from '../../../../graphql/operations';
 import { Button } from '../../../../components/ui/button';
 import { toast } from 'sonner';
 import { uploadToSupabase } from '../../../../lib/supabase';
@@ -259,12 +264,7 @@ export default function TenantApplicationPage() {
             {/* Property Summary Card */}
             <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-xs relative text-left">
               <div className="relative aspect-video w-full">
-                <Image
-                  src={property.image}
-                  alt={property.title}
-                  fill
-                  className="object-cover"
-                />
+                <Image src={property.image} alt={property.title} fill className="object-cover" />
                 <span className="absolute bottom-3 left-3 bg-primary text-primary-foreground text-[10px] font-bold px-2.5 py-1 rounded-full shadow-xs uppercase tracking-wider">
                   GH₵ {property.price.toLocaleString()} / mo
                 </span>
@@ -336,10 +336,15 @@ export default function TenantApplicationPage() {
                   <CheckCircle2 size={32} />
                 </div>
                 <div className="space-y-2">
-                  <h2 className="text-lg font-black text-foreground">Application Already Submitted</h2>
+                  <h2 className="text-lg font-black text-foreground">
+                    Application Already Submitted
+                  </h2>
                   <p className="text-xs text-muted-foreground max-w-md mx-auto leading-relaxed font-semibold">
                     You have already applied for this property. Your application is currently{' '}
-                    <span className="text-primary font-black uppercase tracking-wider">{applicationStatus.toLowerCase()}</span> and waiting for approval or feedback.
+                    <span className="text-primary font-black uppercase tracking-wider">
+                      {applicationStatus.toLowerCase()}
+                    </span>{' '}
+                    and waiting for approval or feedback.
                   </p>
                 </div>
                 <div className="pt-3">
@@ -353,186 +358,189 @@ export default function TenantApplicationPage() {
             ) : (
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                {/* Step 1: Supporting Documents */}
-                <div className="bg-card border border-border rounded-2xl p-6 shadow-xs text-left space-y-5">
-                  <div className="border-b border-border/60 pb-3">
-                    <h2 className="text-sm font-extrabold text-foreground uppercase tracking-widest text-primary">
-                      Supporting Documents
-                    </h2>
-                    <p className="text-xs text-muted-foreground mt-1 font-semibold leading-relaxed">
-                      Please provide high-quality scans of your identification and financial records.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Ghanacard Zone */}
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
-                        National ID (Ghanacard) <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="file"
-                        ref={idInputRef}
-                        onChange={handleIdUpload}
-                        accept="image/*,application/pdf"
-                        className="hidden"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => idInputRef.current?.click()}
-                        disabled={uploadingId}
-                        className={`w-full aspect-[2/1.1] sm:aspect-[2/1] rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-4 transition-all gap-2 cursor-pointer ${
-                          nationalIdUrl
-                            ? 'border-primary bg-primary/5 text-primary'
-                            : 'border-border hover:border-primary bg-zinc-950/10 hover:bg-primary/5 text-muted-foreground'
-                        }`}
-                      >
-                        {uploadingId ? (
-                          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                        ) : nationalIdUrl ? (
-                          <CheckCircle2 className="h-6 w-6 text-primary" />
-                        ) : (
-                          <Upload className="h-6 w-6" />
-                        )}
-                        <span className="text-xs font-bold text-foreground">
-                          {nationalIdUrl ? 'Ghanacard Uploaded' : 'Click to upload or drag'}
-                        </span>
-                        <span className="text-[9px] text-muted-foreground font-semibold">
-                          PDF, JPG, OR PNG
-                        </span>
-                      </button>
-                    </div>
-
-                    {/* Supporting Docs Zone */}
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
+                  {/* Step 1: Supporting Documents */}
+                  <div className="bg-card border border-border rounded-2xl p-6 shadow-xs text-left space-y-5">
+                    <div className="border-b border-border/60 pb-3">
+                      <h2 className="text-sm font-extrabold text-foreground uppercase tracking-widest text-primary">
                         Supporting Documents
-                      </label>
-                      <input
-                        type="file"
-                        ref={docsInputRef}
-                        onChange={handleDocsUpload}
-                        accept="image/*,application/pdf"
-                        className="hidden"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => docsInputRef.current?.click()}
-                        disabled={uploadingDocs}
-                        className={`w-full aspect-[2/1.1] sm:aspect-[2/1] rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-4 transition-all gap-2 cursor-pointer ${
-                          supportingDocsUrl
-                            ? 'border-primary bg-primary/5 text-primary'
-                            : 'border-border hover:border-primary bg-zinc-950/10 hover:bg-primary/5 text-muted-foreground'
-                        }`}
-                      >
-                        {uploadingDocs ? (
-                          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                        ) : supportingDocsUrl ? (
-                          <CheckCircle2 className="h-6 w-6 text-primary" />
-                        ) : (
-                          <Upload className="h-6 w-6" />
-                        )}
-                        <span className="text-xs font-bold text-foreground">
-                          {supportingDocsUrl ? 'Documents Uploaded' : 'Bank statements, Reference letters'}
-                        </span>
-                        <span className="text-[9px] text-muted-foreground font-semibold">
-                          MAX 10MB PER FILE
-                        </span>
-                      </button>
+                      </h2>
+                      <p className="text-xs text-muted-foreground mt-1 font-semibold leading-relaxed">
+                        Please provide high-quality scans of your identification and financial
+                        records.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Ghanacard Zone */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
+                          National ID (Ghanacard) <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="file"
+                          ref={idInputRef}
+                          onChange={handleIdUpload}
+                          accept="image/*,application/pdf"
+                          className="hidden"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => idInputRef.current?.click()}
+                          disabled={uploadingId}
+                          className={`w-full aspect-[2/1.1] sm:aspect-[2/1] rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-4 transition-all gap-2 cursor-pointer ${
+                            nationalIdUrl
+                              ? 'border-primary bg-primary/5 text-primary'
+                              : 'border-border hover:border-primary bg-zinc-950/10 hover:bg-primary/5 text-muted-foreground'
+                          }`}
+                        >
+                          {uploadingId ? (
+                            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                          ) : nationalIdUrl ? (
+                            <CheckCircle2 className="h-6 w-6 text-primary" />
+                          ) : (
+                            <Upload className="h-6 w-6" />
+                          )}
+                          <span className="text-xs font-bold text-foreground">
+                            {nationalIdUrl ? 'Ghanacard Uploaded' : 'Click to upload or drag'}
+                          </span>
+                          <span className="text-[9px] text-muted-foreground font-semibold">
+                            PDF, JPG, OR PNG
+                          </span>
+                        </button>
+                      </div>
+
+                      {/* Supporting Docs Zone */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
+                          Supporting Documents
+                        </label>
+                        <input
+                          type="file"
+                          ref={docsInputRef}
+                          onChange={handleDocsUpload}
+                          accept="image/*,application/pdf"
+                          className="hidden"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => docsInputRef.current?.click()}
+                          disabled={uploadingDocs}
+                          className={`w-full aspect-[2/1.1] sm:aspect-[2/1] rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-4 transition-all gap-2 cursor-pointer ${
+                            supportingDocsUrl
+                              ? 'border-primary bg-primary/5 text-primary'
+                              : 'border-border hover:border-primary bg-zinc-950/10 hover:bg-primary/5 text-muted-foreground'
+                          }`}
+                        >
+                          {uploadingDocs ? (
+                            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                          ) : supportingDocsUrl ? (
+                            <CheckCircle2 className="h-6 w-6 text-primary" />
+                          ) : (
+                            <Upload className="h-6 w-6" />
+                          )}
+                          <span className="text-xs font-bold text-foreground">
+                            {supportingDocsUrl
+                              ? 'Documents Uploaded'
+                              : 'Bank statements, Reference letters'}
+                          </span>
+                          <span className="text-[9px] text-muted-foreground font-semibold">
+                            MAX 10MB PER FILE
+                          </span>
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Step 2: Employment Information */}
-                <div className="bg-card border border-border rounded-2xl p-6 shadow-xs text-left space-y-4">
-                  <div className="border-b border-border/60 pb-3">
-                    <h2 className="text-sm font-extrabold text-foreground uppercase tracking-widest text-primary">
-                      Employment Information
-                    </h2>
+                  {/* Step 2: Employment Information */}
+                  <div className="bg-card border border-border rounded-2xl p-6 shadow-xs text-left space-y-4">
+                    <div className="border-b border-border/60 pb-3">
+                      <h2 className="text-sm font-extrabold text-foreground uppercase tracking-widest text-primary">
+                        Employment Information
+                      </h2>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <InputWrapper
+                        control={form.control as any}
+                        name="employerName"
+                        label="Employer Name"
+                        type="text"
+                        placeholder="e.g. Standard Chartered Bank"
+                        required
+                      />
+
+                      <InputWrapper
+                        control={form.control as any}
+                        name="jobTitle"
+                        label="Job Title"
+                        type="text"
+                        placeholder="e.g. Senior Financial Analyst"
+                        required
+                      />
+
+                      <SelectWrapper
+                        control={form.control as any}
+                        name="monthlyIncome"
+                        label="Monthly Income Range"
+                        options={incomeOptions}
+                        placeholder="Select Range (GH₵)"
+                        className="w-full"
+                        required
+                      />
+
+                      <InputWrapper
+                        control={form.control as any}
+                        name="lengthOfEmployment"
+                        label="Length of Employment"
+                        type="text"
+                        placeholder="e.g. 3 years, 2 months"
+                        required
+                      />
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <InputWrapper
-                      control={form.control as any}
-                      name="employerName"
-                      label="Employer Name"
-                      type="text"
-                      placeholder="e.g. Standard Chartered Bank"
-                      required
-                    />
+                  {/* Step 3: Personal Statement */}
+                  <div className="bg-card border border-border rounded-2xl p-6 shadow-xs text-left space-y-4">
+                    <div className="border-b border-border/60 pb-3">
+                      <h2 className="text-sm font-extrabold text-foreground uppercase tracking-widest text-primary">
+                        Personal Statement
+                      </h2>
+                    </div>
 
-                    <InputWrapper
+                    <TextareaWrapper
                       control={form.control as any}
-                      name="jobTitle"
-                      label="Job Title"
-                      type="text"
-                      placeholder="e.g. Senior Financial Analyst"
-                      required
-                    />
-
-                    <SelectWrapper
-                      control={form.control as any}
-                      name="monthlyIncome"
-                      label="Monthly Income Range"
-                      options={incomeOptions}
-                      placeholder="Select Range (GH₵)"
-                      className='w-full'
-                      required
-                    />
-
-                    <InputWrapper
-                      control={form.control as any}
-                      name="lengthOfEmployment"
-                      label="Length of Employment"
-                      type="text"
-                      placeholder="e.g. 3 years, 2 months"
+                      name="personalStatement"
+                      label="Tell the landlord about yourself"
+                      placeholder="Share your reason for moving, lifestyle habits, or any other information that supports your application..."
+                      rows={6}
                       required
                     />
                   </div>
-                </div>
 
-                {/* Step 3: Personal Statement */}
-                <div className="bg-card border border-border rounded-2xl p-6 shadow-xs text-left space-y-4">
-                  <div className="border-b border-border/60 pb-3">
-                    <h2 className="text-sm font-extrabold text-foreground uppercase tracking-widest text-primary">
-                      Personal Statement
-                    </h2>
+                  {/* Footer Consent & Submit Block */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+                    <p className="text-[10px] text-muted-foreground leading-relaxed text-left font-semibold max-w-md">
+                      By clicking submit, you authorize FieConnect to process your data for the
+                      purpose of this tenancy application.
+                    </p>
+                    <Button
+                      type="submit"
+                      disabled={submitting}
+                      className="w-full sm:w-auto h-11 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-extrabold rounded-xl shadow-xs transition-colors cursor-pointer text-xs shrink-0"
+                    >
+                      {submitting ? (
+                        <>
+                          <Loader2 size={14} className="animate-spin mr-1.5" />
+                          Submitting...
+                        </>
+                      ) : (
+                        'Submit Application'
+                      )}
+                    </Button>
                   </div>
-
-                  <TextareaWrapper
-                    control={form.control as any}
-                    name="personalStatement"
-                    label="Tell the landlord about yourself"
-                    placeholder="Share your reason for moving, lifestyle habits, or any other information that supports your application..."
-                    rows={6}
-                    required
-                  />
-                </div>
-
-                {/* Footer Consent & Submit Block */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-                  <p className="text-[10px] text-muted-foreground leading-relaxed text-left font-semibold max-w-md">
-                    By clicking submit, you authorize FieConnect to process your data for the purpose of
-                    this tenancy application.
-                  </p>
-                  <Button
-                    type="submit"
-                    disabled={submitting}
-                    className="w-full sm:w-auto h-11 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-extrabold rounded-xl shadow-xs transition-colors cursor-pointer text-xs shrink-0"
-                  >
-                    {submitting ? (
-                      <>
-                        <Loader2 size={14} className="animate-spin mr-1.5" />
-                        Submitting...
-                      </>
-                    ) : (
-                      'Submit Application'
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          )}
+                </form>
+              </Form>
+            )}
           </div>
         </div>
       </main>
@@ -542,12 +550,20 @@ export default function TenantApplicationPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-semibold">
           <div className="flex items-center gap-2">
             <span className="text-white">FieConnect</span>
-            <span className="text-zinc-650">&copy; {new Date().getFullYear()} FieConnect Ghana. All rights reserved.</span>
+            <span className="text-zinc-650">
+              &copy; {new Date().getFullYear()} FieConnect Ghana. All rights reserved.
+            </span>
           </div>
           <div className="flex gap-4 text-zinc-500">
-            <Link href="#" className="hover:text-zinc-350 transition-colors">Privacy Policy</Link>
-            <Link href="#" className="hover:text-zinc-350 transition-colors">Terms of Service</Link>
-            <Link href="#" className="hover:text-zinc-350 transition-colors">Support</Link>
+            <Link href="#" className="hover:text-zinc-350 transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href="#" className="hover:text-zinc-350 transition-colors">
+              Terms of Service
+            </Link>
+            <Link href="#" className="hover:text-zinc-350 transition-colors">
+              Support
+            </Link>
           </div>
         </div>
       </footer>
