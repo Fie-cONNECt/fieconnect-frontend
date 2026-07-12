@@ -1,0 +1,71 @@
+'use client';
+
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import type { Control } from 'react-hook-form';
+
+interface Option {
+  label: string;
+  value: string;
+}
+
+interface SelectWrapperProps {
+  control: Control<any>;
+  name: string;
+  label: string;
+  options: Option[];
+  placeholder?: string;
+  className?: string;
+  disabled?: boolean;
+  required?: boolean;
+  warning?: string;
+}
+
+export default function SelectWrapper({
+  control,
+  name,
+  label,
+  options,
+  placeholder,
+  className,
+  disabled = false,
+  required = false,
+  warning,
+}: SelectWrapperProps) {
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem className="w-full">
+          <FormLabel>
+            {required && <span className="text-red-500 mr-1">*</span>}
+            {label}
+          </FormLabel>
+          <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+            <FormControl>
+              <SelectTrigger className={className} disabled={disabled}>
+                <SelectValue placeholder={placeholder || `Select ${label.toLowerCase()}`} />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent className="bg-zinc-950 border border-zinc-800 text-white">
+              {options.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <FormMessage />
+          {warning && <span className="text-xs font-light text-muted-foreground">{warning}</span>}
+        </FormItem>
+      )}
+    />
+  );
+}
