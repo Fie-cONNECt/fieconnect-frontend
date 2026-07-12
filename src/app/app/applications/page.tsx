@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useUser } from '../layout';
@@ -11,10 +11,13 @@ import {
   UPDATE_APPLICATION_STATUS_MUTATION,
   REQUEST_FURTHER_DETAILS_MUTATION,
   SUBMIT_FURTHER_DETAILS_MUTATION,
+  APPROVE_APPLICATION_WITH_AGREEMENT_MUTATION,
+  SUBMIT_SIGNED_AGREEMENT_MUTATION,
 } from '../../../graphql/operations';
 import { Button } from '../../../components/ui/button';
 import { toast } from 'sonner';
 import { isLandlord } from '../../../lib/utils';
+import { uploadToSupabase } from '../../../lib/supabase';
 import {
   FileText,
   Clock,
@@ -29,6 +32,9 @@ import {
   Mail,
   ChevronDown,
   ChevronUp,
+  Upload,
+  Download,
+  Loader2,
 } from 'lucide-react';
 import { Skeleton } from '../../../components/ui/skeleton';
 
@@ -64,6 +70,8 @@ interface Application {
   status: string;
   furtherDetailsRequest?: string;
   furtherDetailsResponse?: string;
+  agreementUrl?: string;
+  signedAgreementUrl?: string;
   createdAt: string;
 }
 
@@ -79,9 +87,22 @@ export default function ApplicationsPage() {
   const [requestMessage, setRequestMessage] = useState('');
   const [activeRequestAppId, setActiveRequestAppId] = useState<string | null>(null);
 
+  // Landlord Approval flow (uploading lease template)
+  const [activeApproveAppId, setActiveApproveAppId] = useState<string | null>(null);
+  const [uploadedAgreementUrl, setUploadedAgreementUrl] = useState('');
+  const [uploadingAgreement, setUploadingAgreement] = useState(false);
+
   // Tenant interaction states
   const [tenantResponse, setTenantResponse] = useState('');
   const [activeReplyAppId, setActiveReplyAppId] = useState<string | null>(null);
+
+  // Tenant Signing flow (uploading signed lease)
+  const [activeSignAppId, setActiveSignAppId] = useState<string | null>(null);
+  const [uploadedSignedUrl, setUploadedSignedUrl] = useState('');
+  const [uploadingSigned, setUploadingSigned] = useState(false);
+
+  const agreementInputRef = useRef<HTMLInputElement>(null);
+  const signedInputRef = useRef<HTMLInputElement>(null);
 
   // Load applications
   const loadApplications = async () => {
@@ -114,6 +135,41 @@ export default function ApplicationsPage() {
       loadApplications();
     } catch (err: any) {
       toast.error(err.message || 'Failed to update application status.');
+    }
+  };
+
+  const handleAgreementUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAgreement(true);
+    try {
+      const url = await uploadToSupabase(file, 'agreements');
+      setUploadedAgreementUrl(url);
+      toast.success('Tenancy agreement template uploaded successfully!');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to upload agreement template.');
+    } finally {
+      setUploadingAgreement(false);
+    }
+  };
+
+  const handleApproveWithAgreementSubmit = async (e: React.FormEvent, id: string) => {
+    e.preventDefault();
+    if (!uploadedAgreementUrl) {
+      toast.error('Please upload a tenancy agreement template first.');
+      return;
+    }
+    try {
+      await requestGQL(APPROVE_APPLICATION_WITH_AGREEMENT_MUTATION, {
+        id,
+        agreementUrl: uploadedAgreementUrl,
+      });
+      toast.success('Application approved! Lease agreement sent to tenant.');
+      setUploadedAgreementUrl('');
+      setActiveApproveAppId(null);
+      loadApplications();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to approve application.');
     }
   };
 
@@ -152,12 +208,53 @@ export default function ApplicationsPage() {
     }
   };
 
+  const handleSignedUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingSigned(true);
+    try {
+      const url = await uploadToSupabase(file, 'agreements');
+      setUploadedSignedUrl(url);
+      toast.success('Signed tenancy agreement uploaded successfully!');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to upload signed agreement.');
+    } finally {
+      setUploadingSigned(false);
+    }
+  };
+
+  const handleSignedAgreementSubmit = async (e: React.FormEvent, id: string) => {
+    e.preventDefault();
+    if (!uploadedSignedUrl) {
+      toast.error('Please upload your signed tenancy agreement PDF first.');
+      return;
+    }
+    try {
+      await requestGQL(SUBMIT_SIGNED_AGREEMENT_MUTATION, {
+        id,
+        signedAgreementUrl: uploadedSignedUrl,
+      });
+      toast.success('Signed agreement submitted! Your lease is now active.');
+      setUploadedSignedUrl('');
+      setActiveSignAppId(null);
+      loadApplications();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to submit signed agreement.');
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'APPROVED':
         return (
           <span className="flex items-center gap-1 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-            <CheckCircle size={10} /> Approved
+            <CheckCircle size={10} /> Active Lease
+          </span>
+        );
+      case 'APPROVED_PENDING_SIGNATURE':
+        return (
+          <span className="flex items-center gap-1 bg-yellow-50 text-yellow-700 dark:bg-yellow-950/20 dark:text-yellow-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider animate-pulse">
+            <Clock size={10} /> Pending Signature
           </span>
         );
       case 'REJECTED':
@@ -445,6 +542,46 @@ export default function ApplicationsPage() {
                     </div>
                   )}
 
+                  {/* ACTIVE AGREEMENT VIEW SECTION (Shared by both) */}
+                  {(app.agreementUrl || app.signedAgreementUrl) && (
+                    <div className="p-4 bg-zinc-50 rounded-xl border border-zinc-200/50 text-left space-y-3 text-xs font-semibold">
+                      <h4 className="text-[10px] font-black uppercase text-zinc-400 tracking-wider">
+                        Tenancy Agreement Documents
+                      </h4>
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        {app.agreementUrl && (
+                          <a
+                            href={app.agreementUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex-1 flex items-center justify-between p-3 bg-white border border-zinc-200 rounded-xl hover:bg-zinc-50/50 transition-all"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Download size={14} className="text-primary" />
+                              <span>Agreement Template</span>
+                            </div>
+                            <span className="text-[10px] text-primary uppercase font-bold">Download</span>
+                          </a>
+                        )}
+
+                        {app.signedAgreementUrl && (
+                          <a
+                            href={app.signedAgreementUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex-1 flex items-center justify-between p-3 bg-emerald-50/30 border border-emerald-100 rounded-xl hover:bg-emerald-50/60 transition-all"
+                          >
+                            <div className="flex items-center gap-2">
+                              <CheckCircle size={14} className="text-emerald-500" />
+                              <span className="text-emerald-700">Signed Agreement</span>
+                            </div>
+                            <span className="text-[10px] text-emerald-600 uppercase font-bold">View PDF</span>
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   {/* INTERACTIVE THREAD (Landlord / Tenant details request panel) */}
                   {(app.status === 'INFORMATION_REQUESTED' || app.furtherDetailsResponse) && (
                     <div className="bg-amber-50/40 dark:bg-amber-950/5 border border-amber-250/20 p-4 rounded-xl space-y-3 text-left">
@@ -479,9 +616,9 @@ export default function ApplicationsPage() {
                   {/* ACTION SECTION PANEL */}
                   {/* Landlord Action controls */}
                   {landlordMode && app.status === 'PENDING' && (
-                    <div className="pt-4 border-t border-zinc-100 flex flex-wrap gap-3 justify-end">
-                      {activeRequestAppId !== app.id ? (
-                        <>
+                    <div className="pt-4 border-t border-zinc-100 flex flex-col items-end gap-3">
+                      {activeRequestAppId !== app.id && activeApproveAppId !== app.id && (
+                        <div className="flex flex-wrap gap-3 justify-end">
                           <Button
                             onClick={() => setActiveRequestAppId(app.id)}
                             variant="outline"
@@ -496,19 +633,22 @@ export default function ApplicationsPage() {
                             Reject Application
                           </Button>
                           <Button
-                            onClick={() => handleStatusUpdate(app.id, 'APPROVED')}
+                            onClick={() => setActiveApproveAppId(app.id)}
                             className="h-10 px-6 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl cursor-pointer shadow-xs border border-primary/20"
                           >
                             Approve Tenancy
                           </Button>
-                        </>
-                      ) : (
+                        </div>
+                      )}
+
+                      {/* Request Details Form */}
+                      {activeRequestAppId === app.id && (
                         <form
                           onSubmit={(e) => handleRequestFurtherDetails(e, app.id)}
-                          className="w-full space-y-3"
+                          className="w-full space-y-3 text-left"
                         >
                           <div className="space-y-1">
-                            <label className="text-xs font-semibold text-zinc-700">
+                            <label className="text-xs font-semibold text-zinc-750">
                               Type request message to tenant:
                             </label>
                             <textarea
@@ -541,10 +681,79 @@ export default function ApplicationsPage() {
                           </div>
                         </form>
                       )}
+
+                      {/* Approve & Upload Lease Agreement Form */}
+                      {activeApproveAppId === app.id && (
+                        <form
+                          onSubmit={(e) => handleApproveWithAgreementSubmit(e, app.id)}
+                          className="w-full space-y-4 text-left border border-primary/15 bg-primary/5 p-5 rounded-2xl"
+                        >
+                          <div className="space-y-1.5">
+                            <h4 className="text-xs font-black text-primary uppercase">
+                              Approve listing & send tenancy agreement
+                            </h4>
+                            <p className="text-[10px] text-zinc-500 font-semibold leading-relaxed">
+                              Upload the draft tenancy agreement PDF. The tenant must download, sign, and return this file to activate their tenancy.
+                            </p>
+                          </div>
+
+                          <div className="space-y-2">
+                            <input
+                              type="file"
+                              ref={agreementInputRef}
+                              onChange={handleAgreementUpload}
+                              accept="application/pdf"
+                              className="hidden"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => agreementInputRef.current?.click()}
+                              disabled={uploadingAgreement}
+                              className={`w-full h-24 rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-4 transition-all gap-1.5 cursor-pointer bg-white ${
+                                uploadedAgreementUrl
+                                  ? 'border-primary text-primary'
+                                  : 'border-zinc-200 hover:border-primary text-zinc-400'
+                              }`}
+                            >
+                              {uploadingAgreement ? (
+                                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                              ) : uploadedAgreementUrl ? (
+                                <CheckCircle className="h-5 w-5 text-primary" />
+                              ) : (
+                                <Upload className="h-5 w-5" />
+                              )}
+                              <span className="text-[11px] font-bold text-slate-700">
+                                {uploadedAgreementUrl ? 'Tenancy Agreement Uploaded' : 'Upload Tenancy Agreement PDF'}
+                              </span>
+                            </button>
+                          </div>
+
+                          <div className="flex gap-2 justify-end">
+                            <Button
+                              type="button"
+                              onClick={() => {
+                                setActiveApproveAppId(null);
+                                setUploadedAgreementUrl('');
+                              }}
+                              variant="outline"
+                              className="h-9 px-4 border-zinc-200 text-zinc-750 text-xs font-bold rounded-xl cursor-pointer"
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              type="submit"
+                              disabled={!uploadedAgreementUrl}
+                              className="h-9 px-5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                            >
+                              <Send size={12} /> Send Agreement & Approve
+                            </Button>
+                          </div>
+                        </form>
+                      )}
                     </div>
                   )}
 
-                  {/* Tenant response form */}
+                  {/* Tenant Response details request form */}
                   {!landlordMode && app.status === 'INFORMATION_REQUESTED' && (
                     <div className="pt-4 border-t border-zinc-100">
                       {activeReplyAppId !== app.id ? (
@@ -559,7 +768,7 @@ export default function ApplicationsPage() {
                       ) : (
                         <form
                           onSubmit={(e) => handleTenantReplySubmit(e, app.id)}
-                          className="space-y-3"
+                          className="space-y-3 text-left"
                         >
                           <div className="space-y-1">
                             <label className="text-xs font-semibold text-zinc-750 block">
@@ -591,6 +800,91 @@ export default function ApplicationsPage() {
                               className="h-9 px-5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer"
                             >
                               <Send size={12} /> Submit Response
+                            </Button>
+                          </div>
+                        </form>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Tenant Lease Signing action panel */}
+                  {!landlordMode && app.status === 'APPROVED_PENDING_SIGNATURE' && (
+                    <div className="pt-4 border-t border-zinc-100 text-left">
+                      {activeSignAppId !== app.id ? (
+                        <div className="flex justify-between items-center gap-4 bg-primary/5 p-4 rounded-xl border border-primary/10">
+                          <p className="text-[11px] text-zinc-500 font-semibold leading-relaxed">
+                            Your application is approved! Please download the Tenancy Agreement above, sign it, and upload the signed copy here to activate your lease.
+                          </p>
+                          <Button
+                            onClick={() => setActiveSignAppId(app.id)}
+                            className="h-10 px-6 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs"
+                          >
+                            <Upload size={13} /> Upload Signed Copy
+                          </Button>
+                        </div>
+                      ) : (
+                        <form
+                          onSubmit={(e) => handleSignedAgreementSubmit(e, app.id)}
+                          className="space-y-4 border border-primary/15 bg-primary/5 p-5 rounded-2xl"
+                        >
+                          <div className="space-y-1">
+                            <h4 className="text-xs font-black text-primary uppercase">
+                              Submit Signed Tenancy Agreement
+                            </h4>
+                            <p className="text-[10px] text-zinc-500 font-semibold leading-relaxed">
+                              Attach a scanned PDF copy of the fully signed tenancy agreement document.
+                            </p>
+                          </div>
+
+                          <div className="space-y-2">
+                            <input
+                              type="file"
+                              ref={signedInputRef}
+                              onChange={handleSignedUpload}
+                              accept="application/pdf"
+                              className="hidden"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => signedInputRef.current?.click()}
+                              disabled={uploadingSigned}
+                              className={`w-full h-24 rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-4 transition-all gap-1.5 cursor-pointer bg-white ${
+                                uploadedSignedUrl
+                                  ? 'border-primary text-primary'
+                                  : 'border-zinc-200 hover:border-primary text-zinc-400'
+                              }`}
+                            >
+                              {uploadingSigned ? (
+                                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                              ) : uploadedSignedUrl ? (
+                                <CheckCircle className="h-5 w-5 text-primary" />
+                              ) : (
+                                <Upload className="h-5 w-5" />
+                              )}
+                              <span className="text-[11px] font-bold text-slate-700">
+                                {uploadedSignedUrl ? 'Signed Agreement Uploaded' : 'Click to Upload Signed PDF'}
+                              </span>
+                            </button>
+                          </div>
+
+                          <div className="flex gap-2 justify-end">
+                            <Button
+                              type="button"
+                              onClick={() => {
+                                setActiveSignAppId(null);
+                                setUploadedSignedUrl('');
+                              }}
+                              variant="outline"
+                              className="h-9 px-4 border-zinc-200 text-zinc-700 text-xs font-bold rounded-xl cursor-pointer"
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              type="submit"
+                              disabled={!uploadedSignedUrl}
+                              className="h-9 px-6 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                            >
+                              <Send size={12} /> Submit Signed Agreement
                             </Button>
                           </div>
                         </form>
