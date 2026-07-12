@@ -3,7 +3,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { requestGQL } from '../../lib/graphql-client';
-import { ME_QUERY, LOGOUT_MUTATION, MY_NOTIFICATIONS_QUERY, MARK_NOTIFICATION_READ_MUTATION } from '../../graphql/operations';
+import {
+  ME_QUERY,
+  LOGOUT_MUTATION,
+  MY_NOTIFICATIONS_QUERY,
+  MARK_NOTIFICATION_READ_MUTATION,
+} from '../../graphql/operations';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -32,6 +37,8 @@ export interface AuthenticatedUser {
   email: string;
   userType?: string;
   phone?: string;
+  avatarUrl?: string | null;
+  bio?: string | null;
   createdAt: string;
 }
 
@@ -76,9 +83,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const handleMarkAsRead = async (id: string, link?: string | null) => {
     try {
       await requestGQL(MARK_NOTIFICATION_READ_MUTATION, { id });
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-      );
+      setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
       setNotificationsOpen(false);
       if (link) {
         router.push(link);
@@ -204,7 +209,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { name: 'Applications', href: '/app/applications', icon: ClipboardList },
     { name: 'Tenancies', href: '/app/tenancies', icon: Key },
     { name: 'Disputes', href: '/app/disputes', icon: AlertTriangle },
-    { name: 'Profile', href: '#', icon: User },
+    { name: 'Profile', href: '/app/profile', icon: User },
   ];
 
   const bottomItems = [{ name: 'Settings', href: '#', icon: Settings }];
@@ -414,15 +419,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                             key={n.id}
                             onClick={() => handleMarkAsRead(n.id, n.link)}
                             className={`p-3.5 hover:bg-zinc-50 transition-colors cursor-pointer flex flex-col gap-1 text-left ${
-                              !n.read ? 'bg-primary/5 border-l-2 border-primary' : 'border-l-2 border-transparent'
+                              !n.read
+                                ? 'bg-primary/5 border-l-2 border-primary'
+                                : 'border-l-2 border-transparent'
                             }`}
                           >
-                            <span className="text-slate-800 font-extrabold text-[11px]">{n.title}</span>
+                            <span className="text-slate-800 font-extrabold text-[11px]">
+                              {n.title}
+                            </span>
                             <span className="text-[10px] text-zinc-500 font-medium leading-relaxed">
                               {n.message}
                             </span>
                             <span className="text-[9px] text-zinc-400 mt-0.5">
-                              {new Date(parseInt(n.createdAt) || n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              {new Date(n.createdAt).toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
                             </span>
                           </div>
                         ))
@@ -434,13 +446,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
               {/* Profile Avatar Card */}
               <div className="flex items-center gap-2 pl-1 border-l border-zinc-100">
-                <div className="relative h-8 w-8 rounded-full overflow-hidden bg-zinc-200 border border-zinc-300">
-                  <Image
-                    src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=200&auto=format&fit=crop"
-                    alt="Kwesi Profile"
-                    fill
-                    className="object-cover"
-                  />
+                <div className="relative h-8 w-8 rounded-full overflow-hidden bg-zinc-200 border border-zinc-300 shrink-0">
+                  {user?.avatarUrl ? (
+                    <Image
+                      src={user.avatarUrl}
+                      alt={`${user.firstName} ${user.lastName}`}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center text-[10px] font-black text-zinc-600 bg-zinc-100">
+                      {`${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase()}
+                    </div>
+                  )}
                 </div>
                 <div className="hidden md:flex flex-col text-left">
                   <span className="text-xs font-bold text-slate-700 leading-tight">

@@ -8,7 +8,16 @@ import { requestGQL } from '../../../lib/graphql-client';
 import { MY_TENANCIES_QUERY } from '../../../graphql/operations';
 import { Button } from '../../../components/ui/button';
 import { isLandlord } from '../../../lib/utils';
-import { FileText, Key, Calendar, Building, User as UserIcon, Phone, Mail, ArrowRight } from 'lucide-react';
+import {
+  FileText,
+  Key,
+  Calendar,
+  Building,
+  User as UserIcon,
+  Phone,
+  Mail,
+  ArrowRight,
+} from 'lucide-react';
 import { Skeleton } from '../../../components/ui/skeleton';
 
 interface UserType {
@@ -102,7 +111,8 @@ export default function TenanciesListPage() {
           <div className="space-y-1">
             <h3 className="text-sm font-bold text-foreground">No active tenancies</h3>
             <p className="text-xs text-muted-foreground font-semibold">
-              Active lease agreements will appear here once tenancy agreements are signed by both parties.
+              Active lease agreements will appear here once tenancy agreements are signed by both
+              parties.
             </p>
           </div>
           <Link href="/app/applications">
@@ -169,7 +179,11 @@ export default function TenanciesListPage() {
                       <Calendar size={13} className="text-zinc-400" />
                       <span>
                         Lease commenced:{' '}
-                        {new Date(isNaN(Number(tenancy.updatedAt)) ? tenancy.updatedAt : parseInt(tenancy.updatedAt)).toLocaleDateString()}
+                        {new Date(
+                          isNaN(Number(tenancy.updatedAt))
+                            ? tenancy.updatedAt
+                            : parseInt(tenancy.updatedAt),
+                        ).toLocaleDateString()}
                       </span>
                     </div>
                   </div>

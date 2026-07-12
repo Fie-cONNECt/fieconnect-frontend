@@ -57,6 +57,8 @@ export const ME_QUERY = graphql(`
       email
       userType
       phone
+      avatarUrl
+      bio
       savedProperties {
         id
       }
@@ -98,6 +100,27 @@ export const MY_PROPERTIES_QUERY = graphql(`
         bathroom
       }
       agreementUrl
+      createdAt
+    }
+  }
+`);
+
+export const PROPERTIES_QUERY = graphql(`
+  query Properties($region: String, $type: String, $minPrice: Float, $maxPrice: Float) {
+    properties(region: $region, type: $type, minPrice: $minPrice, maxPrice: $maxPrice) {
+      id
+      title
+      type
+      location
+      region
+      district
+      price
+      verified
+      bedrooms
+      bathrooms
+      size
+      image
+      about
       createdAt
     }
   }
@@ -476,8 +499,18 @@ export const DISPUTE_QUERY = graphql(`
 `);
 
 export const CREATE_DISPUTE_MUTATION = graphql(`
-  mutation CreateDispute($tenancyId: ID!, $title: String!, $description: String!, $evidenceUrl: String) {
-    createDispute(tenancyId: $tenancyId, title: $title, description: $description, evidenceUrl: $evidenceUrl) {
+  mutation CreateDispute(
+    $tenancyId: ID!
+    $title: String!
+    $description: String!
+    $evidenceUrl: String
+  ) {
+    createDispute(
+      tenancyId: $tenancyId
+      title: $title
+      description: $description
+      evidenceUrl: $evidenceUrl
+    ) {
       id
       status
     }
@@ -508,5 +541,40 @@ export const RESOLVE_DISPUTE_MUTATION = graphql(`
       id
       status
     }
+  }
+`);
+
+export const UPDATE_PROFILE_MUTATION = graphql(`
+  mutation UpdateProfile(
+    $firstName: String
+    $lastName: String
+    $phone: String
+    $bio: String
+    $avatarUrl: String
+  ) {
+    updateProfile(
+      firstName: $firstName
+      lastName: $lastName
+      phone: $phone
+      bio: $bio
+      avatarUrl: $avatarUrl
+    ) {
+      id
+      firstName
+      lastName
+      email
+      userType
+      phone
+      avatarUrl
+      bio
+      createdAt
+      updatedAt
+    }
+  }
+`);
+
+export const CHANGE_PASSWORD_MUTATION = graphql(`
+  mutation ChangePassword($currentPassword: String!, $newPassword: String!) {
+    changePassword(currentPassword: $currentPassword, newPassword: $newPassword)
   }
 `);

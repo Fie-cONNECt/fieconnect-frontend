@@ -17,11 +17,7 @@ import { uploadToSupabase } from '../../../lib/supabase';
 import { useForm } from 'react-hook-form';
 import { Form } from '../../../components/ui/form';
 import { useSearchParams } from 'next/navigation';
-import {
-  InputWrapper,
-  SelectWrapper,
-  TextareaWrapper,
-} from '../../../components/ui/form-wrappers';
+import { InputWrapper, SelectWrapper, TextareaWrapper } from '../../../components/ui/form-wrappers';
 import {
   AlertTriangle,
   Upload,
@@ -223,7 +219,10 @@ function DisputesPageContent() {
           </div>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleCreateDispute)} className="space-y-5 text-xs font-semibold text-left">
+            <form
+              onSubmit={form.handleSubmit(handleCreateDispute)}
+              className="space-y-5 text-xs font-semibold text-left"
+            >
               {/* Tenancy Selector Wrapper */}
               <SelectWrapper
                 control={form.control as any}
@@ -272,7 +271,9 @@ function DisputesPageContent() {
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploadingEvidence}
                   className={`w-full h-28 rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-4 transition-all gap-1.5 cursor-pointer bg-white ${
-                    evidenceUrl ? 'border-primary text-primary bg-primary/5' : 'border-zinc-200 hover:border-primary text-zinc-400'
+                    evidenceUrl
+                      ? 'border-primary text-primary bg-primary/5'
+                      : 'border-zinc-200 hover:border-primary text-zinc-400'
                   }`}
                 >
                   {uploadingEvidence ? (
@@ -283,7 +284,9 @@ function DisputesPageContent() {
                     <Upload className="h-5 w-5 text-primary" />
                   )}
                   <span className="text-[11px] font-bold text-slate-700">
-                    {evidenceUrl ? 'Evidence Document Uploaded' : 'Click to upload or drag and drop'}
+                    {evidenceUrl
+                      ? 'Evidence Document Uploaded'
+                      : 'Click to upload or drag and drop'}
                   </span>
                   <span className="text-[9px] text-zinc-400 font-bold">
                     PNG, JPG or PDF (max. 10MB)
@@ -310,7 +313,8 @@ function DisputesPageContent() {
           <div className="space-y-1">
             <h3 className="text-sm font-bold text-foreground">No disputes raised</h3>
             <p className="text-xs text-muted-foreground font-semibold">
-              Dispute resolutions allow tenants and landlords to submit complaints, share evidence, and resolve conflicts.
+              Dispute resolutions allow tenants and landlords to submit complaints, share evidence,
+              and resolve conflicts.
             </p>
           </div>
           {activeTenancies.length > 0 ? (
@@ -396,7 +400,11 @@ function DisputesPageContent() {
 
 export default function DisputesPage() {
   return (
-    <Suspense fallback={<div className="p-6 text-zinc-400 text-xs font-semibold">Loading disputes workspace...</div>}>
+    <Suspense
+      fallback={
+        <div className="p-6 text-zinc-400 text-xs font-semibold">Loading disputes workspace...</div>
+      }
+    >
       <DisputesPageContent />
     </Suspense>
   );

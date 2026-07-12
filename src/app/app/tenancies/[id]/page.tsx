@@ -111,8 +111,10 @@ export default function TenancyDetailsPage() {
   if (!tenancy) return null;
 
   // Calculate lease terms
-  const startDate = new Date(isNaN(Number(tenancy.updatedAt)) ? tenancy.updatedAt : parseInt(tenancy.updatedAt));
-  
+  const startDate = new Date(
+    isNaN(Number(tenancy.updatedAt)) ? tenancy.updatedAt : parseInt(tenancy.updatedAt),
+  );
+
   // End date is 1 year from start date
   const endDate = new Date(startDate);
   endDate.setFullYear(startDate.getFullYear() + 1);
@@ -195,9 +197,7 @@ export default function TenancyDetailsPage() {
           <p className="text-base font-black text-slate-800 mt-2">
             GH₵ {tenancy.property.price.toLocaleString()}
           </p>
-          <p className="text-[10px] text-zinc-500 font-semibold mt-1">
-            Due on 1st of every month
-          </p>
+          <p className="text-[10px] text-zinc-500 font-semibold mt-1">Due on 1st of every month</p>
         </div>
 
         <div className="bg-white border border-zinc-200/80 p-5 rounded-2xl shadow-2xs">
@@ -205,19 +205,28 @@ export default function TenancyDetailsPage() {
             Start Date
           </p>
           <p className="text-base font-black text-slate-800 mt-2">
-            {startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            {startDate.toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            })}
           </p>
           <p className="text-[10px] text-zinc-500 font-semibold mt-1">
-            {diffMonths === 0 ? 'Less than a month' : `${diffMonths} month${diffMonths > 1 ? 's' : ''}`} elapsed
+            {diffMonths === 0
+              ? 'Less than a month'
+              : `${diffMonths} month${diffMonths > 1 ? 's' : ''}`}{' '}
+            elapsed
           </p>
         </div>
 
         <div className="bg-white border border-zinc-200/80 p-5 rounded-2xl shadow-2xs">
-          <p className="text-[10px] text-zinc-400 font-black uppercase tracking-wider">
-            End Date
-          </p>
+          <p className="text-[10px] text-zinc-400 font-black uppercase tracking-wider">End Date</p>
           <p className="text-base font-black text-slate-800 mt-2">
-            {endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            {endDate.toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            })}
           </p>
           <p className="text-[10px] text-zinc-500 font-semibold mt-1">
             Renewable in {diffDays} day{diffDays !== 1 ? 's' : ''}
@@ -290,15 +299,21 @@ export default function TenancyDetailsPage() {
             </div>
             <div className="grid grid-cols-3 gap-2 pt-2 border-t border-zinc-50">
               <div className="text-center bg-zinc-50 p-2 rounded-lg">
-                <span className="block text-[11px] font-black text-slate-750">{tenancy.property.bedrooms || '3'}</span>
+                <span className="block text-[11px] font-black text-slate-750">
+                  {tenancy.property.bedrooms || '3'}
+                </span>
                 <span className="block text-[8px] text-zinc-400 font-bold uppercase">Beds</span>
               </div>
               <div className="text-center bg-zinc-50 p-2 rounded-lg">
-                <span className="block text-[11px] font-black text-slate-750">{tenancy.property.bathrooms || '2.5'}</span>
+                <span className="block text-[11px] font-black text-slate-750">
+                  {tenancy.property.bathrooms || '2.5'}
+                </span>
                 <span className="block text-[8px] text-zinc-400 font-bold uppercase">Baths</span>
               </div>
               <div className="text-center bg-zinc-50 p-2 rounded-lg">
-                <span className="block text-[11px] font-black text-slate-750">{tenancy.property.size || '1,200'}</span>
+                <span className="block text-[11px] font-black text-slate-750">
+                  {tenancy.property.size || '1,200'}
+                </span>
                 <span className="block text-[8px] text-zinc-400 font-bold uppercase">sqft</span>
               </div>
             </div>
