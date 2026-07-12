@@ -374,7 +374,7 @@ function DisputesPageContent() {
                       )}
                     </td>
                     <td className="p-4 text-zinc-400 font-medium">
-                      {new Date(parseInt(d.createdAt) || d.createdAt).toLocaleDateString()}
+                      {new Date(d.createdAt || d.createdAt).toLocaleDateString()}
                     </td>
                     <td className="p-4 pr-5 text-right">
                       <Link href={`/app/disputes/${d.id}`}>
