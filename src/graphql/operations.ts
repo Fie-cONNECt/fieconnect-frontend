@@ -57,6 +57,8 @@ export const ME_QUERY = graphql(`
       email
       userType
       phone
+      avatarUrl
+      bio
       savedProperties {
         id
       }
@@ -507,6 +509,35 @@ export const RESOLVE_DISPUTE_MUTATION = graphql(`
     resolveDispute(id: $id) {
       id
       status
+    }
+  }
+`);
+
+export const UPDATE_PROFILE_MUTATION = graphql(`
+  mutation UpdateProfile(
+    $firstName: String
+    $lastName: String
+    $phone: String
+    $bio: String
+    $avatarUrl: String
+  ) {
+    updateProfile(
+      firstName: $firstName
+      lastName: $lastName
+      phone: $phone
+      bio: $bio
+      avatarUrl: $avatarUrl
+    ) {
+      id
+      firstName
+      lastName
+      email
+      userType
+      phone
+      avatarUrl
+      bio
+      createdAt
+      updatedAt
     }
   }
 `);

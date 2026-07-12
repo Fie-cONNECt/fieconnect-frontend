@@ -32,6 +32,8 @@ export interface AuthenticatedUser {
   email: string;
   userType?: string;
   phone?: string;
+  avatarUrl?: string | null;
+  bio?: string | null;
   createdAt: string;
 }
 
@@ -204,7 +206,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { name: 'Applications', href: '/app/applications', icon: ClipboardList },
     { name: 'Tenancies', href: '/app/tenancies', icon: Key },
     { name: 'Disputes', href: '/app/disputes', icon: AlertTriangle },
-    { name: 'Profile', href: '#', icon: User },
+    { name: 'Profile', href: '/app/profile', icon: User },
   ];
 
   const bottomItems = [{ name: 'Settings', href: '#', icon: Settings }];
