@@ -206,7 +206,7 @@ export default function TenantPropertiesPage() {
                 name="region"
                 label="Region"
                 options={REGIONS.map((r) => ({ label: r, value: r }))}
-                className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 border border-zinc-200"
+                className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 border border-zinc-200 w-full"
               />
             </div>
             <div className="min-w-[160px] text-left">
@@ -215,7 +215,7 @@ export default function TenantPropertiesPage() {
                 name="propType"
                 label="Property Type"
                 options={PROPERTY_TYPES.map((t) => ({ label: t, value: t }))}
-                className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 border border-zinc-200"
+                className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 border border-zinc-200  w-full"
               />
             </div>
             <div className="min-w-[180px] text-left">
@@ -224,7 +224,7 @@ export default function TenantPropertiesPage() {
                 name="rentRange"
                 label="Rent Range (GHS)"
                 options={RENT_RANGES.map((r, i) => ({ label: r.label, value: i.toString() }))}
-                className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 border border-zinc-200"
+                className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 border border-zinc-200 w-full"
               />
             </div>
 
