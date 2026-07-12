@@ -20,6 +20,7 @@ type Documents = {
   '\n  mutation Logout {\n    logout\n  }\n': typeof types.LogoutDocument;
   '\n  query MyProperties {\n    myProperties {\n      id\n      title\n      type\n      location\n      region\n      district\n      price\n      verified\n      bedrooms\n      bathrooms\n      size\n      parking\n      about\n      amenities\n      lat\n      lng\n      image\n      images {\n        main\n        kitchen\n        bedroom\n        bathroom\n      }\n      agreementUrl\n      createdAt\n    }\n  }\n': typeof types.MyPropertiesDocument;
   '\n  mutation CreateProperty($input: CreatePropertyInput!) {\n    createProperty(input: $input) {\n      id\n      title\n      type\n      location\n      region\n      district\n      price\n      verified\n      bedrooms\n      bathrooms\n      size\n      parking\n      about\n      amenities\n      lat\n      lng\n      image\n      images {\n        main\n        kitchen\n        bedroom\n        bathroom\n      }\n      agreementUrl\n      createdAt\n    }\n  }\n': typeof types.CreatePropertyDocument;
+  '\n  query Property($id: ID!) {\n    property(id: $id) {\n      id\n      title\n      type\n      location\n      region\n      district\n      price\n      verified\n      bedrooms\n      bathrooms\n      size\n      parking\n      about\n      amenities\n      mapDescription\n      lat\n      lng\n      image\n      images {\n        main\n        kitchen\n        bedroom\n        bathroom\n      }\n      agreementUrl\n      landlord {\n        id\n        firstName\n        lastName\n        email\n        phone\n      }\n      createdAt\n    }\n  }\n': typeof types.PropertyDocument;
 };
 const documents: Documents = {
   '\n  mutation Register(\n    $firstName: String!\n    $lastName: String!\n    $email: String!\n    $password: String!\n    $userType: String!\n    $phone: String!\n  ) {\n    register(\n      firstName: $firstName\n      lastName: $lastName\n      email: $email\n      password: $password\n      userType: $userType\n      phone: $phone\n    ) {\n      token\n      user {\n        id\n        firstName\n        lastName\n        email\n        userType\n        phone\n        createdAt\n      }\n    }\n  }\n':
@@ -33,6 +34,8 @@ const documents: Documents = {
     types.MyPropertiesDocument,
   '\n  mutation CreateProperty($input: CreatePropertyInput!) {\n    createProperty(input: $input) {\n      id\n      title\n      type\n      location\n      region\n      district\n      price\n      verified\n      bedrooms\n      bathrooms\n      size\n      parking\n      about\n      amenities\n      lat\n      lng\n      image\n      images {\n        main\n        kitchen\n        bedroom\n        bathroom\n      }\n      agreementUrl\n      createdAt\n    }\n  }\n':
     types.CreatePropertyDocument,
+  '\n  query Property($id: ID!) {\n    property(id: $id) {\n      id\n      title\n      type\n      location\n      region\n      district\n      price\n      verified\n      bedrooms\n      bathrooms\n      size\n      parking\n      about\n      amenities\n      mapDescription\n      lat\n      lng\n      image\n      images {\n        main\n        kitchen\n        bedroom\n        bathroom\n      }\n      agreementUrl\n      landlord {\n        id\n        firstName\n        lastName\n        email\n        phone\n      }\n      createdAt\n    }\n  }\n':
+    types.PropertyDocument,
 };
 
 /**
@@ -85,6 +88,12 @@ export function graphql(
 export function graphql(
   source: '\n  mutation CreateProperty($input: CreatePropertyInput!) {\n    createProperty(input: $input) {\n      id\n      title\n      type\n      location\n      region\n      district\n      price\n      verified\n      bedrooms\n      bathrooms\n      size\n      parking\n      about\n      amenities\n      lat\n      lng\n      image\n      images {\n        main\n        kitchen\n        bedroom\n        bathroom\n      }\n      agreementUrl\n      createdAt\n    }\n  }\n',
 ): (typeof documents)['\n  mutation CreateProperty($input: CreatePropertyInput!) {\n    createProperty(input: $input) {\n      id\n      title\n      type\n      location\n      region\n      district\n      price\n      verified\n      bedrooms\n      bathrooms\n      size\n      parking\n      about\n      amenities\n      lat\n      lng\n      image\n      images {\n        main\n        kitchen\n        bedroom\n        bathroom\n      }\n      agreementUrl\n      createdAt\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  query Property($id: ID!) {\n    property(id: $id) {\n      id\n      title\n      type\n      location\n      region\n      district\n      price\n      verified\n      bedrooms\n      bathrooms\n      size\n      parking\n      about\n      amenities\n      mapDescription\n      lat\n      lng\n      image\n      images {\n        main\n        kitchen\n        bedroom\n        bathroom\n      }\n      agreementUrl\n      landlord {\n        id\n        firstName\n        lastName\n        email\n        phone\n      }\n      createdAt\n    }\n  }\n',
+): (typeof documents)['\n  query Property($id: ID!) {\n    property(id: $id) {\n      id\n      title\n      type\n      location\n      region\n      district\n      price\n      verified\n      bedrooms\n      bathrooms\n      size\n      parking\n      about\n      amenities\n      mapDescription\n      lat\n      lng\n      image\n      images {\n        main\n        kitchen\n        bedroom\n        bathroom\n      }\n      agreementUrl\n      landlord {\n        id\n        firstName\n        lastName\n        email\n        phone\n      }\n      createdAt\n    }\n  }\n'];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

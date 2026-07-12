@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { requestGQL } from '../../../lib/graphql-client';
-import { ME_QUERY, LOGOUT_MUTATION } from '../../../graphql/operations';
+import { ME_QUERY, LOGOUT_MUTATION, PROPERTY_QUERY } from '../../../graphql/operations';
 import { Button } from '../../../components/ui/button';
 import { toast } from 'sonner';
 import {
@@ -39,11 +39,13 @@ interface User {
 }
 
 interface PropertyDetails {
-  id: number;
+  id: string;
   title: string;
   type: string;
   location: string;
-  price: string;
+  region: string;
+  district: string;
+  price: number;
   verified: boolean;
   bedrooms: string;
   bathrooms: string;
@@ -51,44 +53,45 @@ interface PropertyDetails {
   parking: string;
   about: string;
   amenities: string[];
-  mapDescription: string;
+  mapDescription?: string | null;
+  lat?: number | null;
+  lng?: number | null;
   images: {
     main: string;
     kitchen: string;
     bedroom: string;
     bathroom: string;
   };
+  agreementUrl?: string | null;
   landlord: {
-    name: string;
+    id: string;
+    firstName: string;
+    lastName: string;
     phone: string;
     email: string;
-    avatar: string;
-    verified: boolean;
   };
+  createdAt: string;
 }
-
-import { propertiesDb } from '../../../data/properties';
 
 export default function PropertyPage() {
   const params = useParams();
   const idStr = params?.id as string;
-  const propertyId = parseInt(idStr || '1', 10);
-  const property = propertiesDb.find((p) => p.id === propertyId) || propertiesDb[0];
 
+  const [property, setProperty] = useState<PropertyDetails | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [initLoading, setInitLoading] = useState(true);
+  const [propertyLoading, setPropertyLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
   // Gallery Interactive State
   const [activeImageKey, setActiveImageKey] = useState<'main' | 'kitchen' | 'bedroom' | 'bathroom'>(
     'main',
   );
-  const [activeImageUrl, setActiveImageUrl] = useState(property.images.main);
+  const [activeImageUrl, setActiveImageUrl] = useState('');
 
   // Application Modal state
   const [isApplyOpen, setIsApplyOpen] = useState(false);
-  const [applyMessage, setApplyMessage] = useState(
-    `Dear ${property.landlord.name}, I am highly interested in renting your ${property.title} located at ${property.location}. Please get in touch to arrange a viewing.`,
-  );
+  const [applyMessage, setApplyMessage] = useState('');
   const [leaseTerm, setLeaseTerm] = useState('12');
   const [moveInDate, setMoveInDate] = useState('2026-08-01');
   const [isSubmittingApplication, setIsSubmittingApplication] = useState(false);
@@ -96,13 +99,12 @@ export default function PropertyPage() {
   // Saved bookmark state
   const [isSaved, setIsSaved] = useState(false);
 
+  // Fetch current user
   useEffect(() => {
     const fetchMe = async () => {
       try {
         const data = await requestGQL(ME_QUERY);
-        if (data.me) {
-          setUser(data.me);
-        }
+        if (data.me) setUser(data.me);
       } catch (err) {
         console.error('Failed to load user:', err);
       } finally {
@@ -112,14 +114,42 @@ export default function PropertyPage() {
     fetchMe();
   }, []);
 
-  // Update active image when property changes
+  // Fetch property by ID from the real database
   useEffect(() => {
-    setActiveImageUrl(property.images.main);
-    setActiveImageKey('main');
-  }, [propertyId, property]);
+    if (!idStr) return;
+    const fetchProperty = async () => {
+      setPropertyLoading(true);
+      try {
+        const data = await requestGQL(PROPERTY_QUERY, { id: idStr });
+        if (data.property) {
+          setProperty(data.property as PropertyDetails);
+          setActiveImageUrl(data.property.images?.main || data.property.image || '');
+          setApplyMessage(
+            `Dear ${data.property.landlord?.firstName}, I am highly interested in renting your ${data.property.title} located at ${data.property.location}. Please get in touch to arrange a viewing.`,
+          );
+        } else {
+          setNotFound(true);
+        }
+      } catch (err) {
+        console.error('Failed to load property:', err);
+        setNotFound(true);
+      } finally {
+        setPropertyLoading(false);
+      }
+    };
+    fetchProperty();
+  }, [idStr]);
+
+  // Update active image when user switches gallery tab
+  useEffect(() => {
+    if (!property) return;
+    setActiveImageUrl(property.images[activeImageKey] || property.images.main);
+  }, [activeImageKey, property]);
 
   // Load Leaflet and render map dynamically on client side
   useEffect(() => {
+    if (!property || !property.lat || !property.lng) return;
+
     const cssId = 'leaflet-css';
     if (!document.getElementById(cssId)) {
       const link = document.createElement('link');
@@ -150,7 +180,7 @@ export default function PropertyPage() {
       const map = L.map('property-map', {
         zoomControl: true,
         scrollWheelZoom: false,
-      }).setView([lat, lng], 15);
+      }).setView([lat!, lng!], 15);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors',
@@ -172,7 +202,7 @@ export default function PropertyPage() {
         iconAnchor: [20, 20],
       });
 
-      L.marker([lat, lng], { icon: customIcon })
+      L.marker([lat!, lng!], { icon: customIcon })
         .addTo(map)
         .bindPopup(
           `<b style="font-family: inherit; font-size: 11px;">${property.title}</b><br/><span style="font-family: inherit; font-size: 10px; color: #666;">${property.location}</span>`,
@@ -204,7 +234,7 @@ export default function PropertyPage() {
         script.removeEventListener('load', initMap);
       }
     };
-  }, [propertyId, property]);
+  }, [idStr, property]);
 
   const handleLogout = async () => {
     try {
@@ -236,7 +266,35 @@ export default function PropertyPage() {
     }, 1500);
   };
 
-  if (initLoading) {
+  if (notFound) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background text-foreground font-sans">
+        <header className="sticky top-0 z-50 w-full border-b border-border/80 bg-background/95 backdrop-blur-md">
+          <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+            <Link href="/" className="flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+                <Building2 size={14} />
+              </div>
+              <span className="text-base font-bold tracking-tight text-white">FieConnect</span>
+            </Link>
+          </div>
+        </header>
+        <main className="flex-1 flex flex-col items-center justify-center max-w-7xl mx-auto w-full px-4 py-16 text-center space-y-4">
+          <h2 className="text-2xl font-black text-foreground">Property Not Found</h2>
+          <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
+            The property listing you are trying to view does not exist or has been removed.
+          </p>
+          <Link href="/app/properties">
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl text-xs px-5 py-2 cursor-pointer">
+              Back to Properties
+            </Button>
+          </Link>
+        </main>
+      </div>
+    );
+  }
+
+  if (initLoading || propertyLoading || !property) {
     return (
       <div className="min-h-screen flex flex-col bg-background text-foreground font-sans animate-pulse">
         {/* Header Skeleton */}
@@ -421,12 +479,12 @@ export default function PropertyPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
           <div className="space-y-2">
             <div className="flex flex-wrap gap-2 items-center">
-              <span className="bg-emerald-600/10 text-emerald-600 dark:text-emerald-500 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+              <span className="bg-primary/10 text-primary border border-primary/20 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
                 Available Now
               </span>
               {property.verified && (
-                <span className="bg-primary/20 text-primary-foreground text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 border border-primary/30">
-                  <ShieldCheck size={12} className="text-primary-foreground" /> Verified Listing
+                <span className="bg-primary/20 text-primary text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 border border-primary/30">
+                  <ShieldCheck size={12} className="text-primary" /> Verified Listing
                 </span>
               )}
             </div>
@@ -444,8 +502,8 @@ export default function PropertyPage() {
             <div className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest">
               Monthly Rent
             </div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-500 mt-1">
-              {property.price}
+            <div className="text-2xl sm:text-3xl font-extrabold text-primary mt-1">
+              GH₵ {Number(property.price).toLocaleString()}
             </div>
           </div>
         </div>
@@ -470,7 +528,7 @@ export default function PropertyPage() {
           {/* Thumbnail Selector Stack */}
           <div className="grid grid-cols-3 lg:grid-cols-1 gap-3">
             {(['kitchen', 'bedroom', 'bathroom'] as const).map((key) => {
-              const url = property.images[key];
+              const url = property.images[key] || property.images.main;
               const isActive = activeImageKey === key;
               return (
                 <button
@@ -628,17 +686,15 @@ export default function PropertyPage() {
 
               {/* Landlord Profile details */}
               <div className="flex items-center gap-3.5 border-b border-border/60 pb-4">
-                <div className="relative h-12 w-12 rounded-full overflow-hidden border border-border">
-                  <Image
-                    src={property.landlord.avatar}
-                    alt={property.landlord.name}
-                    fill
-                    className="object-cover"
-                  />
+                <div className="h-12 w-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm border border-primary/20 shrink-0">
+                  {property.landlord.firstName?.[0] || 'L'}
+                  {property.landlord.lastName?.[0] || 'D'}
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-foreground">{property.landlord.name}</h4>
-                  <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 uppercase flex items-center gap-1">
+                  <h4 className="text-sm font-bold text-foreground">
+                    {property.landlord.firstName} {property.landlord.lastName}
+                  </h4>
+                  <p className="text-[10px] font-bold text-primary uppercase flex items-center gap-1">
                     <ShieldCheck size={11} /> Verified Owner
                   </p>
                 </div>
@@ -690,8 +746,8 @@ export default function PropertyPage() {
             </div>
 
             {/* Safe / Escrow highlight card */}
-            <div className="bg-emerald-600/5 dark:bg-emerald-600/10 border border-emerald-600/15 p-5 rounded-2xl space-y-2.5">
-              <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-500 uppercase tracking-wider">
+            <div className="bg-primary/5 dark:bg-primary/10 border border-primary/15 p-5 rounded-2xl space-y-2.5">
+              <div className="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-wider">
                 <ShieldCheck size={16} /> FieConnect Protection
               </div>
               <p className="text-[11px] leading-relaxed text-muted-foreground font-semibold">
@@ -755,7 +811,7 @@ export default function PropertyPage() {
             <div className="space-y-1">
               <h2 className="text-lg font-bold text-foreground">Apply for Tenancy</h2>
               <p className="text-xs text-muted-foreground font-medium">
-                Submit an application to {property.landlord.name}
+                Submit an application to {property.landlord.firstName} {property.landlord.lastName}
               </p>
             </div>
 

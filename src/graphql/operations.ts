@@ -131,3 +131,43 @@ export const CREATE_PROPERTY_MUTATION = graphql(`
     }
   }
 `);
+
+export const PROPERTY_QUERY = graphql(`
+  query Property($id: ID!) {
+    property(id: $id) {
+      id
+      title
+      type
+      location
+      region
+      district
+      price
+      verified
+      bedrooms
+      bathrooms
+      size
+      parking
+      about
+      amenities
+      mapDescription
+      lat
+      lng
+      image
+      images {
+        main
+        kitchen
+        bedroom
+        bathroom
+      }
+      agreementUrl
+      landlord {
+        id
+        firstName
+        lastName
+        email
+        phone
+      }
+      createdAt
+    }
+  }
+`);

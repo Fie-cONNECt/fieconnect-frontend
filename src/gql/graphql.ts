@@ -110,6 +110,11 @@ export type Query = {
   __typename?: 'Query';
   me?: Maybe<User>;
   myProperties: Array<Property>;
+  property?: Maybe<Property>;
+};
+
+export type QueryPropertyArgs = {
+  id: Scalars['ID']['input'];
 };
 
 export type User = {
@@ -264,6 +269,52 @@ export type CreatePropertyMutation = {
       bathroom: string;
     };
   };
+};
+
+export type PropertyQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export type PropertyQuery = {
+  __typename?: 'Query';
+  property?: {
+    __typename?: 'Property';
+    id: string;
+    title: string;
+    type: string;
+    location: string;
+    region: string;
+    district: string;
+    price: number;
+    verified: boolean;
+    bedrooms: string;
+    bathrooms: string;
+    size: string;
+    parking: string;
+    about: string;
+    amenities: Array<string>;
+    mapDescription?: string | null;
+    lat?: number | null;
+    lng?: number | null;
+    image: string;
+    agreementUrl?: string | null;
+    createdAt: string;
+    images: {
+      __typename?: 'PropertyImages';
+      main: string;
+      kitchen: string;
+      bedroom: string;
+      bathroom: string;
+    };
+    landlord: {
+      __typename?: 'User';
+      id: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      phone: string;
+    };
+  } | null;
 };
 
 export const RegisterDocument = {
@@ -634,3 +685,91 @@ export const CreatePropertyDocument = {
     },
   ],
 } as unknown as DocumentNode<CreatePropertyMutation, CreatePropertyMutationVariables>;
+export const PropertyDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'Property' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'property' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'location' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'region' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'district' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'price' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'verified' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'bedrooms' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'bathrooms' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'size' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'parking' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'about' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'amenities' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'mapDescription' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'lat' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'lng' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'image' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'images' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'main' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'kitchen' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'bedroom' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'bathroom' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'agreementUrl' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'landlord' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'firstName' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'lastName' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'phone' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<PropertyQuery, PropertyQueryVariables>;
