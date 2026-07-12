@@ -160,9 +160,13 @@ export default function TenantPropertiesPage() {
       {/* ── Hero Banner ── */}
       <div className="relative mx-4 sm:mx-6 lg:mx-8 overflow-hidden rounded-2xl min-h-[180px] flex items-end">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/80 via-emerald-800/70 to-emerald-600/60 z-10" />
-        {featured[0] && (
-          <Image src={featured[0].image} alt="Hero" fill className="object-cover" priority />
-        )}
+        <Image
+          src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2000&auto=format&fit=crop"
+          alt="Hero"
+          fill
+          className="object-cover"
+          priority
+        />
         <div className="relative z-20 p-7 pb-8">
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
             Welcome to FieConnect.
