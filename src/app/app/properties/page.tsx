@@ -21,6 +21,9 @@ import {
 } from '../../../lib/constants';
 import { Button } from '../../../components/ui/button';
 import { Skeleton } from '../../../components/ui/skeleton';
+import { useForm } from 'react-hook-form';
+import { Form } from '../../../components/ui/form';
+import { SelectWrapper } from '../../../components/ui/form-wrappers';
 import {
   Search,
   MapPin,
@@ -78,6 +81,12 @@ function timeSince(iso: string) {
   return `Added ${d} day${d > 1 ? 's' : ''} ago`;
 }
 
+interface FilterFormValues {
+  region: string;
+  propType: string;
+  rentRange: string;
+}
+
 // ── Tenant Discovery Page ──────────────────────────────────────────
 export default function TenantPropertiesPage() {
   const { user, loading: userLoading } = useUser();
@@ -89,10 +98,13 @@ export default function TenantPropertiesPage() {
   const [tenancyCount, setTenancyCount] = useState(0);
   const [disputeCount, setDisputeCount] = useState(0);
 
-  // Filter state
-  const [region, setRegion] = useState('All');
-  const [propType, setPropType] = useState('All');
-  const [rentRange, setRentRange] = useState(0); // index into RENT_RANGES
+  const form = useForm<FilterFormValues>({
+    defaultValues: {
+      region: 'All',
+      propType: 'All',
+      rentRange: '0',
+    },
+  });
 
   const recommendedRef = useRef<HTMLDivElement>(null);
 
@@ -101,7 +113,11 @@ export default function TenantPropertiesPage() {
     return <LandlordPropertiesPage />;
   }
 
-  const fetchProperties = async (r = region, t = propType, ri = rentRange) => {
+  const fetchProperties = async (
+    r = form.getValues('region'),
+    t = form.getValues('propType'),
+    ri = parseInt(form.getValues('rentRange')) || 0,
+  ) => {
     setLoading(true);
     try {
       const range = RENT_RANGES[ri];
@@ -136,7 +152,12 @@ export default function TenantPropertiesPage() {
     }
   }, [userLoading]);
 
-  const handleSearch = () => fetchProperties(region, propType, rentRange);
+  const handleSearch = () =>
+    fetchProperties(
+      form.getValues('region'),
+      form.getValues('propType'),
+      parseInt(form.getValues('rentRange')) || 0,
+    );
 
   // Derive sections from the flat list
   const featured = properties.slice(0, 3);
@@ -174,72 +195,66 @@ export default function TenantPropertiesPage() {
 
       {/* ── Search Filters ── */}
       <div className="px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap gap-3 items-end">
-          <div className="flex flex-col gap-1 min-w-[160px]">
-            <label className="text-[10px] font-black text-zinc-400 uppercase tracking-wider">
-              Region
-            </label>
-            <select
-              value={region}
-              onChange={(e) => setRegion(e.target.value)}
-              className="h-10 px-3 rounded-xl border border-zinc-200 text-xs font-semibold text-slate-700 bg-white focus:outline-none focus:border-primary cursor-pointer"
-            >
-              {REGIONS.map((r) => (
-                <option key={r}>{r}</option>
-              ))}
-            </select>
-          </div>
-          <div className="flex flex-col gap-1 min-w-[160px]">
-            <label className="text-[10px] font-black text-zinc-400 uppercase tracking-wider">
-              Property Type
-            </label>
-            <select
-              value={propType}
-              onChange={(e) => setPropType(e.target.value)}
-              className="h-10 px-3 rounded-xl border border-zinc-200 text-xs font-semibold text-slate-700 bg-white focus:outline-none focus:border-primary cursor-pointer"
-            >
-              {PROPERTY_TYPES.map((t) => (
-                <option key={t}>{t}</option>
-              ))}
-            </select>
-          </div>
-          <div className="flex flex-col gap-1 min-w-[180px]">
-            <label className="text-[10px] font-black text-zinc-400 uppercase tracking-wider">
-              Rent Range (GHS)
-            </label>
-            <select
-              value={rentRange}
-              onChange={(e) => setRentRange(Number(e.target.value))}
-              className="h-10 px-3 rounded-xl border border-zinc-200 text-xs font-semibold text-slate-700 bg-white focus:outline-none focus:border-primary cursor-pointer"
-            >
-              {RENT_RANGES.map((r, i) => (
-                <option key={r.label} value={i}>
-                  {r.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <Button
-            onClick={handleSearch}
-            className="h-10 px-6 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer"
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(() => handleSearch())}
+            className="flex flex-wrap gap-3 items-end"
           >
-            <Search size={13} /> Search
-          </Button>
-          {(region !== 'All' || propType !== 'All' || rentRange !== 0) && (
-            <button
-              type="button"
-              onClick={() => {
-                setRegion('All');
-                setPropType('All');
-                setRentRange(0);
-                fetchProperties('All', 'All', 0);
-              }}
-              className="h-10 px-4 border border-zinc-200 hover:bg-zinc-50 text-zinc-500 hover:text-zinc-700 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
+            <div className="min-w-[160px] text-left">
+              <SelectWrapper
+                control={form.control as any}
+                name="region"
+                label="Region"
+                options={REGIONS.map((r) => ({ label: r, value: r }))}
+                className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 border border-zinc-200"
+              />
+            </div>
+            <div className="min-w-[160px] text-left">
+              <SelectWrapper
+                control={form.control as any}
+                name="propType"
+                label="Property Type"
+                options={PROPERTY_TYPES.map((t) => ({ label: t, value: t }))}
+                className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 border border-zinc-200"
+              />
+            </div>
+            <div className="min-w-[180px] text-left">
+              <SelectWrapper
+                control={form.control as any}
+                name="rentRange"
+                label="Rent Range (GHS)"
+                options={RENT_RANGES.map((r, i) => ({ label: r.label, value: i.toString() }))}
+                className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 border border-zinc-200"
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="h-10 px-6 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer"
             >
-              Clear Filters
-            </button>
-          )}
-        </div>
+              <Search size={13} /> Search
+            </Button>
+
+            {(form.watch('region') !== 'All' ||
+              form.watch('propType') !== 'All' ||
+              form.watch('rentRange') !== '0') && (
+              <button
+                type="button"
+                onClick={() => {
+                  form.reset({
+                    region: 'All',
+                    propType: 'All',
+                    rentRange: '0',
+                  });
+                  fetchProperties('All', 'All', 0);
+                }}
+                className="h-10 px-4 border border-zinc-200 hover:bg-zinc-50 text-zinc-500 hover:text-zinc-700 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
+              >
+                Clear Filters
+              </button>
+            )}
+          </form>
+        </Form>
       </div>
 
       {/* ── Activity Stats ── */}
@@ -302,7 +317,8 @@ export default function TenantPropertiesPage() {
         <section className="space-y-4">
           <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8">
             <h2 className="text-sm font-black text-slate-800">
-              Recommended in {region === 'All' ? 'Greater Accra' : region}
+              Recommended in{' '}
+              {form.watch('region') === 'All' ? 'Greater Accra' : form.watch('region')}
             </h2>
             <div className="flex gap-1">
               <button
