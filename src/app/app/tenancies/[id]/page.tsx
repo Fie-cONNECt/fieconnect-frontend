@@ -138,7 +138,7 @@ export default function TenancyDetailsPage() {
   };
 
   const handleDisputeClick = () => {
-    toast.info('Disputes resolution portal is currently undergoing maintenance and will be active shortly.');
+    router.push(`/app/disputes?tenancyId=${tenancy.id}`);
   };
 
   return (
