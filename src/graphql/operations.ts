@@ -405,3 +405,108 @@ export const TENANCY_QUERY = graphql(`
     }
   }
 `);
+
+export const MY_DISPUTES_QUERY = graphql(`
+  query MyDisputes {
+    myDisputes {
+      id
+      tenancy {
+        id
+        property {
+          id
+          title
+          image
+          location
+          price
+        }
+      }
+      creator {
+        id
+        firstName
+        lastName
+      }
+      title
+      description
+      evidenceUrl
+      status
+      createdAt
+    }
+  }
+`);
+
+export const DISPUTE_QUERY = graphql(`
+  query Dispute($id: ID!) {
+    dispute(id: $id) {
+      id
+      tenancy {
+        id
+        property {
+          id
+          title
+          image
+          location
+          price
+        }
+      }
+      creator {
+        id
+        firstName
+        lastName
+      }
+      title
+      description
+      evidenceUrl
+      status
+      comments {
+        id
+        sender {
+          id
+          firstName
+          lastName
+        }
+        text
+        createdAt
+      }
+      viewedByLandlordAt
+      viewedByTenantAt
+      createdAt
+      updatedAt
+    }
+  }
+`);
+
+export const CREATE_DISPUTE_MUTATION = graphql(`
+  mutation CreateDispute($tenancyId: ID!, $title: String!, $description: String!, $evidenceUrl: String) {
+    createDispute(tenancyId: $tenancyId, title: $title, description: $description, evidenceUrl: $evidenceUrl) {
+      id
+      status
+    }
+  }
+`);
+
+export const ADD_DISPUTE_COMMENT_MUTATION = graphql(`
+  mutation AddDisputeComment($id: ID!, $text: String!) {
+    addDisputeComment(id: $id, text: $text) {
+      id
+      comments {
+        id
+        sender {
+          id
+          firstName
+          lastName
+        }
+        text
+        createdAt
+      }
+    }
+  }
+`);
+
+export const RESOLVE_DISPUTE_MUTATION = graphql(`
+  mutation ResolveDispute($id: ID!) {
+    resolveDispute(id: $id) {
+      id
+      status
+    }
+  }
+`);
