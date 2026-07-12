@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useUser } from '../layout';
@@ -16,6 +16,7 @@ import { isLandlord } from '../../../lib/utils';
 import { uploadToSupabase } from '../../../lib/supabase';
 import { useForm } from 'react-hook-form';
 import { Form } from '../../../components/ui/form';
+import { useSearchParams } from 'next/navigation';
 import {
   InputWrapper,
   SelectWrapper,
@@ -76,9 +77,11 @@ interface DisputeFormValues {
   description: string;
 }
 
-export default function DisputesPage() {
+function DisputesPageContent() {
   const { user } = useUser();
   const landlordMode = isLandlord(user);
+  const searchParams = useSearchParams();
+  const tenancyIdParam = searchParams.get('tenancyId');
 
   const [disputes, setDisputes] = useState<Dispute[]>([]);
   const [activeTenancies, setActiveTenancies] = useState<Tenancy[]>([]);
@@ -99,6 +102,14 @@ export default function DisputesPage() {
       description: '',
     },
   });
+
+  // Pre-fill tenancyId form value if passed via search params
+  useEffect(() => {
+    if (tenancyIdParam) {
+      form.setValue('tenancyId', tenancyIdParam);
+      setShowSubmitForm(true);
+    }
+  }, [tenancyIdParam, form]);
 
   const loadData = async () => {
     try {
@@ -380,5 +391,13 @@ export default function DisputesPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function DisputesPage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-zinc-400 text-xs font-semibold">Loading disputes workspace...</div>}>
+      <DisputesPageContent />
+    </Suspense>
   );
 }
