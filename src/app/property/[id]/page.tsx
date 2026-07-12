@@ -749,12 +749,13 @@ export default function PropertyPage() {
 
               {/* Action CTAs */}
               <div className="space-y-2 pt-4">
-                <Button
-                  onClick={() => setIsApplyOpen(true)}
-                  className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer text-xs"
-                >
-                  Apply for this Property
-                </Button>
+                <Link href={`/property/${property.id}/apply`} className="w-full">
+                  <Button
+                    className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer text-xs"
+                  >
+                    Apply for this Property
+                  </Button>
+                </Link>
                 <Button
                   onClick={handleSaveToggle}
                   variant="outline"
@@ -822,89 +823,6 @@ export default function PropertyPage() {
         </div>
       </footer>
 
-      {/* Application overlay modal */}
-      {isApplyOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md bg-card border border-border rounded-3xl shadow-2xl p-6 space-y-4 animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
-            <button
-              onClick={() => setIsApplyOpen(false)}
-              className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-            >
-              <X size={16} />
-            </button>
-
-            <div className="space-y-1">
-              <h2 className="text-lg font-bold text-foreground">Apply for Tenancy</h2>
-              <p className="text-xs text-muted-foreground font-medium">
-                Submit an application to {property.landlord.firstName} {property.landlord.lastName}
-              </p>
-            </div>
-
-            <form onSubmit={handleApplySubmit} className="space-y-4 pt-2">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                    <Calendar size={12} className="text-primary" /> Target Move-in
-                  </label>
-                  <input
-                    type="date"
-                    value={moveInDate}
-                    onChange={(e) => setMoveInDate(e.target.value)}
-                    className="w-full h-10 rounded-xl bg-background border border-border text-xs px-3 text-foreground focus:outline-hidden focus:ring-2 focus:ring-primary/50 cursor-pointer font-semibold"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                    <Clock size={12} className="text-primary" /> Lease Duration
-                  </label>
-                  <select
-                    value={leaseTerm}
-                    onChange={(e) => setLeaseTerm(e.target.value)}
-                    className="w-full h-10 rounded-xl bg-background border border-border text-xs px-3 text-foreground focus:outline-hidden focus:ring-2 focus:ring-primary/50 cursor-pointer font-semibold"
-                  >
-                    <option value="6">6 Months</option>
-                    <option value="12">12 Months (1 Year)</option>
-                    <option value="24">24 Months (2 Years)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Introduction Message
-                </label>
-                <textarea
-                  rows={4}
-                  value={applyMessage}
-                  onChange={(e) => setApplyMessage(e.target.value)}
-                  className="w-full rounded-xl bg-background border border-border text-xs p-3 text-foreground focus:outline-hidden focus:ring-2 focus:ring-primary/50 resize-none font-medium"
-                  required
-                />
-              </div>
-
-              <div className="pt-2 flex gap-3">
-                <Button
-                  type="button"
-                  onClick={() => setIsApplyOpen(false)}
-                  variant="outline"
-                  className="flex-1 h-10 border-border text-foreground hover:bg-muted font-semibold rounded-xl text-xs cursor-pointer"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isSubmittingApplication}
-                  className="flex-1 h-10 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl text-xs cursor-pointer"
-                >
-                  {isSubmittingApplication ? 'Sending...' : 'Submit Application'}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

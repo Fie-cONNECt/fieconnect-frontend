@@ -185,3 +185,13 @@ export const TOGGLE_SAVE_PROPERTY_MUTATION = graphql(`
     }
   }
 `);
+
+export const CREATE_APPLICATION_MUTATION = graphql(`
+  mutation CreateApplication($input: CreateApplicationInput!) {
+    createApplication(input: $input) {
+      id
+      status
+      createdAt
+    }
+  }
+`);
