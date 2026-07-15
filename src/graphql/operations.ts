@@ -106,18 +106,8 @@ export const MY_PROPERTIES_QUERY = graphql(`
 `);
 
 export const PROPERTIES_QUERY = graphql(`
-  query Properties(
-    $region: String
-    $type: String
-    $minPrice: Float
-    $maxPrice: Float
-  ) {
-    properties(
-      region: $region
-      type: $type
-      minPrice: $minPrice
-      maxPrice: $maxPrice
-    ) {
+  query Properties($region: String, $type: String, $minPrice: Float, $maxPrice: Float) {
+    properties(region: $region, type: $type, minPrice: $minPrice, maxPrice: $maxPrice) {
       id
       title
       type

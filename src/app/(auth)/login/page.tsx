@@ -12,7 +12,7 @@ export default function LoginPage() {
     const token =
       typeof window !== "undefined" ? localStorage.getItem("token") : null;
     if (token) {
-      router.push("/");
+      router.push("/app");
     }
   }, [router]);
   return (

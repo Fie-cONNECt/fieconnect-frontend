@@ -40,9 +40,13 @@ export default function TextareaWrapper({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="w-full">
-          <FormLabel>
-            {required && <span className="text-red-500 mr-1">*</span>}
+        <FormItem className="w-full space-y-2">
+          <FormLabel className="text-sm font-semibold text-foreground">
+            {required && (
+              <span className="text-destructive mr-1" aria-hidden>
+                *
+              </span>
+            )}
             {label}
           </FormLabel>
           <FormControl>
@@ -55,12 +59,8 @@ export default function TextareaWrapper({
               {...field}
             />
           </FormControl>
-          <FormMessage />
-          {warning && (
-            <span className="text-xs font-light text-muted-foreground">
-              {warning}
-            </span>
-          )}
+          <FormMessage className="text-xs font-medium text-destructive" />
+          {warning && <span className="text-caption">{warning}</span>}
         </FormItem>
       )}
     />
