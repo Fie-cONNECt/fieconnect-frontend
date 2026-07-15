@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useUser } from '../layout';
-import { requestGQL } from '../../../lib/graphql-client';
-import { MY_TENANCIES_QUERY } from '../../../graphql/operations';
-import { Button } from '../../../components/ui/button';
-import { isLandlord } from '../../../lib/utils';
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useUser } from "../layout";
+import { requestGQL } from "../../../lib/graphql-client";
+import { MY_TENANCIES_QUERY } from "../../../graphql/operations";
+import { Button } from "../../../components/ui/button";
+import { isLandlord } from "../../../lib/utils";
 import {
   FileText,
   Key,
@@ -17,8 +17,8 @@ import {
   Phone,
   Mail,
   ArrowRight,
-} from 'lucide-react';
-import { Skeleton } from '../../../components/ui/skeleton';
+} from "lucide-react";
+import { Skeleton } from "../../../components/ui/skeleton";
 
 interface UserType {
   id: string;
@@ -65,7 +65,7 @@ export default function TenanciesListPage() {
           setTenancies(data.myTenancies as Tenancy[]);
         }
       } catch (err) {
-        console.error('Failed to load tenancies:', err);
+        console.error("Failed to load tenancies:", err);
       } finally {
         setLoading(false);
       }
@@ -95,11 +95,13 @@ export default function TenanciesListPage() {
   return (
     <div className="space-y-6 text-left">
       <div>
-        <h1 className="text-xl font-black text-slate-800 tracking-tight">Active Tenancies</h1>
+        <h1 className="text-xl font-black text-slate-800 tracking-tight">
+          Active Tenancies
+        </h1>
         <p className="text-xs font-semibold text-zinc-400 mt-1">
           {landlordMode
-            ? 'Manage and monitor all active leases and tenants for your properties.'
-            : 'Access your active tenancy agreement details and contact information.'}
+            ? "Manage and monitor all active leases and tenants for your properties."
+            : "Access your active tenancy agreement details and contact information."}
         </p>
       </div>
 
@@ -109,10 +111,12 @@ export default function TenanciesListPage() {
             <Key size={24} />
           </div>
           <div className="space-y-1">
-            <h3 className="text-sm font-bold text-foreground">No active tenancies</h3>
+            <h3 className="text-sm font-bold text-foreground">
+              No active tenancies
+            </h3>
             <p className="text-xs text-muted-foreground font-semibold">
-              Active lease agreements will appear here once tenancy agreements are signed by both
-              parties.
+              Active lease agreements will appear here once tenancy agreements
+              are signed by both parties.
             </p>
           </div>
           <Link href="/app/applications">
@@ -124,7 +128,9 @@ export default function TenanciesListPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {tenancies.map((tenancy) => {
-            const oppositeParty = landlordMode ? tenancy.tenant : tenancy.property.landlord;
+            const oppositeParty = landlordMode
+              ? tenancy.tenant
+              : tenancy.property.landlord;
             return (
               <div
                 key={tenancy.id}
@@ -169,7 +175,7 @@ export default function TenanciesListPage() {
                           {oppositeParty.firstName} {oppositeParty.lastName}
                         </p>
                         <p className="text-[9px] text-zinc-400 uppercase font-black">
-                          {landlordMode ? 'Tenant' : 'Landlord'}
+                          {landlordMode ? "Tenant" : "Landlord"}
                         </p>
                       </div>
                     </div>
@@ -178,7 +184,7 @@ export default function TenanciesListPage() {
                     <div className="flex items-center gap-2 text-[10px] text-zinc-500">
                       <Calendar size={13} className="text-zinc-400" />
                       <span>
-                        Lease commenced:{' '}
+                        Lease commenced:{" "}
                         {new Date(
                           isNaN(Number(tenancy.updatedAt))
                             ? tenancy.updatedAt

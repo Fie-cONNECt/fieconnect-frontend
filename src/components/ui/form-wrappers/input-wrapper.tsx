@@ -1,8 +1,14 @@
-'use client';
+"use client";
 
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import type { Control } from 'react-hook-form';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import type { Control } from "react-hook-form";
 
 interface InputWrapperProps {
   control: Control<any>;
@@ -35,23 +41,38 @@ export default function InputWrapper({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="w-full">
-          <FormLabel className={type === 'hidden' ? 'hidden' : ''}>
-            {required && <span className="text-red-500 mr-1">*</span>}
+        <FormItem className="w-full space-y-2">
+          <FormLabel
+            className={
+              type === "hidden"
+                ? "hidden"
+                : "text-sm font-semibold text-foreground"
+            }
+          >
+            {required && (
+              <span className="text-destructive mr-1" aria-hidden>
+                *
+              </span>
+            )}
             {label}
           </FormLabel>
           <FormControl>
             <Input
               type={type}
-              placeholder={type === 'number' ? '' : placeholder || `Enter ${label.toLowerCase()}`}
+              placeholder={
+                type === "number"
+                  ? ""
+                  : placeholder || `Enter ${label.toLowerCase()}`
+              }
               className={className}
               disabled={disabled}
               readOnly={readonly}
+              aria-required={required}
               {...field}
             />
           </FormControl>
-          <FormMessage />
-          {warning && <span className="text-xs font-light text-muted-foreground">{warning}</span>}
+          <FormMessage className="text-xs font-medium text-destructive" />
+          {warning && <span className="text-caption">{warning}</span>}
         </FormItem>
       )}
     />

@@ -1,22 +1,26 @@
-'use client';
+"use client";
 
-import React, { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { useUser } from '../../layout';
-import { requestGQL } from '../../../../lib/graphql-client';
-import { CREATE_PROPERTY_MUTATION } from '../../../../graphql/operations';
-import { uploadToSupabase } from '../../../../lib/supabase';
-import { Button } from '../../../../components/ui/button';
-import { toast } from 'sonner';
-import { REGIONS, PROPERTY_TYPES, PARKING_OPTIONS } from '../../../../lib/constants';
-import { useForm } from 'react-hook-form';
-import { Form } from '../../../../components/ui/form';
+import React, { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { useUser } from "../../layout";
+import { requestGQL } from "../../../../lib/graphql-client";
+import { CREATE_PROPERTY_MUTATION } from "../../../../graphql/operations";
+import { uploadToSupabase } from "../../../../lib/supabase";
+import { Button } from "../../../../components/ui/button";
+import { toast } from "sonner";
+import {
+  REGIONS,
+  PROPERTY_TYPES,
+  PARKING_OPTIONS,
+} from "../../../../lib/constants";
+import { useForm } from "react-hook-form";
+import { Form } from "../../../../components/ui/form";
 import {
   InputWrapper,
   SelectWrapper,
   TextareaWrapper,
-} from '../../../../components/ui/form-wrappers';
+} from "../../../../components/ui/form-wrappers";
 import {
   Plus,
   Image as ImageIcon,
@@ -26,8 +30,8 @@ import {
   Sparkles,
   ArrowLeft,
   Loader2,
-} from 'lucide-react';
-import Link from 'next/link';
+} from "lucide-react";
+import Link from "next/link";
 
 export default function NewPropertyPage() {
   const { user } = useUser();
@@ -36,28 +40,28 @@ export default function NewPropertyPage() {
   // React Hook Form initialization
   const form = useForm({
     defaultValues: {
-      title: '',
-      region: 'Greater Accra',
-      district: '',
-      propertyType: 'Apartment',
+      title: "",
+      region: "Greater Accra",
+      district: "",
+      propertyType: "Apartment",
       price: 0,
-      bedrooms: '3',
-      bathrooms: '2',
-      size: '120',
-      parking: 'Yes',
-      description: '',
+      bedrooms: "3",
+      bathrooms: "2",
+      size: "120",
+      parking: "Yes",
+      description: "",
     },
   });
 
   const watchedValues = form.watch();
 
   // File Upload States
-  const [coverUrl, setCoverUrl] = useState('');
-  const [roomUrl, setRoomUrl] = useState('');
-  const [kitchenUrl, setKitchenUrl] = useState('');
-  const [bathroomUrl, setBathroomUrl] = useState('');
-  const [pdfUrl, setPdfUrl] = useState('');
-  const [pdfName, setPdfName] = useState('');
+  const [coverUrl, setCoverUrl] = useState("");
+  const [roomUrl, setRoomUrl] = useState("");
+  const [kitchenUrl, setKitchenUrl] = useState("");
+  const [bathroomUrl, setBathroomUrl] = useState("");
+  const [pdfUrl, setPdfUrl] = useState("");
+  const [pdfName, setPdfName] = useState("");
 
   // Individual image uploading loaders
   const [uploadingCover, setUploadingCover] = useState(false);
@@ -81,25 +85,25 @@ export default function NewPropertyPage() {
 
   const handleFileUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    type: 'cover' | 'room' | 'kitchen' | 'bathroom' | 'pdf',
+    type: "cover" | "room" | "kitchen" | "bathroom" | "pdf",
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     try {
-      if (type === 'cover') setUploadingCover(true);
-      if (type === 'room') setUploadingRoom(true);
-      if (type === 'kitchen') setUploadingKitchen(true);
-      if (type === 'bathroom') setUploadingBathroom(true);
-      if (type === 'pdf') setUploadingPdf(true);
+      if (type === "cover") setUploadingCover(true);
+      if (type === "room") setUploadingRoom(true);
+      if (type === "kitchen") setUploadingKitchen(true);
+      if (type === "bathroom") setUploadingBathroom(true);
+      if (type === "pdf") setUploadingPdf(true);
 
       const url = await uploadToSupabase(file);
 
-      if (type === 'cover') setCoverUrl(url);
-      if (type === 'room') setRoomUrl(url);
-      if (type === 'kitchen') setKitchenUrl(url);
-      if (type === 'bathroom') setBathroomUrl(url);
-      if (type === 'pdf') {
+      if (type === "cover") setCoverUrl(url);
+      if (type === "room") setRoomUrl(url);
+      if (type === "kitchen") setKitchenUrl(url);
+      if (type === "bathroom") setBathroomUrl(url);
+      if (type === "pdf") {
         setPdfUrl(url);
         setPdfName(file.name);
       }
@@ -109,17 +113,17 @@ export default function NewPropertyPage() {
       console.error(err);
       toast.error(`Upload failed: ${err.message}`);
     } finally {
-      if (type === 'cover') setUploadingCover(false);
-      if (type === 'room') setUploadingRoom(false);
-      if (type === 'kitchen') setUploadingKitchen(false);
-      if (type === 'bathroom') setUploadingBathroom(false);
-      if (type === 'pdf') setUploadingPdf(false);
+      if (type === "cover") setUploadingCover(false);
+      if (type === "room") setUploadingRoom(false);
+      if (type === "kitchen") setUploadingKitchen(false);
+      if (type === "bathroom") setUploadingBathroom(false);
+      if (type === "pdf") setUploadingPdf(false);
     }
   };
 
   const onSubmit = async (values: any) => {
     if (!coverUrl) {
-      toast.error('Please upload at least a Cover Image for the listing');
+      toast.error("Please upload at least a Cover Image for the listing");
       return;
     }
 
@@ -128,16 +132,16 @@ export default function NewPropertyPage() {
       const input = {
         title: values.title,
         type: values.propertyType,
-        location: values.district + ', ' + values.region,
+        location: values.district + ", " + values.region,
         region: values.region,
         district: values.district,
         price: Number(values.price),
-        bedrooms: values.bedrooms + ' Beds',
-        bathrooms: values.bathrooms + ' Baths',
+        bedrooms: values.bedrooms + " Beds",
+        bathrooms: values.bathrooms + " Baths",
         size: values.size,
         parking: values.parking,
         about: values.description,
-        amenities: ['Electricity', 'Water', 'Gated Community'],
+        amenities: ["Electricity", "Water", "Gated Community"],
         image: coverUrl,
         kitchenImage: kitchenUrl || coverUrl,
         bedroomImage: roomUrl || coverUrl,
@@ -146,8 +150,8 @@ export default function NewPropertyPage() {
       };
 
       await requestGQL(CREATE_PROPERTY_MUTATION, { input });
-      toast.success('Property listed successfully on FieConnect!');
-      router.push('/app/properties');
+      toast.success("Property listed successfully on FieConnect!");
+      router.push("/app/properties");
     } catch (err: any) {
       console.error(err);
       toast.error(`Failed to list property: ${err.message}`);
@@ -157,8 +161,8 @@ export default function NewPropertyPage() {
   };
 
   const handleSaveDraft = () => {
-    toast.success('Property details saved as draft!');
-    router.push('/app/properties');
+    toast.success("Property details saved as draft!");
+    router.push("/app/properties");
   };
 
   return (
@@ -201,7 +205,7 @@ export default function NewPropertyPage() {
                 Publishing...
               </>
             ) : (
-              'List Property'
+              "List Property"
             )}
           </Button>
         </div>
@@ -343,7 +347,7 @@ export default function NewPropertyPage() {
                     accept="image/*"
                     ref={coverInputRef}
                     className="hidden"
-                    onChange={(e) => handleFileUpload(e, 'cover')}
+                    onChange={(e) => handleFileUpload(e, "cover")}
                   />
                   <button
                     type="button"
@@ -352,12 +356,23 @@ export default function NewPropertyPage() {
                     className="relative w-full aspect-square rounded-xl border-2 border-dashed border-border hover:border-primary bg-background/50 flex flex-col items-center justify-center p-3 text-center gap-1.5 transition-colors cursor-pointer overflow-hidden"
                   >
                     {coverUrl ? (
-                      <Image src={coverUrl} alt="Cover Preview" fill className="object-cover" />
+                      <Image
+                        src={coverUrl}
+                        alt="Cover Preview"
+                        fill
+                        className="object-cover"
+                      />
                     ) : uploadingCover ? (
-                      <Loader2 size={16} className="animate-spin text-primary" />
+                      <Loader2
+                        size={16}
+                        className="animate-spin text-primary"
+                      />
                     ) : (
                       <>
-                        <ImageIcon size={18} className="text-muted-foreground" />
+                        <ImageIcon
+                          size={18}
+                          className="text-muted-foreground"
+                        />
                         <span className="text-[9px] font-bold text-muted-foreground leading-tight">
                           Upload Image
                         </span>
@@ -376,7 +391,7 @@ export default function NewPropertyPage() {
                     accept="image/*"
                     ref={roomInputRef}
                     className="hidden"
-                    onChange={(e) => handleFileUpload(e, 'room')}
+                    onChange={(e) => handleFileUpload(e, "room")}
                   />
                   <button
                     type="button"
@@ -385,12 +400,23 @@ export default function NewPropertyPage() {
                     className="relative w-full aspect-square rounded-xl border-2 border-dashed border-border hover:border-primary bg-background/50 flex flex-col items-center justify-center p-3 text-center gap-1.5 transition-colors cursor-pointer overflow-hidden"
                   >
                     {roomUrl ? (
-                      <Image src={roomUrl} alt="Room Preview" fill className="object-cover" />
+                      <Image
+                        src={roomUrl}
+                        alt="Room Preview"
+                        fill
+                        className="object-cover"
+                      />
                     ) : uploadingRoom ? (
-                      <Loader2 size={16} className="animate-spin text-primary" />
+                      <Loader2
+                        size={16}
+                        className="animate-spin text-primary"
+                      />
                     ) : (
                       <>
-                        <ImageIcon size={18} className="text-muted-foreground" />
+                        <ImageIcon
+                          size={18}
+                          className="text-muted-foreground"
+                        />
                         <span className="text-[9px] font-bold text-muted-foreground leading-tight">
                           Upload Image
                         </span>
@@ -409,7 +435,7 @@ export default function NewPropertyPage() {
                     accept="image/*"
                     ref={kitchenInputRef}
                     className="hidden"
-                    onChange={(e) => handleFileUpload(e, 'kitchen')}
+                    onChange={(e) => handleFileUpload(e, "kitchen")}
                   />
                   <button
                     type="button"
@@ -418,12 +444,23 @@ export default function NewPropertyPage() {
                     className="relative w-full aspect-square rounded-xl border-2 border-dashed border-border hover:border-primary bg-background/50 flex flex-col items-center justify-center p-3 text-center gap-1.5 transition-colors cursor-pointer overflow-hidden"
                   >
                     {kitchenUrl ? (
-                      <Image src={kitchenUrl} alt="Kitchen Preview" fill className="object-cover" />
+                      <Image
+                        src={kitchenUrl}
+                        alt="Kitchen Preview"
+                        fill
+                        className="object-cover"
+                      />
                     ) : uploadingKitchen ? (
-                      <Loader2 size={16} className="animate-spin text-primary" />
+                      <Loader2
+                        size={16}
+                        className="animate-spin text-primary"
+                      />
                     ) : (
                       <>
-                        <ImageIcon size={18} className="text-muted-foreground" />
+                        <ImageIcon
+                          size={18}
+                          className="text-muted-foreground"
+                        />
                         <span className="text-[9px] font-bold text-muted-foreground leading-tight">
                           Upload Image
                         </span>
@@ -442,7 +479,7 @@ export default function NewPropertyPage() {
                     accept="image/*"
                     ref={bathroomInputRef}
                     className="hidden"
-                    onChange={(e) => handleFileUpload(e, 'bathroom')}
+                    onChange={(e) => handleFileUpload(e, "bathroom")}
                   />
                   <button
                     type="button"
@@ -458,10 +495,16 @@ export default function NewPropertyPage() {
                         className="object-cover"
                       />
                     ) : uploadingBathroom ? (
-                      <Loader2 size={16} className="animate-spin text-primary" />
+                      <Loader2
+                        size={16}
+                        className="animate-spin text-primary"
+                      />
                     ) : (
                       <>
-                        <ImageIcon size={18} className="text-muted-foreground" />
+                        <ImageIcon
+                          size={18}
+                          className="text-muted-foreground"
+                        />
                         <span className="text-[9px] font-bold text-muted-foreground leading-tight">
                           Upload Image
                         </span>
@@ -482,7 +525,7 @@ export default function NewPropertyPage() {
                       Tenancy Agreement Template
                     </h4>
                     <p className="text-[10px] text-muted-foreground font-semibold leading-relaxed mt-0.5">
-                      {pdfName || 'Upload your signed standard agreement (PDF)'}
+                      {pdfName || "Upload your signed standard agreement (PDF)"}
                     </p>
                   </div>
                 </div>
@@ -492,7 +535,7 @@ export default function NewPropertyPage() {
                   accept=".pdf"
                   ref={pdfInputRef}
                   className="hidden"
-                  onChange={(e) => handleFileUpload(e, 'pdf')}
+                  onChange={(e) => handleFileUpload(e, "pdf")}
                 />
                 <Button
                   type="button"
@@ -504,9 +547,9 @@ export default function NewPropertyPage() {
                   {uploadingPdf ? (
                     <Loader2 size={12} className="animate-spin text-primary" />
                   ) : pdfUrl ? (
-                    'Change PDF'
+                    "Change PDF"
                   ) : (
-                    'Upload PDF'
+                    "Upload PDF"
                   )}
                 </Button>
               </div>
@@ -524,7 +567,12 @@ export default function NewPropertyPage() {
               {/* Image display */}
               <div className="relative h-44 w-full bg-input/40 flex items-center justify-center">
                 {coverUrl ? (
-                  <Image src={coverUrl} alt="Cover Preview" fill className="object-cover" />
+                  <Image
+                    src={coverUrl}
+                    alt="Cover Preview"
+                    fill
+                    className="object-cover"
+                  />
                 ) : (
                   <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                     Property Cover Image
@@ -533,8 +581,10 @@ export default function NewPropertyPage() {
 
                 {/* Price Tag overlay */}
                 <div className="absolute bottom-3 right-3 bg-card/95 backdrop-blur-xs px-3 py-1 rounded-lg text-foreground font-black text-xs shadow-xs border border-border/40">
-                  GH₵ {(watchedValues.price || 0).toLocaleString()}{' '}
-                  <span className="text-[9px] font-bold text-muted-foreground">/mo</span>
+                  GH₵ {(watchedValues.price || 0).toLocaleString()}{" "}
+                  <span className="text-[9px] font-bold text-muted-foreground">
+                    /mo
+                  </span>
                 </div>
               </div>
 
@@ -542,11 +592,13 @@ export default function NewPropertyPage() {
               <div className="p-5 space-y-4">
                 <div className="space-y-1">
                   <h4 className="text-sm font-extrabold text-foreground line-clamp-1">
-                    {watchedValues.title || 'Modern 3-Bedroom Apartment'}
+                    {watchedValues.title || "Modern 3-Bedroom Apartment"}
                   </h4>
                   <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-bold">
                     <MapPin size={10} />
-                    {watchedValues.district ? watchedValues.district + ', ' : ''}
+                    {watchedValues.district
+                      ? watchedValues.district + ", "
+                      : ""}
                     {watchedValues.region}
                   </div>
                 </div>
@@ -573,14 +625,16 @@ export default function NewPropertyPage() {
                     <span className="text-[8px] text-muted-foreground uppercase block tracking-wider">
                       Area
                     </span>
-                    <span className="text-foreground block mt-0.5">{watchedValues.size} m²</span>
+                    <span className="text-foreground block mt-0.5">
+                      {watchedValues.size} m²
+                    </span>
                   </div>
                 </div>
 
                 {/* Description snippet */}
                 <p className="text-[10px] text-muted-foreground font-semibold leading-relaxed line-clamp-2">
                   {watchedValues.description ||
-                    'Your property description will appear here as you type. Start filling in the form to see how it looks to potential tenants.'}
+                    "Your property description will appear here as you type. Start filling in the form to see how it looks to potential tenants."}
                 </p>
 
                 {/* Owner info card */}
@@ -608,9 +662,10 @@ export default function NewPropertyPage() {
                 Pro Tip
               </div>
               <p className="text-[10px] text-foreground/80 font-bold leading-relaxed">
-                Properties with 4+ high-quality images and a detailed description get 3x more views
-                in {watchedValues.region}. Make sure to capture key areas like rooms, the kitchen,
-                and bathrooms.
+                Properties with 4+ high-quality images and a detailed
+                description get 3x more views in {watchedValues.region}. Make
+                sure to capture key areas like rooms, the kitchen, and
+                bathrooms.
               </p>
             </div>
           </div>

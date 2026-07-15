@@ -1,14 +1,20 @@
-'use client';
+"use client";
 
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import type { Control } from 'react-hook-form';
+} from "@/components/ui/select";
+import type { Control } from "react-hook-form";
 
 interface Option {
   label: string;
@@ -48,10 +54,16 @@ export default function SelectWrapper({
             {required && <span className="text-red-500 mr-1">*</span>}
             {label}
           </FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+          <Select
+            onValueChange={field.onChange}
+            defaultValue={field.value}
+            value={field.value}
+          >
             <FormControl>
               <SelectTrigger className={className} disabled={disabled}>
-                <SelectValue placeholder={placeholder || `Select ${label.toLowerCase()}`} />
+                <SelectValue
+                  placeholder={placeholder || `Select ${label.toLowerCase()}`}
+                />
               </SelectTrigger>
             </FormControl>
             <SelectContent className="bg-zinc-950 border border-zinc-800 text-white">
@@ -63,7 +75,11 @@ export default function SelectWrapper({
             </SelectContent>
           </Select>
           <FormMessage />
-          {warning && <span className="text-xs font-light text-muted-foreground">{warning}</span>}
+          {warning && (
+            <span className="text-xs font-light text-muted-foreground">
+              {warning}
+            </span>
+          )}
         </FormItem>
       )}
     />
