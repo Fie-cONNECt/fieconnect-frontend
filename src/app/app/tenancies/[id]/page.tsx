@@ -295,7 +295,7 @@ export default function TenancyDetailsPage() {
             </div>
             <div>
               <p className="font-black text-slate-800">{tenancy.property.title}</p>
-              <p className="text-[10px] text-zinc-450 mt-0.5">{tenancy.property.location}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{tenancy.property.location}</p>
             </div>
             <div className="grid grid-cols-3 gap-2 pt-2 border-t border-zinc-50">
               <div className="text-center bg-zinc-50 p-2 rounded-lg">
@@ -340,14 +340,14 @@ export default function TenancyDetailsPage() {
             <div className="space-y-2.5 pt-2 border-t border-zinc-50 text-left">
               <a
                 href={`mailto:${tenancy.tenant.email}`}
-                className="flex items-center gap-2 text-zinc-650 hover:text-primary transition-colors"
+                className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
               >
                 <Mail size={13} className="text-zinc-400" />
                 <span>{tenancy.tenant.email}</span>
               </a>
               <a
                 href={`tel:${tenancy.tenant.phone}`}
-                className="flex items-center gap-2 text-zinc-650 hover:text-primary transition-colors"
+                className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
               >
                 <Phone size={13} className="text-zinc-400" />
                 <span>{tenancy.tenant.phone}</span>
@@ -384,14 +384,14 @@ export default function TenancyDetailsPage() {
             <div className="space-y-2.5 pt-2 border-t border-zinc-50 text-left">
               <a
                 href={`mailto:${tenancy.property.landlord.email}`}
-                className="flex items-center gap-2 text-zinc-650 hover:text-primary transition-colors"
+                className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
               >
                 <Mail size={13} className="text-zinc-400" />
                 <span>{tenancy.property.landlord.email}</span>
               </a>
               <a
                 href={`tel:${tenancy.property.landlord.phone}`}
-                className="flex items-center gap-2 text-zinc-650 hover:text-primary transition-colors"
+                className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
               >
                 <Phone size={13} className="text-zinc-400" />
                 <span>{tenancy.property.landlord.phone}</span>

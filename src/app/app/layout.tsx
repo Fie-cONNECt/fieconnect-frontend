@@ -143,58 +143,49 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-zinc-50 flex flex-col font-sans animate-pulse">
-        {/* Desktop Sidebar Skeleton */}
-        <aside className="hidden lg:block fixed top-0 bottom-0 left-0 w-64 border-r border-zinc-200 bg-zinc-50 px-5 py-6 flex flex-col z-20 justify-between">
+      <div className="min-h-screen bg-background flex flex-col font-sans animate-pulse">
+        <aside className="hidden lg:block fixed top-0 bottom-0 left-0 w-64 border-r border-border bg-card px-5 py-6 flex flex-col z-20 justify-between">
           <div className="space-y-6">
             <div className="space-y-2 px-2 mb-8">
-              <Skeleton className="h-6 w-32 bg-zinc-200" />
-              <Skeleton className="h-3 w-24 bg-zinc-200/80" />
+              <Skeleton className="h-6 w-32 bg-muted" />
+              <Skeleton className="h-3 w-24 bg-muted/80" />
             </div>
             <div className="space-y-3">
               {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-10 w-full bg-zinc-200/70 rounded-xl" />
+                <Skeleton key={i} className="h-10 w-full bg-muted/70 rounded-xl" />
               ))}
             </div>
           </div>
-          <div className="border-t border-zinc-200/75 pt-4 space-y-3">
-            <Skeleton className="h-10 w-full bg-zinc-200/70 rounded-xl" />
-            <Skeleton className="h-10 w-full bg-zinc-200/70 rounded-xl" />
+          <div className="border-t border-border pt-4 space-y-3">
+            <Skeleton className="h-10 w-full bg-muted/70 rounded-xl" />
+            <Skeleton className="h-10 w-full bg-muted/70 rounded-xl" />
           </div>
         </aside>
 
-        {/* Content Container Skeleton */}
         <div className="lg:pl-64 flex flex-col flex-1">
-          {/* Header Skeleton */}
-          <header className="h-16 bg-white border-b border-zinc-100 px-6 flex items-center justify-between">
-            <Skeleton className="h-6 w-32 bg-zinc-200" />
+          <header className="h-16 bg-card border-b border-border px-6 flex items-center justify-between">
+            <Skeleton className="h-6 w-32 bg-muted" />
             <div className="flex items-center gap-4">
-              <Skeleton className="hidden sm:block h-9 w-48 bg-zinc-200/80 rounded-full" />
-              <Skeleton className="h-9 w-9 bg-zinc-200/80 rounded-xl" />
-              <Skeleton className="h-8 w-24 bg-zinc-200/80 rounded-full" />
+              <Skeleton className="hidden sm:block h-9 w-48 bg-muted/80 rounded-full" />
+              <Skeleton className="h-9 w-9 bg-muted/80 rounded-xl" />
+              <Skeleton className="h-8 w-24 bg-muted/80 rounded-full" />
             </div>
           </header>
 
-          {/* Main workspace Skeleton */}
           <main className="flex-1 p-6 space-y-6">
-            {/* Welcome banner shape */}
-            <Skeleton className="h-32 w-full bg-zinc-200 rounded-2xl" />
-
-            {/* Summary cards grid */}
+            <Skeleton className="h-32 w-full bg-muted rounded-2xl" />
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Skeleton className="h-20 w-full bg-zinc-200 rounded-2xl" />
-              <Skeleton className="h-20 w-full bg-zinc-200 rounded-2xl" />
-              <Skeleton className="h-20 w-full bg-zinc-200 rounded-2xl" />
+              <Skeleton className="h-20 w-full bg-muted rounded-2xl" />
+              <Skeleton className="h-20 w-full bg-muted rounded-2xl" />
+              <Skeleton className="h-20 w-full bg-muted rounded-2xl" />
             </div>
-
-            {/* Content columns */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
-                <Skeleton className="h-80 w-full bg-zinc-200 rounded-2xl" />
+                <Skeleton className="h-80 w-full bg-muted rounded-2xl" />
               </div>
               <div className="lg:col-span-1 space-y-6">
-                <Skeleton className="h-56 w-full bg-zinc-200 rounded-2xl" />
-                <Skeleton className="h-36 w-full bg-zinc-200 rounded-2xl" />
+                <Skeleton className="h-56 w-full bg-muted rounded-2xl" />
+                <Skeleton className="h-36 w-full bg-muted rounded-2xl" />
               </div>
             </div>
           </main>
@@ -223,19 +214,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full bg-zinc-50 border-r border-zinc-200/80 px-5 py-6">
-      {/* Branding Header */}
+    <div className="flex flex-col h-full bg-sidebar border-r border-sidebar-border px-5 py-6">
       <div className="flex flex-col mb-8 px-2">
-        <div className="text-xl font-black tracking-tight text-primary flex items-center gap-2">
+        <Link href="/app" className="text-xl font-extrabold tracking-tight text-primary flex items-center gap-2">
           FieConnect
-        </div>
-        <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-0.5">
-          Property Management
-        </div>
+        </Link>
+        <div className="text-overline mt-1">Property Management</div>
       </div>
 
-      {/* Main Navigation links */}
-      <nav className="space-y-1.5 flex-1">
+      <nav className="space-y-1.5 flex-1" aria-label="Dashboard">
         {navItems.map((item) => {
           const active = isActive(item.href);
           const Icon = item.icon;
@@ -244,30 +231,31 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               key={item.name}
               href={item.href}
               onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              aria-current={active ? 'page' : undefined}
+              className={`flex items-center gap-3 px-3.5 py-2.5 min-h-11 rounded-xl text-sm font-semibold transition-ui ${
                 active
                   ? 'bg-primary text-primary-foreground shadow-sm border border-primary/30'
-                  : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
               }`}
             >
-              <Icon size={16} className={active ? 'text-primary-foreground' : 'text-zinc-400'} />
+              <Icon size={16} className={active ? 'text-primary-foreground' : 'text-muted-foreground'} aria-hidden />
               {item.name}
             </Link>
           );
         })}
       </nav>
 
-      {/* Footer Navigation section */}
-      <div className="border-t border-zinc-200/75 pt-4 space-y-1.5">
+      <div className="border-t border-sidebar-border pt-4 space-y-1.5">
         {isLandlord(user) && (
           <button
+            type="button"
             onClick={() => {
               setMobileMenuOpen(false);
               router.push('/app/properties/new');
             }}
-            className="flex w-full items-center justify-center gap-1.5 px-3.5 py-2.5 mb-2 rounded-xl text-xs font-black bg-primary hover:bg-primary/90 text-primary-foreground transition-all cursor-pointer h-10 shadow-xs border border-primary/30"
+            className="flex w-full items-center justify-center gap-1.5 px-3.5 py-2.5 mb-2 rounded-xl text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground transition-ui cursor-pointer h-11 shadow-sm border border-primary/30"
           >
-            <Plus size={14} strokeWidth={3} />
+            <Plus size={14} strokeWidth={3} aria-hidden />
             Add New Listing
           </button>
         )}
@@ -276,23 +264,24 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           return (
             <Link
               key={item.name}
-              href={item.href}
+              href={item.href === '#' ? '/app/profile' : item.href}
               onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 transition-all"
+              className="flex items-center gap-3 px-3.5 py-2.5 min-h-11 rounded-xl text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-ui"
             >
-              <Icon size={16} className="text-zinc-400" />
+              <Icon size={16} className="text-muted-foreground" aria-hidden />
               {item.name}
             </Link>
           );
         })}
         <button
+          type="button"
           onClick={() => {
             setMobileMenuOpen(false);
             handleLogout();
           }}
-          className="flex w-full items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-red-500 hover:text-red-700 hover:bg-red-50/50 transition-all cursor-pointer text-left"
+          className="flex w-full items-center gap-3 px-3.5 py-2.5 min-h-11 rounded-xl text-sm font-semibold text-destructive hover:bg-destructive/10 transition-ui cursor-pointer text-left"
         >
-          <LogOut size={16} className="text-red-400" />
+          <LogOut size={16} aria-hidden />
           Logout
         </button>
       </div>
@@ -301,25 +290,29 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <UserContext.Provider value={{ user, loading, logout: handleLogout }}>
-      <div className="min-h-screen bg-zinc-50 flex flex-col font-sans">
-        {/* Desktop Sidebar (Left side, fixed width) */}
-        <aside className="hidden lg:block fixed top-0 bottom-0 left-0 w-64 z-20">
+      <div className="min-h-screen bg-background flex flex-col font-sans">
+        <aside className="hidden lg:block fixed top-0 bottom-0 left-0 w-64 z-20" aria-label="Sidebar">
           <SidebarContent />
         </aside>
 
-        {/* Mobile Slide-in Drawer overlay */}
         {mobileMenuOpen && (
           <div className="lg:hidden">
-            {/* Dark backdrop blur */}
             <div
               className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 transition-opacity"
               onClick={() => setMobileMenuOpen(false)}
+              aria-hidden
             />
-            {/* Drawer Panel */}
-            <div className="fixed top-0 bottom-0 left-0 w-64 bg-zinc-50 z-50 shadow-2xl animate-in slide-in-from-left duration-300">
+            <div
+              className="fixed top-0 bottom-0 left-0 w-64 bg-sidebar z-50 shadow-2xl animate-in slide-in-from-left duration-300"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Navigation menu"
+            >
               <button
+                type="button"
                 onClick={() => setMobileMenuOpen(false)}
-                className="absolute top-4 right-4 p-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-500 transition-colors z-50 cursor-pointer"
+                className="absolute top-4 right-4 p-2.5 min-h-11 min-w-11 rounded-lg bg-muted hover:bg-muted/80 text-muted-foreground transition-ui z-50 cursor-pointer flex items-center justify-center"
+                aria-label="Close menu"
               >
                 <X size={16} />
               </button>
@@ -328,26 +321,25 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
         )}
 
-        {/* Content Container Area */}
         <div className="lg:pl-64 flex flex-col flex-1">
-          {/* Sticky Header */}
           <header
-            className={`sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b border-zinc-100 px-4 sm:px-6 flex items-center justify-between transition-all ${isLandlord(user) ? 'h-20' : 'h-16'}`}
+            className={`sticky top-0 z-30 bg-card/90 backdrop-blur-md border-b border-border px-4 sm:px-6 flex items-center justify-between transition-ui ${isLandlord(user) ? 'h-20' : 'h-16'}`}
           >
-            {/* Left Header Section */}
             {isLandlord(user) ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 min-w-0">
                 <button
+                  type="button"
                   onClick={() => setMobileMenuOpen(true)}
-                  className="lg:hidden p-2 rounded-xl text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors cursor-pointer"
+                  className="lg:hidden p-2.5 min-h-11 min-w-11 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-ui cursor-pointer flex items-center justify-center"
+                  aria-label="Open menu"
                 >
                   <Menu size={20} />
                 </button>
-                <div className="flex flex-col text-left">
-                  <h1 className="text-lg sm:text-xl font-black text-slate-800 tracking-tight">
+                <div className="flex flex-col text-left min-w-0">
+                  <h1 className="text-h3 text-foreground truncate">
                     Hello, Mr. {user?.lastName}!
                   </h1>
-                  <span className="text-[10px] sm:text-[11px] text-zinc-400 font-bold tracking-wide mt-0.5">
+                  <span className="text-caption mt-0.5 hidden sm:block">
                     Welcome back to your property portfolio overview.
                   </span>
                 </div>
@@ -355,88 +347,95 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             ) : (
               <div className="flex items-center gap-3">
                 <button
+                  type="button"
                   onClick={() => setMobileMenuOpen(true)}
-                  className="lg:hidden p-2 rounded-xl text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors cursor-pointer"
+                  className="lg:hidden p-2.5 min-h-11 min-w-11 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-ui cursor-pointer flex items-center justify-center"
+                  aria-label="Open menu"
                 >
                   <Menu size={20} />
                 </button>
-                <h1 className="text-lg sm:text-xl font-extrabold tracking-tight text-slate-800">
-                  Dashboard
-                </h1>
+                <h1 className="text-h3 text-foreground">Dashboard</h1>
               </div>
             )}
 
-            {/* Right Header Controls */}
             <div className="flex items-center gap-3 sm:gap-4">
-              {/* Search Bar Input (Only for Tenants) */}
               {!isLandlord(user) && (
                 <div className="relative hidden sm:block w-48 md:w-64">
                   <Search
                     size={14}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                    aria-hidden
                   />
                   <input
-                    type="text"
-                    placeholder="Search..."
-                    className="w-full h-9 pl-9 pr-4 rounded-full bg-zinc-100/80 border border-transparent text-xs text-slate-700 placeholder-zinc-400 focus:outline-hidden focus:bg-white focus:border-zinc-200 transition-all font-medium"
+                    type="search"
+                    placeholder="Search properties..."
+                    aria-label="Search properties"
+                    className="w-full h-10 pl-9 pr-4 rounded-full bg-muted/80 border border-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:bg-card focus:border-border focus:ring-2 focus:ring-ring/40 transition-ui font-medium"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        router.push('/app/properties');
+                      }
+                    }}
                   />
                 </div>
               )}
 
-              {/* Notification icon button & dropdown */}
               <div className="relative">
                 <button
+                  type="button"
                   onClick={() => setNotificationsOpen(!notificationsOpen)}
-                  className="relative p-2 text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50 rounded-xl transition-colors cursor-pointer"
+                  className="relative p-2.5 min-h-11 min-w-11 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-ui cursor-pointer flex items-center justify-center"
+                  aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
+                  aria-expanded={notificationsOpen}
                 >
                   <Bell size={18} />
                   {unreadCount > 0 && (
-                    <span className="absolute top-1.5 right-1.5 h-4 w-4 rounded-full bg-red-500 border-2 border-white text-[8px] font-black text-white flex items-center justify-center shadow-xs">
+                    <span className="absolute top-1.5 right-1.5 h-4 w-4 rounded-full bg-destructive border-2 border-card text-[8px] font-bold text-white flex items-center justify-center shadow-sm">
                       {unreadCount}
                     </span>
                   )}
                 </button>
 
-                {/* Notifications Dropdown Panel */}
                 {notificationsOpen && (
-                  <div className="absolute right-0 mt-2 w-80 bg-white border border-zinc-200 rounded-2xl shadow-xl z-50 overflow-hidden text-left animate-in fade-in duration-200">
-                    <div className="p-3 border-b border-zinc-100 flex justify-between items-center bg-zinc-50/50">
-                      <span className="text-xs font-black text-slate-800">Notifications</span>
+                  <div
+                    className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-card border border-border rounded-2xl shadow-xl z-50 overflow-hidden text-left animate-in fade-in duration-200"
+                    role="menu"
+                    aria-label="Notifications"
+                  >
+                    <div className="p-3 border-b border-border flex justify-between items-center bg-muted/40">
+                      <span className="text-sm font-bold text-foreground">Notifications</span>
                       {unreadCount > 0 && (
-                        <span className="text-[9px] bg-primary/20 text-primary font-bold px-2 py-0.5 rounded-full">
+                        <span className="text-[10px] bg-primary/20 text-primary-foreground font-bold px-2 py-0.5 rounded-full bg-primary/30">
                           {unreadCount} new
                         </span>
                       )}
                     </div>
-                    <div className="max-h-72 overflow-y-auto divide-y divide-zinc-50 font-semibold text-xs">
+                    <div className="max-h-72 overflow-y-auto divide-y divide-border font-medium text-sm">
                       {notifications.length === 0 ? (
-                        <div className="p-6 text-center text-zinc-400 text-xs">
+                        <div className="p-6 text-center text-muted-foreground text-sm">
                           No notifications yet
                         </div>
                       ) : (
                         notifications.map((n) => (
-                          <div
+                          <button
+                            type="button"
                             key={n.id}
                             onClick={() => handleMarkAsRead(n.id, n.link)}
-                            className={`p-3.5 hover:bg-zinc-50 transition-colors cursor-pointer flex flex-col gap-1 text-left ${
+                            className={`w-full p-3.5 hover:bg-muted/60 transition-ui cursor-pointer flex flex-col gap-1 text-left ${
                               !n.read
                                 ? 'bg-primary/5 border-l-2 border-primary'
                                 : 'border-l-2 border-transparent'
                             }`}
                           >
-                            <span className="text-slate-800 font-extrabold text-[11px]">
-                              {n.title}
-                            </span>
-                            <span className="text-[10px] text-zinc-500 font-medium leading-relaxed">
-                              {n.message}
-                            </span>
-                            <span className="text-[9px] text-zinc-400 mt-0.5">
+                            <span className="text-foreground font-bold text-xs">{n.title}</span>
+                            <span className="text-caption leading-relaxed">{n.message}</span>
+                            <span className="text-[10px] text-muted-foreground mt-0.5">
                               {new Date(n.createdAt).toLocaleTimeString([], {
                                 hour: '2-digit',
                                 minute: '2-digit',
                               })}
                             </span>
-                          </div>
+                          </button>
                         ))
                       )}
                     </div>
@@ -444,9 +443,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 )}
               </div>
 
-              {/* Profile Avatar Card */}
-              <div className="flex items-center gap-2 pl-1 border-l border-zinc-100">
-                <div className="relative h-8 w-8 rounded-full overflow-hidden bg-zinc-200 border border-zinc-300 shrink-0">
+              <Link
+                href="/app/profile"
+                className="flex items-center gap-2 pl-3 border-l border-border hover:opacity-90 transition-ui focus-visible:rounded-lg"
+              >
+                <div className="relative h-9 w-9 rounded-full overflow-hidden bg-muted border border-border shrink-0">
                   {user?.avatarUrl ? (
                     <Image
                       src={user.avatarUrl}
@@ -455,25 +456,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       className="object-cover"
                     />
                   ) : (
-                    <div className="h-full w-full flex items-center justify-center text-[10px] font-black text-zinc-600 bg-zinc-100">
+                    <div className="h-full w-full flex items-center justify-center text-[10px] font-bold text-muted-foreground bg-muted">
                       {`${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase()}
                     </div>
                   )}
                 </div>
                 <div className="hidden md:flex flex-col text-left">
-                  <span className="text-xs font-bold text-slate-700 leading-tight">
+                  <span className="text-sm font-semibold text-foreground leading-tight">
                     {user?.firstName} {user?.lastName}
                   </span>
-                  <span className="text-[9px] font-bold uppercase text-zinc-400 tracking-wider">
-                    {user?.userType || 'Tenant'}
-                  </span>
+                  <span className="text-overline">{user?.userType || 'Tenant'}</span>
                 </div>
-              </div>
+              </Link>
             </div>
           </header>
 
-          {/* Page Contents Container */}
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-zinc-50/50">{children}</main>
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-background">{children}</main>
         </div>
       </div>
     </UserContext.Provider>

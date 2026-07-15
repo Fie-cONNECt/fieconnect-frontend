@@ -49,7 +49,7 @@ export default function LoginForm() {
       }
 
       toast.success('Login successful!');
-      router.push('/');
+      router.push('/app');
     } catch (error: any) {
       console.error('Login error:', error);
       toast.error(error.message || 'Login failed. Please check your credentials.');
@@ -58,14 +58,14 @@ export default function LoginForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 w-full">
         <InputWrapper
           control={form.control as any}
           name="email"
           label="Email"
           type="email"
           placeholder="Enter your email"
-          className="rounded-full bg-background border-border text-foreground"
+          className="rounded-xl h-11 bg-background border-border text-foreground"
           required
         />
 
@@ -75,14 +75,14 @@ export default function LoginForm() {
           label="Password"
           type="password"
           placeholder="Enter your password"
-          className="rounded-full bg-background border-border text-foreground"
+          className="rounded-xl h-11 bg-background border-border text-foreground"
           required
         />
 
         <Button
           type="submit"
           disabled={form.formState.isSubmitting}
-          className="w-full rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-12 mt-2 shadow-md transition-colors"
+          className="w-full rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-11 mt-2 shadow-md transition-ui"
         >
           {form.formState.isSubmitting ? 'Logging in...' : 'Login'}
         </Button>

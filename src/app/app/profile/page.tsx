@@ -311,7 +311,7 @@ export default function ProfilePage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-zinc-700 block">Email Address</label>
                 <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-zinc-150 bg-zinc-50 text-xs font-semibold text-zinc-400">
-                  <Mail size={13} className="text-zinc-350 shrink-0" />
+                  <Mail size={13} className="text-muted-foreground shrink-0" />
                   <span>{user.email}</span>
                   <span className="ml-auto text-[9px] font-black uppercase tracking-wider text-zinc-300">
                     Cannot be changed

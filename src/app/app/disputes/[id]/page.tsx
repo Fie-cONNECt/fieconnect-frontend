@@ -226,7 +226,7 @@ export default function DisputeDetailsPage() {
               <h2 className="text-base font-black text-slate-800 tracking-tight mt-1">
                 {dispute.title}
               </h2>
-              <p className="text-[10px] text-zinc-450 font-bold mt-1.5">
+              <p className="text-[10px] text-muted-foreground font-bold mt-1.5">
                 Filed by {dispute.creator.firstName} {dispute.creator.lastName} on{' '}
                 {new Date(parseInt(dispute.createdAt) || dispute.createdAt).toLocaleDateString()}
               </p>
@@ -396,7 +396,7 @@ export default function DisputeDetailsPage() {
                 <div>
                   <div className="flex items-center gap-1.5">
                     <h4
-                      className={`font-extrabold ${firstOpposingComment ? 'text-slate-800' : 'text-zinc-450'}`}
+                      className={`font-extrabold ${firstOpposingComment ? 'text-slate-800' : 'text-muted-foreground'}`}
                     >
                       Response Filed
                     </h4>
@@ -430,7 +430,7 @@ export default function DisputeDetailsPage() {
                 </div>
                 <div>
                   <h4
-                    className={`font-extrabold ${dispute.status === 'RESOLVED' ? 'text-slate-800' : 'text-zinc-450'}`}
+                    className={`font-extrabold ${dispute.status === 'RESOLVED' ? 'text-slate-800' : 'text-muted-foreground'}`}
                   >
                     Resolution / Closing
                   </h4>
@@ -459,7 +459,7 @@ export default function DisputeDetailsPage() {
             </div>
             <div>
               <p className="font-black text-slate-800">{dispute.tenancy.property.title}</p>
-              <p className="text-[10px] text-zinc-450 mt-0.5">
+              <p className="text-[10px] text-muted-foreground mt-0.5">
                 {dispute.tenancy.property.location}
               </p>
             </div>

@@ -609,7 +609,7 @@ export default function ApplicationsPage() {
                           <p className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase">
                             Landlord Question:
                           </p>
-                          <p className="text-xs text-zinc-700 dark:text-zinc-350 font-medium">
+                          <p className="text-xs text-zinc-700 dark:text-muted-foreground font-medium">
                             "{app.furtherDetailsRequest}"
                           </p>
                         </div>
@@ -620,7 +620,7 @@ export default function ApplicationsPage() {
                           <p className="text-[10px] font-bold text-primary uppercase">
                             Tenant Response:
                           </p>
-                          <p className="text-xs text-zinc-700 dark:text-zinc-350 font-medium">
+                          <p className="text-xs text-zinc-700 dark:text-muted-foreground font-medium">
                             "{app.furtherDetailsResponse}"
                           </p>
                         </div>

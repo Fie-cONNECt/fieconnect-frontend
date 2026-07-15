@@ -14,6 +14,7 @@ import {
 import { Button } from '../../../../components/ui/button';
 import { toast } from 'sonner';
 import { uploadToSupabase } from '../../../../lib/supabase';
+import { PublicFooterCompact } from '@/components/layout';
 import { useForm } from 'react-hook-form';
 import { Form } from '../../../../components/ui/form';
 import {
@@ -545,28 +546,7 @@ export default function TenantApplicationPage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="w-full bg-zinc-950 text-zinc-400 py-8 border-t border-zinc-900 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-semibold">
-          <div className="flex items-center gap-2">
-            <span className="text-white">FieConnect</span>
-            <span className="text-zinc-650">
-              &copy; {new Date().getFullYear()} FieConnect Ghana. All rights reserved.
-            </span>
-          </div>
-          <div className="flex gap-4 text-zinc-500">
-            <Link href="#" className="hover:text-zinc-350 transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="#" className="hover:text-zinc-350 transition-colors">
-              Terms of Service
-            </Link>
-            <Link href="#" className="hover:text-zinc-350 transition-colors">
-              Support
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <PublicFooterCompact />
     </div>
   );
 }

@@ -17,6 +17,8 @@ import {
 } from '../../graphql/operations';
 import { Button } from '../../components/ui/button';
 import { Skeleton } from '../../components/ui/skeleton';
+import { StatCard, EmptyState } from '@/components/layout';
+import { StatusBadge } from '@/components/ui/status-badge';
 import {
   FileText,
   Wrench,
@@ -179,12 +181,12 @@ export default function DashboardPage() {
       <div className="space-y-6 max-w-7xl mx-auto animate-in fade-in duration-300">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-24 rounded-2xl bg-zinc-200" />
+            <Skeleton key={i} className="h-24 rounded-2xl bg-muted" />
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Skeleton className="lg:col-span-2 h-96 rounded-2xl bg-zinc-200" />
-          <Skeleton className="h-96 rounded-2xl bg-zinc-200" />
+          <Skeleton className="lg:col-span-2 h-96 rounded-2xl bg-muted" />
+          <Skeleton className="h-96 rounded-2xl bg-muted" />
         </div>
       </div>
     );
@@ -194,79 +196,50 @@ export default function DashboardPage() {
 
   if (landlordMode) {
     return (
-      <div className="space-y-6 max-w-7xl mx-auto animate-in fade-in duration-500">
-        {/* 1. Stats Row */}
+      <div className="section-spacing max-w-7xl mx-auto animate-in fade-in duration-500">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {/* Total Properties */}
-          <Link href="/app/properties">
-            <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 flex items-center justify-between shadow-2xs hover:shadow-sm transition-all text-left cursor-pointer">
-              <div>
-                <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-none mb-2">
-                  Total Properties
-                </div>
-                <div className="text-3xl font-black text-primary leading-none">
-                  {totalProperties}
-                </div>
-              </div>
-              <div className="h-11 w-11 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                <Building2 size={20} />
-              </div>
-            </div>
-          </Link>
-
-          {/* Pending Applications */}
-          <Link href="/app/applications">
-            <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 flex items-center justify-between shadow-2xs hover:shadow-sm transition-all text-left cursor-pointer">
-              <div>
-                <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-none mb-2">
-                  Pending Applications
-                </div>
-                <div className="text-3xl font-black text-amber-500 leading-none">
-                  {pendingApplicationsCount}
-                </div>
-              </div>
-              <div className="h-11 w-11 rounded-full bg-amber-50 text-[#f0af2f] flex items-center justify-center shrink-0">
-                <ClipboardList size={20} />
-              </div>
-            </div>
-          </Link>
-
-          {/* Active Tenancies */}
-          <Link href="/app/tenancies">
-            <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 flex items-center justify-between shadow-2xs hover:shadow-sm transition-all text-left cursor-pointer">
-              <div>
-                <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-none mb-2">
-                  Active Tenancies
-                </div>
-                <div className="text-3xl font-black text-primary leading-none">
-                  {activeTenanciesCount}
-                </div>
-              </div>
-              <div className="h-11 w-11 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                <Users size={20} />
-              </div>
-            </div>
-          </Link>
+          <StatCard
+            label="Total Properties"
+            value={totalProperties}
+            href="/app/properties"
+            tone="primary"
+            icon={<Building2 size={20} />}
+          />
+          <StatCard
+            label="Pending Applications"
+            value={pendingApplicationsCount}
+            href="/app/applications"
+            tone="warning"
+            icon={<ClipboardList size={20} />}
+          />
+          <StatCard
+            label="Active Tenancies"
+            value={activeTenanciesCount}
+            href="/app/tenancies"
+            tone="primary"
+            icon={<Users size={20} />}
+          />
         </div>
 
-        {/* 2. Main Dashboard Layout Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column: Recent Activity Table */}
-          <div className="lg:col-span-2 bg-white border border-zinc-200/80 rounded-2xl p-5 sm:p-6 shadow-2xs text-left">
-            <div className="flex items-center justify-between pb-4 border-b border-zinc-100 mb-6">
-              <h3 className="text-base font-bold text-slate-800">Recent Applications</h3>
+          <div className="lg:col-span-2 card-surface p-5 sm:p-6 text-left">
+            <div className="flex items-center justify-between pb-4 border-b border-border mb-6">
+              <h3 className="text-h4 text-foreground">Recent Applications</h3>
               <Link
                 href="/app/applications"
-                className="text-xs font-bold text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
+                className="text-sm font-semibold text-primary hover:text-primary/80 transition-ui flex items-center gap-1"
               >
-                View All <ArrowRight size={12} />
+                View All <ArrowRight size={12} aria-hidden />
               </Link>
             </div>
 
             {recentApplications.length === 0 ? (
-              <div className="text-center py-12 text-xs text-zinc-400 font-semibold">
-                No recent applications received yet.
-              </div>
+              <EmptyState
+                icon={<ClipboardList size={16} />}
+                title="No recent applications"
+                description="When tenants apply to your listings, they will appear here."
+                className="border-0 bg-transparent py-8"
+              />
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-xs text-left border-collapse">
@@ -302,17 +275,7 @@ export default function DashboardPage() {
                           {app.tenant.firstName} {app.tenant.lastName}
                         </td>
                         <td className="py-3.5">
-                          <span
-                            className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
-                              app.status === 'PENDING'
-                                ? 'bg-amber-50 text-[#e69312] border-amber-100'
-                                : app.status === 'APPROVED'
-                                  ? 'bg-primary/10 text-primary border-primary/20'
-                                  : 'bg-red-50 text-red-650 border-red-100'
-                            }`}
-                          >
-                            {app.status}
-                          </span>
+                          <StatusBadge status={app.status} />
                         </td>
                         <td className="py-3.5 text-zinc-400 font-medium">
                           {new Date(app.createdAt).toLocaleDateString()}
@@ -396,82 +359,50 @@ export default function DashboardPage() {
 
   // Tenant View
   return (
-    <div className="space-y-6 max-w-7xl mx-auto animate-in fade-in duration-500">
-      {/* 1. Welcome Banner Card */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-zinc-900 to-zinc-800 p-6 sm:p-8 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-6 border border-primary/20">
+    <div className="section-spacing max-w-7xl mx-auto animate-in fade-in duration-500">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-brand-green-dark to-brand-green p-6 sm:p-8 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-6 border border-primary/20">
         <div className="absolute right-0 top-0 -translate-y-12 translate-x-12 w-64 h-64 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
-        <div className="absolute left-1/3 bottom-0 translate-y-16 w-48 h-48 rounded-full bg-yellow-500/5 blur-2xl pointer-events-none" />
+        <div className="absolute left-1/3 bottom-0 translate-y-16 w-48 h-48 rounded-full bg-primary/10 blur-2xl pointer-events-none" />
 
         <div className="space-y-2 z-10 text-left">
-          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            Welcome, {userName}!
-          </h2>
-          <p className="text-xs sm:text-sm text-zinc-450 font-medium">
+          <h2 className="text-h1 text-white">Welcome, {userName}!</h2>
+          <p className="text-body text-white/70">
             Everything is looking good with your tenancies today.
           </p>
         </div>
 
         <Link href="/app/properties" className="z-10 self-start md:self-auto">
-          <Button className="h-11 px-5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-extrabold flex items-center justify-center gap-1.5 shadow-sm transition-all border border-primary/30 cursor-pointer">
-            <Plus size={16} strokeWidth={3} />
+          <Button className="h-11 px-5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold flex items-center justify-center gap-1.5 shadow-sm transition-ui border border-primary/30 cursor-pointer">
+            <Plus size={16} strokeWidth={3} aria-hidden />
             Find New Property
           </Button>
         </Link>
       </div>
 
-      {/* 2. Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {/* Active Tenancy */}
-        <Link href="/app/tenancies">
-          <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 flex items-center gap-4 shadow-2xs hover:shadow-sm transition-all text-left cursor-pointer">
-            <div className="h-11 w-11 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
-              <Key size={20} />
-            </div>
-            <div>
-              <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-none mb-1">
-                Active Tenancy
-              </div>
-              <div className="text-2xl font-black text-slate-800 leading-none">
-                {tenantActiveTenanciesCount}
-              </div>
-            </div>
-          </div>
-        </Link>
-
-        {/* Pending Applications */}
-        <Link href="/app/applications">
-          <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 flex items-center gap-4 shadow-2xs hover:shadow-sm transition-all text-left cursor-pointer">
-            <div className="h-11 w-11 rounded-full bg-amber-50 text-[#f0af2f] flex items-center justify-center shrink-0">
-              <ClipboardList size={20} />
-            </div>
-            <div>
-              <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-none mb-1">
-                Pending Applications
-              </div>
-              <div className="text-2xl font-black text-slate-800 leading-none">
-                {tenantPendingApplicationsCount}
-              </div>
-            </div>
-          </div>
-        </Link>
-
-        {/* Unread Notifications */}
-        <div
-          onClick={() => setShowNotificationsModal(true)}
-          className="bg-white border border-zinc-200/80 rounded-2xl p-5 flex items-center gap-4 shadow-2xs hover:shadow-sm transition-all text-left cursor-pointer"
-        >
-          <div className="h-11 w-11 rounded-full bg-red-50 text-red-500 flex items-center justify-center shrink-0">
-            <Bell size={20} />
-          </div>
-          <div>
-            <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-none mb-1">
-              Unread Notifications
-            </div>
-            <div className="text-2xl font-black text-slate-800 leading-none">
-              {unreadNotificationsCount}
-            </div>
-          </div>
-        </div>
+        <StatCard
+          label="Active Tenancy"
+          value={tenantActiveTenanciesCount}
+          href="/app/tenancies"
+          tone="primary"
+          icon={<Key size={20} />}
+        />
+        <StatCard
+          label="Pending Applications"
+          value={tenantPendingApplicationsCount}
+          href="/app/applications"
+          tone="warning"
+          icon={<ClipboardList size={20} />}
+        />
+        <button type="button" onClick={() => setShowNotificationsModal(true)} className="text-left w-full">
+          <StatCard
+            label="Unread Notifications"
+            value={unreadNotificationsCount}
+            tone="destructive"
+            icon={<Bell size={20} />}
+            className="cursor-pointer"
+          />
+        </button>
       </div>
 
       {/* 3. Main Dashboard Grid */}
@@ -601,7 +532,7 @@ export default function DashboardPage() {
               </div>
               <div className="space-y-1">
                 <h4 className="text-xs font-bold text-slate-800">No Active Lease</h4>
-                <p className="text-[10px] text-zinc-450 font-medium leading-relaxed">
+                <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
                   You do not have any active leases. Find a property and apply to get started.
                 </p>
               </div>

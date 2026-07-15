@@ -12,7 +12,7 @@ import {
   TOGGLE_SAVE_PROPERTY_MUTATION,
   MY_APPLICATIONS_QUERY,
 } from '../../../graphql/operations';
-import { Button } from '../../../components/ui/button';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import {
   MapPin,
@@ -28,13 +28,14 @@ import {
   Bookmark,
   Share2,
   ChevronRight,
-  LogOut,
   Calendar,
   Clock,
   ArrowLeft,
   X,
 } from 'lucide-react';
-import { Skeleton } from '../../../components/ui/skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
+import { PublicNavbar, PublicNavbarSkeleton, PublicFooterCompact, EmptyState } from '@/components/layout';
+import { StatusBadge } from '@/components/ui/status-badge';
 
 interface User {
   id: string;
@@ -318,26 +319,20 @@ export default function PropertyPage() {
   if (notFound) {
     return (
       <div className="min-h-screen flex flex-col bg-background text-foreground font-sans">
-        <header className="sticky top-0 z-50 w-full border-b border-border/80 bg-background/95 backdrop-blur-md">
-          <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-                <Building2 size={14} />
-              </div>
-              <span className="text-base font-bold tracking-tight text-white">FieConnect</span>
-            </Link>
-          </div>
-        </header>
-        <main className="flex-1 flex flex-col items-center justify-center max-w-7xl mx-auto w-full px-4 py-16 text-center space-y-4">
-          <h2 className="text-2xl font-black text-foreground">Property Not Found</h2>
-          <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
-            The property listing you are trying to view does not exist or has been removed.
-          </p>
-          <Link href="/app/properties">
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl text-xs px-5 py-2 cursor-pointer">
-              Back to Properties
-            </Button>
-          </Link>
+        <PublicNavbar user={user} onLogout={handleLogout} activeLink="browse" />
+        <main className="flex-1 flex items-center justify-center page-container py-16">
+          <EmptyState
+            icon={<Building2 size={20} />}
+            title="Property Not Found"
+            description="The property listing you are trying to view does not exist or has been removed."
+            action={
+              <Link href="/app/properties">
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl text-sm px-5 h-10 cursor-pointer">
+                  Back to Properties
+                </Button>
+              </Link>
+            }
+          />
         </main>
       </div>
     );
@@ -346,13 +341,7 @@ export default function PropertyPage() {
   if (initLoading || propertyLoading || !property) {
     return (
       <div className="min-h-screen flex flex-col bg-background text-foreground font-sans animate-pulse">
-        {/* Header Skeleton */}
-        <header className="h-16 bg-white border-b border-zinc-100 px-6 flex items-center justify-between">
-          <Skeleton className="h-6 w-32 bg-zinc-200" />
-          <div className="flex items-center gap-4">
-            <Skeleton className="h-8 w-24 bg-zinc-200/80 rounded-full" />
-          </div>
-        </header>
+        <PublicNavbarSkeleton />
 
         {/* Main Details page Skeleton */}
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8 sm:px-6 lg:px-8 space-y-8">
@@ -408,116 +397,44 @@ export default function PropertyPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground font-sans">
-      {/* 1. Header/Navbar */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/80 bg-background/95 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-4.5 w-4.5"
-                >
-                  <polygon points="12 2 2 22 22 22"></polygon>
-                </svg>
-              </div>
-              <span className="text-base font-bold tracking-tight text-foreground">FieConnect</span>
-            </Link>
+      <PublicNavbar user={user} onLogout={handleLogout} activeLink="browse" />
 
-            <nav className="hidden md:flex items-center gap-4 text-xs font-semibold text-muted-foreground">
-              <Link href="/" className="hover:text-foreground transition-colors pb-1 pt-0.5">
-                Browse
-              </Link>
-              <Link href="#" className="hover:text-foreground transition-colors pb-1 pt-0.5">
-                How it Works
-              </Link>
-              <Link href="#" className="hover:text-foreground transition-colors pb-1 pt-0.5">
-                About
-              </Link>
-            </nav>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {user ? (
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 bg-muted/60 px-3 py-1.5 rounded-full border border-border">
-                  <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center text-[10px] font-bold text-primary-foreground">
-                    {user.firstName[0]}
-                  </div>
-                  <span className="text-xs font-medium text-foreground">Hi, {user.firstName}</span>
-                </div>
-                <Button
-                  onClick={handleLogout}
-                  variant="ghost"
-                  className="text-xs flex items-center gap-1.5 hover:bg-destructive/10 hover:text-destructive transition-colors h-8 px-3 rounded-full"
-                >
-                  <LogOut size={14} />
-                  Sign Out
-                </Button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-3">
-                <Link
-                  href="/login"
-                  className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/signup"
-                  className="text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-full shadow-xs transition-colors"
-                >
-                  Sign Up
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
-
-      {/* Main Container */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-6 sm:px-6 lg:px-8 space-y-6">
-        {/* Navigation / Actions Bar */}
+      <main className="flex-1 page-container py-6 space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-border/60 pb-4">
-          {/* Breadcrumbs */}
-          <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-            <Link href="/" className="hover:text-foreground transition-colors">
+          <nav className="flex items-center gap-2 text-sm font-semibold text-muted-foreground" aria-label="Breadcrumb">
+            <Link href="/" className="hover:text-foreground transition-ui">
               Browse
             </Link>
-            <ChevronRight size={12} className="text-muted-foreground/60" />
-            <Link href="/" className="hover:text-foreground transition-colors">
-              Accra
+            <ChevronRight size={12} className="text-muted-foreground/60" aria-hidden />
+            <Link href="/app/properties" className="hover:text-foreground transition-ui">
+              {property.region || 'Properties'}
             </Link>
-            <ChevronRight size={12} className="text-muted-foreground/60" />
+            <ChevronRight size={12} className="text-muted-foreground/60" aria-hidden />
             <span className="text-foreground line-clamp-1">{property.title}</span>
-          </div>
+          </nav>
 
-          {/* Share/Save actions */}
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={handleSaveToggle}
-              className={`p-2 rounded-xl border border-border flex items-center justify-center transition-all cursor-pointer ${
+              className={`p-2.5 min-h-11 min-w-11 rounded-xl border border-border flex items-center justify-center transition-ui cursor-pointer ${
                 isSaved
-                  ? 'bg-amber-500/10 text-amber-500 border-amber-500/30'
+                  ? 'bg-warning/15 text-warning-foreground border-warning/30'
                   : 'bg-card text-muted-foreground hover:text-foreground'
               }`}
-              title="Save Property"
+              aria-label={isSaved ? 'Unsave property' : 'Save property'}
+              aria-pressed={isSaved}
             >
               <Bookmark size={16} fill={isSaved ? 'currentColor' : 'none'} />
             </button>
             <button
+              type="button"
               onClick={() => {
                 navigator.clipboard.writeText(window.location.href);
                 toast.success('Link copied to clipboard!');
               }}
-              className="p-2 rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground transition-all cursor-pointer"
-              title="Copy Listing URL"
+              className="p-2.5 min-h-11 min-w-11 rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground transition-ui cursor-pointer"
+              aria-label="Copy listing URL"
             >
               <Share2 size={16} />
             </button>
@@ -822,43 +739,7 @@ export default function PropertyPage() {
         </div>
       </main>
 
-      {/* 5. Footer */}
-      <footer className="w-full bg-zinc-950 text-zinc-400 py-12 border-t border-zinc-900 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-          <div className="space-y-4 max-w-sm">
-            <div className="flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary text-primary-foreground font-extrabold text-sm shadow-xs">
-                F
-              </div>
-              <span className="text-base font-bold tracking-tight text-white">FieConnect</span>
-            </div>
-            <p className="text-xs leading-relaxed text-zinc-500 font-light">
-              Modernizing the digital tenancy experience in Ghana with trust, transparency, and
-              efficiency.
-            </p>
-          </div>
-
-          <div className="flex flex-col md:items-end gap-6">
-            <div className="flex flex-wrap gap-4 text-xs font-semibold text-zinc-500">
-              <Link href="#" className="hover:text-zinc-300 transition-colors">
-                Privacy Policy
-              </Link>
-              <Link href="#" className="hover:text-zinc-300 transition-colors">
-                Terms of Service
-              </Link>
-              <Link href="#" className="hover:text-zinc-300 transition-colors">
-                Contact Support
-              </Link>
-              <Link href="#" className="hover:text-zinc-300 transition-colors">
-                Careers
-              </Link>
-            </div>
-            <div className="text-[11px] text-zinc-650">
-              &copy; {new Date().getFullYear()} FieConnect Ghana. All rights reserved.
-            </div>
-          </div>
-        </div>
-      </footer>
+      <PublicFooterCompact />
     </div>
   );
 }

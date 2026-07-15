@@ -42,14 +42,19 @@
   --color-brand-green-dark: var(--brand-green-dark);
   --color-brand-green-medium: var(--brand-green-medium);
   --color-brand-green-light: var(--brand-green-light);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --shadow-card: var(--shadow-card);
+  --shadow-card-hover: var(--shadow-card-hover);
 }
 
 :root {
-  /* Radius */
+  /* Radius — 12px base (aligns with 8px spacing system) */
   --radius: 0.75rem;
 
   /* Brand Green Colors */
@@ -67,16 +72,16 @@
   --popover-foreground: oklch(0.25 0.01 280);
 
   /* Primary - Yellow/Gold accent */
-  --success: oklch(83.182% 0.22298 145.717);
-  --primary: oklch(0.78 0.15 85); /* Bright yellow from work day bars */
+  --success: oklch(0.65 0.17 145);
+  --primary: oklch(0.78 0.15 85); /* Bright yellow/gold */
   --primary-foreground: oklch(0.25 0.01 280);
 
   /* Secondary - Dark gray/black */
-  --secondary: oklch(0.3 0.01 280); /* Dark sections like truancy */
+  --secondary: oklch(0.3 0.01 280);
   --secondary-foreground: oklch(0.99 0.003 85);
 
   /* Muted - Light gray */
-  --muted: oklch(0.88 0.01 280); /* Gray sections like vacation */
+  --muted: oklch(0.88 0.01 280);
   --muted-foreground: oklch(0.45 0.01 280);
 
   /* Accent - Yellow */
@@ -86,17 +91,25 @@
   /* Destructive - Red */
   --destructive: #ec644b;
 
+  /* Warning - Amber (replaces hardcoded #f0af2f) */
+  --warning: oklch(0.75 0.15 75);
+  --warning-foreground: oklch(0.35 0.08 55);
+
   /* Borders & Input */
-  --border: oklch(0.92 0.005 85); /* Subtle border */
+  --border: oklch(0.92 0.005 85);
   --input: oklch(0.96 0.005 85);
-  --ring: oklch(0.78 0.15 85); /* Yellow focus ring */
+  --ring: oklch(0.78 0.15 85);
+
+  /* Shadows */
+  --shadow-card: 0 1px 2px oklch(0.25 0.01 280 / 0.04), 0 1px 3px oklch(0.25 0.01 280 / 0.06);
+  --shadow-card-hover: 0 4px 12px oklch(0.25 0.01 280 / 0.08), 0 2px 4px oklch(0.25 0.01 280 / 0.04);
 
   /* Chart colors */
-  --chart-1: oklch(0.78 0.15 85); /* Yellow - work day */
-  --chart-2: oklch(0.3 0.01 280); /* Dark gray - truancy */
-  --chart-3: oklch(0.88 0.01 280); /* Light gray - vacation */
-  --chart-4: oklch(0.55 0.12 45); /* Orange accent from header */
-  --chart-5: oklch(0.92 0.08 100); /* Light yellow */
+  --chart-1: oklch(0.78 0.15 85);
+  --chart-2: oklch(0.3 0.01 280);
+  --chart-3: oklch(0.88 0.01 280);
+  --chart-4: oklch(0.55 0.12 45);
+  --chart-5: oklch(0.92 0.08 100);
 
   /* Sidebar */
   --sidebar: oklch(0.99 0.003 85);
@@ -110,20 +123,18 @@
 }
 
 .dark {
-  /* Brand Green Colors for Dark Mode */
   --brand-green: #075a3a;
   --brand-green-dark: #05432b;
   --brand-green-medium: #0c6a4b;
   --brand-green-light: rgba(7, 90, 58, 0.15);
 
-  /* Dark mode would invert the color scheme */
   --background: oklch(0.2 0.01 280);
   --foreground: oklch(0.96 0.005 85);
   --card: oklch(0.25 0.01 280);
   --card-foreground: oklch(0.96 0.005 85);
   --popover: oklch(0.25 0.01 280);
   --popover-foreground: oklch(0.96 0.005 85);
-  --success: oklch(83.182% 0.22298 145.717);
+  --success: oklch(0.7 0.17 145);
   --primary: oklch(0.78 0.15 85);
   --primary-foreground: oklch(0.2 0.01 280);
   --secondary: oklch(0.35 0.01 280);
@@ -132,10 +143,14 @@
   --muted-foreground: oklch(0.65 0.01 280);
   --accent: oklch(0.78 0.15 85);
   --accent-foreground: oklch(0.2 0.01 280);
-  --destructive: oklch(70.216% 0.18922 22.207);
+  --destructive: oklch(0.7 0.19 22);
+  --warning: oklch(0.78 0.14 75);
+  --warning-foreground: oklch(0.2 0.01 280);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.78 0.15 85);
+  --shadow-card: 0 1px 2px oklch(0 0 0 / 0.2);
+  --shadow-card-hover: 0 4px 12px oklch(0 0 0 / 0.35);
   --chart-1: oklch(0.78 0.15 85);
   --chart-2: oklch(0.45 0.01 280);
   --chart-3: oklch(0.65 0.01 280);
@@ -155,8 +170,93 @@
   * {
     @apply border-border outline-ring/50;
   }
+
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   body {
-    font-size: 0.7rem;
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans text-base leading-relaxed;
+  }
+
+  /* Focus visible for keyboard users */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring/50 ring-offset-2 ring-offset-background;
+  }
+
+  /* Improve tap targets on touch devices */
+  @media (pointer: coarse) {
+    button,
+    a,
+    [role='button'] {
+      min-height: 44px;
+    }
+  }
+}
+
+@layer utilities {
+  /* ── Typography scale ─────────────────────────────────────────── */
+  .text-display {
+    @apply text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight;
+  }
+
+  .text-h1 {
+    @apply text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight;
+  }
+
+  .text-h2 {
+    @apply text-xl sm:text-2xl font-bold tracking-tight leading-snug;
+  }
+
+  .text-h3 {
+    @apply text-lg font-bold tracking-tight leading-snug;
+  }
+
+  .text-h4 {
+    @apply text-base font-semibold tracking-tight leading-snug;
+  }
+
+  .text-body {
+    @apply text-sm leading-relaxed;
+  }
+
+  .text-body-sm {
+    @apply text-xs leading-relaxed;
+  }
+
+  .text-caption {
+    @apply text-[11px] font-medium leading-normal text-muted-foreground;
+  }
+
+  .text-overline {
+    @apply text-[10px] font-bold uppercase tracking-widest text-muted-foreground;
+  }
+
+  /* ── Layout helpers (8px grid) ─────────────────────────────────── */
+  .page-container {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-spacing {
+    @apply space-y-6 sm:space-y-8;
+  }
+
+  .card-surface {
+    @apply rounded-2xl border border-border bg-card text-card-foreground shadow-[var(--shadow-card)] transition-shadow duration-200;
+  }
+
+  .card-surface-hover {
+    @apply rounded-2xl border border-border bg-card text-card-foreground shadow-[var(--shadow-card)] transition-shadow duration-200 hover:shadow-[var(--shadow-card-hover)] hover:border-primary/20;
+  }
+
+  /* ── Interactive transitions ───────────────────────────────────── */
+  .transition-ui {
+    @apply transition-all duration-200 ease-out;
+  }
+
+  .interactive-scale {
+    @apply transition-transform duration-200 ease-out hover:scale-[1.01] active:scale-[0.99];
   }
 }
