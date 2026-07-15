@@ -1,19 +1,30 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Spinner } from '@/components/ui/spinner';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Form } from '@/components/ui/form';
+import React, { useState } from "react";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Spinner } from "@/components/ui/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Form } from "@/components/ui/form";
 import {
   InputWrapper,
   TextareaWrapper,
@@ -23,21 +34,27 @@ import {
   SelectWrapper,
   DatePickerWrapper,
   FileUploadWrapper,
-} from '@/components/ui/form-wrappers';
-import { ArrowLeft, Sparkles, Info, ChevronDownIcon, FileCode } from 'lucide-react';
+} from "@/components/ui/form-wrappers";
+import {
+  ArrowLeft,
+  Sparkles,
+  Info,
+  ChevronDownIcon,
+  FileCode,
+} from "lucide-react";
 
 export default function ComponentsShowcase() {
   const [progressValue, setProgressValue] = useState(65);
 
   const form = useForm({
     defaultValues: {
-      username: 'downspice',
-      bio: 'Software engineer and fullstack developer',
+      username: "downspice",
+      bio: "Software engineer and fullstack developer",
       notifications: true,
       agreeTerms: true,
       difficulty: 50,
-      role: 'developer',
-      birthdate: '2026-07-07T09:00:00.000Z',
+      role: "developer",
+      birthdate: "2026-07-07T09:00:00.000Z",
       avatar: null as File | null,
     },
   });
@@ -83,13 +100,16 @@ export default function ComponentsShowcase() {
                 fieConnect Component Library
               </h1>
               <p className="mt-2 text-zinc-400 text-sm">
-                Interactive preview of the fully-configured shadcn/ui primitives.
+                Interactive preview of the fully-configured shadcn/ui
+                primitives.
               </p>
             </div>
             <div className="flex gap-2">
               <Button
                 variant="outline"
-                onClick={() => setProgressValue(Math.floor(Math.random() * 100))}
+                onClick={() =>
+                  setProgressValue(Math.floor(Math.random() * 100))
+                }
                 className="border-zinc-800 text-zinc-300 hover:bg-zinc-800"
               >
                 Randomize Progress
@@ -105,7 +125,8 @@ export default function ComponentsShowcase() {
                 Live Form Wrappers Showcase
               </CardTitle>
               <p className="text-sm text-zinc-400 mt-1">
-                Demonstrating all custom wrappers in a unified React Hook Form context.
+                Demonstrating all custom wrappers in a unified React Hook Form
+                context.
               </p>
             </CardHeader>
             <CardContent className="pt-6">
@@ -131,10 +152,10 @@ export default function ComponentsShowcase() {
                         label="Primary Role"
                         required
                         options={[
-                          { label: 'Developer', value: 'developer' },
-                          { label: 'Designer', value: 'designer' },
-                          { label: 'Product Manager', value: 'pm' },
-                          { label: 'QA Engineer', value: 'qa' },
+                          { label: "Developer", value: "developer" },
+                          { label: "Designer", value: "designer" },
+                          { label: "Product Manager", value: "pm" },
+                          { label: "QA Engineer", value: "qa" },
                         ]}
                       />
                     </div>
@@ -198,7 +219,11 @@ export default function ComponentsShowcase() {
                       <span>Observer: Live State Values</span>
                     </div>
                     <pre className="flex-1 overflow-auto bg-black p-4 rounded-lg font-mono text-[11px] text-indigo-300 border border-zinc-900 leading-normal max-h-[480px]">
-                      {JSON.stringify(getSerializableValues(formValues), null, 2)}
+                      {JSON.stringify(
+                        getSerializableValues(formValues),
+                        null,
+                        2,
+                      )}
                     </pre>
                   </div>
                 </form>
@@ -215,7 +240,9 @@ export default function ComponentsShowcase() {
                   <span className="h-2 w-2 rounded-full bg-indigo-500" />
                   Primitives & Badges
                 </CardTitle>
-                <p className="text-xs text-zinc-500">Buttons, tags, tooltips, and alerts.</p>
+                <p className="text-xs text-zinc-500">
+                  Buttons, tags, tooltips, and alerts.
+                </p>
               </CardHeader>
               <CardContent className="space-y-6 text-zinc-300">
                 {/* Buttons Row */}
@@ -242,7 +269,10 @@ export default function ComponentsShowcase() {
                   <div className="flex flex-wrap gap-2">
                     <Badge>Default</Badge>
                     <Badge variant="secondary">Secondary</Badge>
-                    <Badge variant="outline" className="border-zinc-800 text-zinc-300">
+                    <Badge
+                      variant="outline"
+                      className="border-zinc-800 text-zinc-300"
+                    >
                       Outline
                     </Badge>
                     <Badge variant="destructive">Destructive</Badge>
@@ -275,7 +305,8 @@ export default function ComponentsShowcase() {
                       Information Alert
                     </AlertTitle>
                     <AlertDescription className="text-zinc-400 text-xs">
-                      All tailwind utilities and CSS variables are loaded properly in the system.
+                      All tailwind utilities and CSS variables are loaded
+                      properly in the system.
                     </AlertDescription>
                   </Alert>
                 </div>
@@ -341,7 +372,9 @@ export default function ComponentsShowcase() {
                   <span className="h-2 w-2 rounded-full bg-purple-500" />
                   Layout, Containers & Details
                 </CardTitle>
-                <p className="text-xs text-zinc-500">Tabs, Separators, and Accordions.</p>
+                <p className="text-xs text-zinc-500">
+                  Tabs, Separators, and Accordions.
+                </p>
               </CardHeader>
               <CardContent className="space-y-6 text-zinc-300">
                 {/* Tabs */}
@@ -364,10 +397,16 @@ export default function ComponentsShowcase() {
                         Settings
                       </TabsTrigger>
                     </TabsList>
-                    <TabsContent value="account" className="pt-2 text-xs text-zinc-400">
+                    <TabsContent
+                      value="account"
+                      className="pt-2 text-xs text-zinc-400"
+                    >
                       Manage your profile information and active JWT tokens.
                     </TabsContent>
-                    <TabsContent value="password" className="pt-2 text-xs text-zinc-400">
+                    <TabsContent
+                      value="password"
+                      className="pt-2 text-xs text-zinc-400"
+                    >
                       Configure MongoDB schemas and GraphQL endpoints.
                     </TabsContent>
                   </Tabs>
@@ -381,7 +420,10 @@ export default function ComponentsShowcase() {
                     Accordion
                   </h3>
                   <div className="space-y-4">
-                    <details className="group border-b border-zinc-800 pb-3" open>
+                    <details
+                      className="group border-b border-zinc-800 pb-3"
+                      open
+                    >
                       <summary className="flex justify-between items-center text-sm font-medium hover:text-indigo-400 py-3 text-zinc-200 cursor-pointer list-none">
                         <span>Is this showcase responsive?</span>
                         <ChevronDownIcon
@@ -390,8 +432,8 @@ export default function ComponentsShowcase() {
                         />
                       </summary>
                       <p className="text-xs text-zinc-400 pb-3 leading-relaxed">
-                        Yes, all components are built using Tailwind responsive layouts and
-                        mobile-first guidelines.
+                        Yes, all components are built using Tailwind responsive
+                        layouts and mobile-first guidelines.
                       </p>
                     </details>
                     <details className="group border-b border-zinc-800 pb-3">
@@ -403,8 +445,8 @@ export default function ComponentsShowcase() {
                         />
                       </summary>
                       <p className="text-xs text-zinc-400 pb-3 leading-relaxed">
-                        We use standard CSS variables mapped to Tailwind variables, allowing easy
-                        dark/light mode setup.
+                        We use standard CSS variables mapped to Tailwind
+                        variables, allowing easy dark/light mode setup.
                       </p>
                     </details>
                   </div>

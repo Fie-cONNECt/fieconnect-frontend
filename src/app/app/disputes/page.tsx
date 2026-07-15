@@ -1,23 +1,27 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useRef, Suspense } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useUser } from '../layout';
-import { requestGQL } from '../../../lib/graphql-client';
+import React, { useState, useEffect, useRef, Suspense } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useUser } from "../layout";
+import { requestGQL } from "../../../lib/graphql-client";
 import {
   MY_DISPUTES_QUERY,
   MY_TENANCIES_QUERY,
   CREATE_DISPUTE_MUTATION,
-} from '../../../graphql/operations';
-import { Button } from '../../../components/ui/button';
-import { toast } from 'sonner';
-import { isLandlord } from '../../../lib/utils';
-import { uploadToSupabase } from '../../../lib/supabase';
-import { useForm } from 'react-hook-form';
-import { Form } from '../../../components/ui/form';
-import { useSearchParams } from 'next/navigation';
-import { InputWrapper, SelectWrapper, TextareaWrapper } from '../../../components/ui/form-wrappers';
+} from "../../../graphql/operations";
+import { Button } from "../../../components/ui/button";
+import { toast } from "sonner";
+import { isLandlord } from "../../../lib/utils";
+import { uploadToSupabase } from "../../../lib/supabase";
+import { useForm } from "react-hook-form";
+import { Form } from "../../../components/ui/form";
+import { useSearchParams } from "next/navigation";
+import {
+  InputWrapper,
+  SelectWrapper,
+  TextareaWrapper,
+} from "../../../components/ui/form-wrappers";
 import {
   AlertTriangle,
   Upload,
@@ -30,8 +34,8 @@ import {
   User as UserIcon,
   MessageSquare,
   Send,
-} from 'lucide-react';
-import { Skeleton } from '../../../components/ui/skeleton';
+} from "lucide-react";
+import { Skeleton } from "../../../components/ui/skeleton";
 
 interface UserType {
   id: string;
@@ -77,7 +81,7 @@ function DisputesPageContent() {
   const { user } = useUser();
   const landlordMode = isLandlord(user);
   const searchParams = useSearchParams();
-  const tenancyIdParam = searchParams.get('tenancyId');
+  const tenancyIdParam = searchParams.get("tenancyId");
 
   const [disputes, setDisputes] = useState<Dispute[]>([]);
   const [activeTenancies, setActiveTenancies] = useState<Tenancy[]>([]);
@@ -85,7 +89,7 @@ function DisputesPageContent() {
 
   // Form states
   const [showSubmitForm, setShowSubmitForm] = useState(false);
-  const [evidenceUrl, setEvidenceUrl] = useState('');
+  const [evidenceUrl, setEvidenceUrl] = useState("");
   const [uploadingEvidence, setUploadingEvidence] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -93,16 +97,16 @@ function DisputesPageContent() {
   // Initialize react-hook-form with wrappers context
   const form = useForm<DisputeFormValues>({
     defaultValues: {
-      tenancyId: '',
-      title: '',
-      description: '',
+      tenancyId: "",
+      title: "",
+      description: "",
     },
   });
 
   // Pre-fill tenancyId form value if passed via search params
   useEffect(() => {
     if (tenancyIdParam) {
-      form.setValue('tenancyId', tenancyIdParam);
+      form.setValue("tenancyId", tenancyIdParam);
       setShowSubmitForm(true);
     }
   }, [tenancyIdParam, form]);
@@ -119,7 +123,7 @@ function DisputesPageContent() {
         setActiveTenancies(tenanciesData.myTenancies as Tenancy[]);
       }
     } catch (err) {
-      console.error('Failed to load disputes data:', err);
+      console.error("Failed to load disputes data:", err);
     } finally {
       setLoading(false);
     }
@@ -136,11 +140,11 @@ function DisputesPageContent() {
     if (!file) return;
     setUploadingEvidence(true);
     try {
-      const url = await uploadToSupabase(file, 'agreements');
+      const url = await uploadToSupabase(file, "agreements");
       setEvidenceUrl(url);
-      toast.success('Evidence file uploaded successfully!');
+      toast.success("Evidence file uploaded successfully!");
     } catch (err: any) {
-      toast.error(err.message || 'Failed to upload evidence.');
+      toast.error(err.message || "Failed to upload evidence.");
     } finally {
       setUploadingEvidence(false);
     }
@@ -155,13 +159,15 @@ function DisputesPageContent() {
         evidenceUrl: evidenceUrl || null,
       });
 
-      toast.success('Dispute raised successfully! The other party has been notified.');
+      toast.success(
+        "Dispute raised successfully! The other party has been notified.",
+      );
       form.reset();
-      setEvidenceUrl('');
+      setEvidenceUrl("");
       setShowSubmitForm(false);
       loadData();
     } catch (err: any) {
-      toast.error(err.message || 'Failed to file dispute.');
+      toast.error(err.message || "Failed to file dispute.");
     }
   };
 
@@ -185,7 +191,9 @@ function DisputesPageContent() {
     <div className="space-y-6 text-left">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-xl font-black text-slate-800 tracking-tight">Dispute Resolution</h1>
+          <h1 className="text-xl font-black text-slate-800 tracking-tight">
+            Dispute Resolution
+          </h1>
           <p className="text-xs font-semibold text-zinc-400 mt-1">
             Resolve issues with property tenancies professionally.
           </p>
@@ -204,12 +212,13 @@ function DisputesPageContent() {
         <div className="max-w-2xl bg-white border border-zinc-200/85 p-6 rounded-2xl shadow-xs">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-sm font-black text-slate-850 uppercase tracking-wide flex items-center gap-2">
-              <AlertTriangle size={16} className="text-primary" /> Submit a Dispute
+              <AlertTriangle size={16} className="text-primary" /> Submit a
+              Dispute
             </h3>
             <button
               onClick={() => {
                 setShowSubmitForm(false);
-                setEvidenceUrl('');
+                setEvidenceUrl("");
                 form.reset();
               }}
               className="text-xs font-bold text-zinc-400 hover:text-zinc-600 cursor-pointer"
@@ -258,7 +267,9 @@ function DisputesPageContent() {
 
               {/* Evidence Upload */}
               <div className="space-y-1.5">
-                <label className="text-zinc-700 font-bold block">Evidence Upload:</label>
+                <label className="text-zinc-700 font-bold block">
+                  Evidence Upload:
+                </label>
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -272,8 +283,8 @@ function DisputesPageContent() {
                   disabled={uploadingEvidence}
                   className={`w-full h-28 rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-4 transition-all gap-1.5 cursor-pointer bg-white ${
                     evidenceUrl
-                      ? 'border-primary text-primary bg-primary/5'
-                      : 'border-zinc-200 hover:border-primary text-zinc-400'
+                      ? "border-primary text-primary bg-primary/5"
+                      : "border-zinc-200 hover:border-primary text-zinc-400"
                   }`}
                 >
                   {uploadingEvidence ? (
@@ -285,8 +296,8 @@ function DisputesPageContent() {
                   )}
                   <span className="text-[11px] font-bold text-slate-700">
                     {evidenceUrl
-                      ? 'Evidence Document Uploaded'
-                      : 'Click to upload or drag and drop'}
+                      ? "Evidence Document Uploaded"
+                      : "Click to upload or drag and drop"}
                   </span>
                   <span className="text-[9px] text-zinc-400 font-bold">
                     PNG, JPG or PDF (max. 10MB)
@@ -311,10 +322,12 @@ function DisputesPageContent() {
             <AlertTriangle size={24} />
           </div>
           <div className="space-y-1">
-            <h3 className="text-sm font-bold text-foreground">No disputes raised</h3>
+            <h3 className="text-sm font-bold text-foreground">
+              No disputes raised
+            </h3>
             <p className="text-xs text-muted-foreground font-semibold">
-              Dispute resolutions allow tenants and landlords to submit complaints, share evidence,
-              and resolve conflicts.
+              Dispute resolutions allow tenants and landlords to submit
+              complaints, share evidence, and resolve conflicts.
             </p>
           </div>
           {activeTenancies.length > 0 ? (
@@ -346,7 +359,10 @@ function DisputesPageContent() {
               </thead>
               <tbody className="divide-y divide-zinc-100 text-slate-700">
                 {disputes.map((d) => (
-                  <tr key={d.id} className="hover:bg-zinc-50/50 transition-colors">
+                  <tr
+                    key={d.id}
+                    className="hover:bg-zinc-50/50 transition-colors"
+                  >
                     <td className="p-4 pl-5 font-bold text-slate-800 max-w-xs truncate">
                       {d.title}
                     </td>
@@ -360,14 +376,16 @@ function DisputesPageContent() {
                             className="object-cover"
                           />
                         </div>
-                        <span className="truncate max-w-[150px]">{d.tenancy.property.title}</span>
+                        <span className="truncate max-w-[150px]">
+                          {d.tenancy.property.title}
+                        </span>
                       </div>
                     </td>
                     <td className="p-4 font-bold text-zinc-600">
                       {d.creator.firstName} {d.creator.lastName}
                     </td>
                     <td className="p-4">
-                      {d.status === 'OPEN' ? (
+                      {d.status === "OPEN" ? (
                         <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full">
                           <Clock size={10} /> Open
                         </span>
@@ -378,7 +396,9 @@ function DisputesPageContent() {
                       )}
                     </td>
                     <td className="p-4 text-zinc-400 font-medium">
-                      {new Date(d.createdAt || d.createdAt).toLocaleDateString()}
+                      {new Date(
+                        d.createdAt || d.createdAt,
+                      ).toLocaleDateString()}
                     </td>
                     <td className="p-4 pr-5 text-right">
                       <Link href={`/app/disputes/${d.id}`}>
@@ -402,7 +422,9 @@ export default function DisputesPage() {
   return (
     <Suspense
       fallback={
-        <div className="p-6 text-zinc-400 text-xs font-semibold">Loading disputes workspace...</div>
+        <div className="p-6 text-zinc-400 text-xs font-semibold">
+          Loading disputes workspace...
+        </div>
       }
     >
       <DisputesPageContent />

@@ -1,6 +1,10 @@
-import Image from 'next/image';
+import Image from "next/image";
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
       {/* Left side - Auth Form Container */}
@@ -21,7 +25,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               <polygon points="12 2 2 22 22 22"></polygon>
             </svg>
           </div>
-          <span className="text-lg font-bold tracking-tight text-foreground">fieConnect</span>
+          <span className="text-lg font-bold tracking-tight text-foreground">
+            fieConnect
+          </span>
         </div>
 
         {/* Dynamic Form Content */}
@@ -48,8 +54,12 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           </div>
 
           <div className="absolute bottom-16 left-12 w-72 rounded-[2rem] bg-card/80 p-6 shadow-2xl backdrop-blur-xl border border-border">
-            <div className="mb-2 text-sm font-bold text-card-foreground">Direct Connectivity</div>
-            <div className="text-xs text-primary font-medium">99.9% Global Sync Efficiency</div>
+            <div className="mb-2 text-sm font-bold text-card-foreground">
+              Direct Connectivity
+            </div>
+            <div className="text-xs text-primary font-medium">
+              99.9% Global Sync Efficiency
+            </div>
             <div className="mt-4 flex -space-x-3">
               {[1, 2, 3, 4].map((i) => (
                 <div
@@ -64,14 +74,20 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <div className="text-xs font-bold text-primary-foreground/80 mb-1 uppercase tracking-wider">
               Status
             </div>
-            <div className="text-sm font-semibold text-primary-foreground">System Online</div>
+            <div className="text-sm font-semibold text-primary-foreground">
+              System Online
+            </div>
           </div>
 
           <div className="absolute bottom-12 right-12 w-56 rounded-2xl bg-card/90 p-4 shadow-2xl backdrop-blur-xl border border-border">
-            <div className="text-xs font-bold text-card-foreground mb-1">Active Resolvers</div>
+            <div className="text-xs font-bold text-card-foreground mb-1">
+              Active Resolvers
+            </div>
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <div className="text-xs text-card-foreground/80">GraphQL Endpoints Loaded</div>
+              <div className="text-xs text-card-foreground/80">
+                GraphQL Endpoints Loaded
+              </div>
             </div>
           </div>
         </div>

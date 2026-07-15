@@ -1,10 +1,16 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import type { Control } from 'react-hook-form';
-import { Eye, EyeOff } from 'lucide-react';
+import React, { useState } from "react";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import type { Control } from "react-hook-form";
+import { Eye, EyeOff } from "lucide-react";
 
 interface PasswordWrapperProps {
   control: Control<any>;
@@ -24,7 +30,7 @@ export default function PasswordWrapper({
   name,
   label,
   className,
-  placeholder = '••••••••',
+  placeholder = "••••••••",
   disabled = false,
   required = false,
   readonly = false,
@@ -46,15 +52,15 @@ export default function PasswordWrapper({
   const getStrengthMeta = (score: number) => {
     switch (score) {
       case 1:
-        return { text: 'Weak', color: 'bg-red-500' };
+        return { text: "Weak", color: "bg-red-500" };
       case 2:
-        return { text: 'Medium', color: 'bg-orange-500' };
+        return { text: "Medium", color: "bg-orange-500" };
       case 3:
-        return { text: 'Good', color: 'bg-yellow-500' };
+        return { text: "Good", color: "bg-yellow-500" };
       case 4:
-        return { text: 'Strong', color: 'bg-emerald-500' };
+        return { text: "Strong", color: "bg-emerald-500" };
       default:
-        return { text: 'None', color: 'bg-zinc-800' };
+        return { text: "None", color: "bg-zinc-800" };
     }
   };
 
@@ -63,7 +69,7 @@ export default function PasswordWrapper({
       control={control}
       name={name}
       render={({ field }) => {
-        const val = field.value || '';
+        const val = field.value || "";
         const strength = getStrength(val);
         const meta = getStrengthMeta(strength);
 
@@ -77,7 +83,7 @@ export default function PasswordWrapper({
               <div className="relative">
                 <FormControl>
                   <Input
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     placeholder={placeholder}
                     className={`pr-10 ${className}`}
                     disabled={disabled}
@@ -103,7 +109,7 @@ export default function PasswordWrapper({
                         <div
                           key={index}
                           className={`flex-1 h-full rounded-full transition-all duration-300 ${
-                            active ? meta.color : 'bg-zinc-800'
+                            active ? meta.color : "bg-zinc-800"
                           }`}
                         />
                       );
@@ -112,17 +118,37 @@ export default function PasswordWrapper({
                   <div className="flex justify-between text-[10px] text-zinc-400 font-medium px-0.5">
                     <span>Strength: {meta.text}</span>
                     <div className="flex gap-2">
-                      <span className={val.length >= 9 ? 'text-emerald-400' : 'text-zinc-500'}>
+                      <span
+                        className={
+                          val.length >= 9 ? "text-emerald-400" : "text-zinc-500"
+                        }
+                      >
                         9+ Chars
                       </span>
-                      <span className={/[A-Z]/.test(val) ? 'text-emerald-400' : 'text-zinc-500'}>
+                      <span
+                        className={
+                          /[A-Z]/.test(val)
+                            ? "text-emerald-400"
+                            : "text-zinc-500"
+                        }
+                      >
                         Caps
                       </span>
-                      <span className={/[0-9]/.test(val) ? 'text-emerald-400' : 'text-zinc-500'}>
+                      <span
+                        className={
+                          /[0-9]/.test(val)
+                            ? "text-emerald-400"
+                            : "text-zinc-500"
+                        }
+                      >
                         Number
                       </span>
                       <span
-                        className={/[^A-Za-z0-9]/.test(val) ? 'text-emerald-400' : 'text-zinc-500'}
+                        className={
+                          /[^A-Za-z0-9]/.test(val)
+                            ? "text-emerald-400"
+                            : "text-zinc-500"
+                        }
                       >
                         Special
                       </span>
@@ -133,7 +159,11 @@ export default function PasswordWrapper({
 
               <FormMessage />
             </FormItem>
-            {warning && <span className="text-xs text-muted-foreground mt-1 block">{warning}</span>}
+            {warning && (
+              <span className="text-xs text-muted-foreground mt-1 block">
+                {warning}
+              </span>
+            )}
           </>
         );
       }}
