@@ -27,6 +27,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { Skeleton } from "../../../../components/ui/skeleton";
+import { PageHeader } from "@/components/layout";
+import { StatusBadge } from "@/components/ui/status-badge";
 
 interface UserType {
   id: string;
@@ -154,14 +156,14 @@ export default function DisputeDetailsPage() {
   if (loading) {
     return (
       <div className="space-y-6 text-left animate-pulse">
-        <Skeleton className="h-6 w-24 bg-zinc-200" />
+        <Skeleton className="h-6 w-24 bg-muted" />
         <div className="flex justify-between items-center">
-          <Skeleton className="h-10 w-64 bg-zinc-200" />
-          <Skeleton className="h-10 w-32 bg-zinc-200" />
+          <Skeleton className="h-10 w-64 bg-muted" />
+          <Skeleton className="h-10 w-32 bg-muted" />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Skeleton className="lg:col-span-2 h-96 bg-zinc-200 rounded-2xl" />
-          <Skeleton className="h-96 bg-zinc-200 rounded-2xl" />
+          <Skeleton className="lg:col-span-2 h-96 bg-muted rounded-2xl" />
+          <Skeleton className="h-96 bg-muted rounded-2xl" />
         </div>
       </div>
     );
@@ -187,58 +189,46 @@ export default function DisputeDetailsPage() {
       <div>
         <Link
           href="/app/disputes"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-400 hover:text-zinc-700 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
         >
           <ChevronLeft size={14} /> Back to Disputes
         </Link>
       </div>
 
-      {/* Header bar */}
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-        <div>
-          <h1 className="text-xl font-black text-slate-800 tracking-tight">
-            Dispute Resolution
-          </h1>
-          <p className="text-xs font-semibold text-zinc-400 mt-1">
-            Track progress and message details regarding the dispute workspace.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {dispute.status === "OPEN" ? (
-            <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 font-extrabold text-[10px] uppercase tracking-wider px-3 py-1 rounded-full border border-emerald-100/50 shadow-2xs">
-              <Clock size={11} className="animate-pulse" /> Status: Open
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1.5 bg-zinc-100 text-zinc-500 font-extrabold text-[10px] uppercase tracking-wider px-3 py-1 rounded-full">
-              <CheckCircle size={11} /> Status: Closed
-            </span>
-          )}
-
-          {oppositeReadTime ? (
-            <span className="inline-flex items-center gap-1 text-[10px] text-zinc-400 font-semibold bg-zinc-50 px-2.5 py-1 rounded-lg border border-zinc-100">
-              <Eye size={12} /> Viewed by {oppositeRoleName} on{" "}
-              {new Date(oppositeReadTime).toLocaleDateString()}
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1 text-[10px] text-zinc-400 font-semibold bg-zinc-50 px-2.5 py-1 rounded-lg border border-zinc-100">
-              <Clock size={12} /> Awaiting {oppositeRoleName} view
-            </span>
-          )}
-        </div>
-      </div>
+      <PageHeader
+        title="Dispute Resolution"
+        description="Track progress and message details regarding the dispute workspace."
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <StatusBadge
+              status={dispute.status === "OPEN" ? "OPEN" : "CLOSED"}
+              label={dispute.status === "OPEN" ? "Open" : "Closed"}
+            />
+            {oppositeReadTime ? (
+              <span className="inline-flex items-center gap-1 text-caption text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-lg border border-border">
+                <Eye size={12} aria-hidden /> Viewed by {oppositeRoleName} on{" "}
+                {new Date(oppositeReadTime).toLocaleDateString()}
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 text-caption text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-lg border border-border">
+                <Clock size={12} aria-hidden /> Awaiting {oppositeRoleName} view
+              </span>
+            )}
+          </div>
+        }
+      />
 
       {/* Main Workspace Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Left Pane (Dispute Details & Message Thread) */}
         <div className="lg:col-span-2 space-y-6">
           {/* Dispute info card */}
-          <div className="bg-white border border-zinc-200/85 p-5 rounded-2xl shadow-2xs text-left space-y-4">
+          <div className="card-surface p-5 rounded-2xl shadow-2xs text-left space-y-4">
             <div>
               <span className="text-[10px] font-black text-primary uppercase tracking-wider">
                 Original Complaint
               </span>
-              <h2 className="text-base font-black text-slate-800 tracking-tight mt-1">
+              <h2 className="text-base font-black text-foreground tracking-tight mt-1">
                 {dispute.title}
               </h2>
               <p className="text-[10px] text-muted-foreground font-bold mt-1.5">
@@ -250,8 +240,8 @@ export default function DisputeDetailsPage() {
               </p>
             </div>
 
-            <div className="p-4 bg-zinc-50/50 border border-zinc-150 rounded-xl">
-              <p className="text-xs text-zinc-700 leading-relaxed font-semibold">
+            <div className="p-4 bg-muted/50/50 border border-zinc-150 rounded-xl">
+              <p className="text-xs text-foreground leading-relaxed font-semibold">
                 {dispute.description}
               </p>
             </div>
@@ -269,7 +259,7 @@ export default function DisputeDetailsPage() {
 
             {/* Resolve button for Dispute creator */}
             {dispute.status === "OPEN" && isCreatorOfDispute && (
-              <div className="pt-2 border-t border-zinc-100 flex justify-end">
+              <div className="pt-2 border-t border-border flex justify-end">
                 <Button
                   onClick={handleResolveDispute}
                   disabled={closingDispute}
@@ -287,7 +277,7 @@ export default function DisputeDetailsPage() {
           </div>
 
           {/* Comment timeline chat thread */}
-          <div className="bg-white border border-zinc-200/85 p-5 rounded-2xl shadow-2xs space-y-4">
+          <div className="card-surface p-5 rounded-2xl shadow-2xs space-y-4">
             <h3 className="text-xs font-black text-slate-850 uppercase tracking-wider flex items-center gap-2">
               <MessageSquare size={15} /> Discussion Board
             </h3>
@@ -295,7 +285,7 @@ export default function DisputeDetailsPage() {
             {/* Messages box */}
             <div className="space-y-4 max-h-96 overflow-y-auto pr-1">
               {dispute.comments.length === 0 ? (
-                <div className="p-10 text-center text-zinc-400 text-xs font-semibold bg-zinc-50/40 rounded-xl border border-dashed border-zinc-200/60">
+                <div className="p-10 text-center text-muted-foreground text-xs font-semibold bg-muted/50/40 rounded-xl border border-dashed border-border/60">
                   No discussion messages yet. Write a message below to start
                   mediation.
                 </div>
@@ -308,18 +298,18 @@ export default function DisputeDetailsPage() {
                       className={`flex flex-col max-w-[85%] rounded-2xl p-4.5 space-y-1 font-semibold text-xs text-left ${
                         isSenderSelf
                           ? "bg-primary/5 border border-primary/15 ml-auto rounded-tr-none"
-                          : "bg-zinc-50 border border-zinc-150 mr-auto rounded-tl-none"
+                          : "bg-muted/50 border border-zinc-150 mr-auto rounded-tl-none"
                       }`}
                     >
-                      <p className="text-[10px] text-zinc-400 font-extrabold uppercase">
+                      <p className="text-[10px] text-muted-foreground font-extrabold uppercase">
                         {isSenderSelf
                           ? "You"
                           : `${comment.sender.firstName} ${comment.sender.lastName}`}
                       </p>
-                      <p className="text-slate-800 leading-relaxed font-medium">
+                      <p className="text-foreground leading-relaxed font-medium">
                         {comment.text}
                       </p>
-                      <p className="text-[9px] text-zinc-400 font-semibold self-end mt-1">
+                      <p className="text-[9px] text-muted-foreground font-semibold self-end mt-1">
                         {new Date(
                           parseInt(comment.createdAt) || comment.createdAt,
                         ).toLocaleTimeString([], {
@@ -337,14 +327,14 @@ export default function DisputeDetailsPage() {
             {dispute.status === "OPEN" ? (
               <form
                 onSubmit={handleAddComment}
-                className="pt-4 border-t border-zinc-100 space-y-3"
+                className="pt-4 border-t border-border space-y-3"
               >
                 <textarea
                   rows={3}
                   placeholder="Type your mediation response or update details here..."
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
-                  className="w-full p-3 rounded-xl border border-zinc-200 text-xs focus:outline-hidden focus:border-primary transition-colors bg-white resize-none font-medium leading-relaxed"
+                  className="w-full p-3 rounded-xl border border-border text-xs focus:outline-hidden focus:border-primary transition-colors bg-white resize-none font-medium leading-relaxed"
                   required
                 />
                 <div className="flex justify-end">
@@ -363,7 +353,7 @@ export default function DisputeDetailsPage() {
                 </div>
               </form>
             ) : (
-              <div className="p-4 bg-zinc-50 text-center rounded-xl text-xs font-semibold text-zinc-500 border border-zinc-200">
+              <div className="p-4 bg-muted/50 text-center rounded-xl text-xs font-semibold text-muted-foreground border border-border">
                 This dispute has been marked as resolved and closed. No further
                 comments can be posted.
               </div>
@@ -374,12 +364,12 @@ export default function DisputeDetailsPage() {
         {/* Right Sidebar: Timeline & Property metadata */}
         <div className="space-y-6">
           {/* Timeline tracker */}
-          <div className="bg-white border border-zinc-200/85 p-5 rounded-2xl shadow-2xs text-left space-y-4">
+          <div className="card-surface p-5 rounded-2xl shadow-2xs text-left space-y-4">
             <div className="flex justify-between items-center border-b border-zinc-50 pb-2">
               <h3 className="text-xs font-black text-slate-850 uppercase tracking-wider">
                 Timeline
               </h3>
-              <span className="text-[9px] text-zinc-400 font-extrabold tracking-wider">
+              <span className="text-[9px] text-muted-foreground font-extrabold tracking-wider">
                 Dispute ID: #DSP-{dispute.id.substring(18, 22).toUpperCase()}
               </span>
             </div>
@@ -392,17 +382,17 @@ export default function DisputeDetailsPage() {
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <h4 className="font-extrabold text-slate-800">
+                    <h4 className="font-extrabold text-foreground">
                       Complaint Filed
                     </h4>
-                    <span className="text-[9px] text-zinc-400">
+                    <span className="text-[9px] text-muted-foreground">
                       {new Date(dispute.createdAt).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
                       })}
                     </span>
                   </div>
-                  <p className="text-[10px] text-zinc-500 font-semibold leading-relaxed mt-0.5">
+                  <p className="text-[10px] text-muted-foreground font-semibold leading-relaxed mt-0.5">
                     Dispute officially submitted. Other party notified.
                   </p>
                 </div>
@@ -414,7 +404,7 @@ export default function DisputeDetailsPage() {
                   className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 border ${
                     firstOpposingComment
                       ? "bg-amber-500 border-amber-500/20 text-white"
-                      : "bg-zinc-100 border-zinc-200 text-zinc-400"
+                      : "bg-zinc-100 border-border text-muted-foreground"
                   }`}
                 >
                   <MessageSquare size={14} />
@@ -422,12 +412,12 @@ export default function DisputeDetailsPage() {
                 <div>
                   <div className="flex items-center gap-1.5">
                     <h4
-                      className={`font-extrabold ${firstOpposingComment ? "text-slate-800" : "text-muted-foreground"}`}
+                      className={`font-extrabold ${firstOpposingComment ? "text-foreground" : "text-muted-foreground"}`}
                     >
                       Response Filed
                     </h4>
                     {firstOpposingComment && (
-                      <span className="text-[9px] text-zinc-400">
+                      <span className="text-[9px] text-muted-foreground">
                         {new Date(
                           parseInt(firstOpposingComment.createdAt) ||
                             firstOpposingComment.createdAt,
@@ -438,7 +428,7 @@ export default function DisputeDetailsPage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-[10px] text-zinc-500 font-semibold leading-relaxed mt-0.5">
+                  <p className="text-[10px] text-muted-foreground font-semibold leading-relaxed mt-0.5">
                     {firstOpposingComment
                       ? "Acknowledgement response posted by the other party."
                       : "Awaiting formal response or comment from the other party."}
@@ -452,18 +442,18 @@ export default function DisputeDetailsPage() {
                   className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 border ${
                     dispute.status === "RESOLVED"
                       ? "bg-emerald-500 border-emerald-500/20 text-white"
-                      : "bg-zinc-100 border-zinc-200 text-zinc-400"
+                      : "bg-zinc-100 border-border text-muted-foreground"
                   }`}
                 >
                   <CheckCircle size={14} />
                 </div>
                 <div>
                   <h4
-                    className={`font-extrabold ${dispute.status === "RESOLVED" ? "text-slate-800" : "text-muted-foreground"}`}
+                    className={`font-extrabold ${dispute.status === "RESOLVED" ? "text-foreground" : "text-muted-foreground"}`}
                   >
                     Resolution / Closing
                   </h4>
-                  <p className="text-[10px] text-zinc-500 font-semibold leading-relaxed mt-0.5">
+                  <p className="text-[10px] text-muted-foreground font-semibold leading-relaxed mt-0.5">
                     {dispute.status === "RESOLVED"
                       ? "Mediation completed and case closed."
                       : "Step to follow response mediation."}
@@ -474,8 +464,8 @@ export default function DisputeDetailsPage() {
           </div>
 
           {/* Property tenancy metadata info */}
-          <div className="bg-white border border-zinc-200/80 rounded-2xl shadow-2xs overflow-hidden p-4 space-y-4 text-xs font-semibold">
-            <h3 className="text-[10px] font-black uppercase text-zinc-400 tracking-wider">
+          <div className="card-surface rounded-2xl shadow-2xs overflow-hidden p-4 space-y-4 text-xs font-semibold">
+            <h3 className="text-[10px] font-black uppercase text-muted-foreground tracking-wider">
               Property Information
             </h3>
             <div className="relative h-32 w-full rounded-xl overflow-hidden border border-zinc-150">
@@ -487,7 +477,7 @@ export default function DisputeDetailsPage() {
               />
             </div>
             <div>
-              <p className="font-black text-slate-800">
+              <p className="font-black text-foreground">
                 {dispute.tenancy.property.title}
               </p>
               <p className="text-[10px] text-muted-foreground mt-0.5">
@@ -498,7 +488,7 @@ export default function DisputeDetailsPage() {
               <Link href={`/app/tenancies/${dispute.tenancy.id}`}>
                 <Button
                   variant="outline"
-                  className="w-full h-9 border-zinc-200 text-zinc-700 font-bold rounded-xl text-[11px] cursor-pointer"
+                  className="w-full h-9 border-border text-foreground font-bold rounded-xl text-[11px] cursor-pointer"
                 >
                   View Tenancy Details
                 </Button>

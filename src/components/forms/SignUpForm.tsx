@@ -22,6 +22,7 @@ import {
 import { requestGQL } from "@/lib/graphql-client";
 import { REGISTER_MUTATION } from "@/graphql/operations";
 import { toast } from "sonner";
+import { persistAuthSession } from "@/lib/auth-session";
 import { useRouter } from "next/navigation";
 import { User, Home, Eye, EyeOff, Check } from "lucide-react";
 
@@ -101,8 +102,7 @@ export default function SignUpForm() {
       const { token, user } = response.register;
 
       if (typeof window !== "undefined") {
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(user));
+        persistAuthSession(token, user);
       }
 
       toast.success("Registration successful! Welcome to FieConnect.");

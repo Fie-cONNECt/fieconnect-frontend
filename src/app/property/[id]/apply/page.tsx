@@ -219,17 +219,17 @@ export default function TenantApplicationPage() {
 
   if (initLoading || !property) {
     return (
-      <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-900/20 text-foreground font-sans animate-pulse">
+      <div className="min-h-screen flex flex-col bg-background dark:bg-zinc-900/20 text-foreground font-sans animate-pulse">
         <header className="h-16 bg-card border-b border-border px-6 flex items-center gap-4">
-          <Skeleton className="h-6 w-6 bg-zinc-200" />
-          <Skeleton className="h-6 w-32 bg-zinc-200" />
+          <Skeleton className="h-6 w-6 bg-muted" />
+          <Skeleton className="h-6 w-32 bg-muted" />
         </header>
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-1 space-y-6">
-            <Skeleton className="h-64 bg-zinc-200 rounded-2xl" />
+            <Skeleton className="h-64 bg-muted rounded-2xl" />
           </div>
           <div className="lg:col-span-3">
-            <Skeleton className="h-96 bg-zinc-200 rounded-2xl" />
+            <Skeleton className="h-96 bg-muted rounded-2xl" />
           </div>
         </main>
       </div>
@@ -245,7 +245,7 @@ export default function TenantApplicationPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950/40 text-foreground font-sans">
+    <div className="min-h-screen flex flex-col bg-background dark:bg-zinc-950/40 text-foreground font-sans">
       {/* 1. Header/Navbar */}
       <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto flex h-16 items-center px-4 sm:px-6 lg:px-8">

@@ -34,7 +34,7 @@ export default function CheckboxWrapper({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 bg-zinc-950/40 border-zinc-800">
+        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-xl border border-border p-4 bg-muted/30">
           <FormControl>
             <Checkbox
               checked={field.value}
@@ -44,12 +44,16 @@ export default function CheckboxWrapper({
             />
           </FormControl>
           <div className="space-y-1 leading-none">
-            <FormLabel>
-              {required && <span className="text-red-500 mr-1">*</span>}
+            <FormLabel className="text-sm font-semibold text-foreground">
+              {required && (
+                <span className="text-destructive mr-1" aria-hidden>
+                  *
+                </span>
+              )}
               {label}
             </FormLabel>
           </div>
-          <FormMessage />
+          <FormMessage className="text-xs font-medium text-destructive" />
           {warning && (
             <span className="text-xs font-light text-muted-foreground">
               {warning}
