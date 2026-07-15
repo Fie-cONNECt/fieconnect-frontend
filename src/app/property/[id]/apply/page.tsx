@@ -14,7 +14,7 @@ import {
 import { Button } from "../../../../components/ui/button";
 import { toast } from "sonner";
 import { uploadToSupabase } from "../../../../lib/supabase";
-import { PublicFooterCompact } from "@/components/layout";
+import { PublicFooterCompact, BrandLogoLink } from "@/components/layout";
 import { useForm } from "react-hook-form";
 import { Form } from "../../../../components/ui/form";
 import {
@@ -255,12 +255,10 @@ export default function TenantApplicationPage() {
           >
             <ArrowLeft size={16} />
           </Link>
-          <div className="flex items-center gap-3">
-            <span className="text-base font-black tracking-tight text-foreground">
-              FieConnect
-            </span>
-            <div className="h-4 w-px bg-border" />
-            <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+          <div className="flex items-center gap-3 min-w-0">
+            <BrandLogoLink href="/" size="sm" />
+            <div className="h-4 w-px bg-border shrink-0" />
+            <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest truncate">
               Tenant Application
             </span>
           </div>

@@ -29,6 +29,7 @@ import {
 import { toast } from "sonner";
 import { Skeleton } from "../../components/ui/skeleton";
 import { isLandlord } from "../../lib/utils";
+import { BrandLogoLink } from "@/components/layout/brand-logo";
 
 export interface AuthenticatedUser {
   id: string;
@@ -221,13 +222,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-sidebar border-r border-sidebar-border px-5 py-6">
       <div className="flex flex-col mb-8 px-2">
-        <Link
-          href="/app"
-          className="text-xl font-extrabold tracking-tight text-primary flex items-center gap-2"
-        >
-          FieConnect
-        </Link>
-        <div className="text-overline mt-1">Property Management</div>
+        <BrandLogoLink href="/app" size="md" showTagline linkClassName="mb-2" />
+        <div className="text-overline">Property Management</div>
       </div>
 
       <nav className="space-y-1.5 flex-1" aria-label="Dashboard">

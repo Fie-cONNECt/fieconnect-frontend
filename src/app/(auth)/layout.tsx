@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { BrandLogoLink } from "@/components/layout/brand-logo";
 
 export default function AuthLayout({
   children,
@@ -9,34 +10,12 @@ export default function AuthLayout({
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <div className="flex w-full flex-col justify-center px-8 sm:w-[50%] lg:px-16 xl:px-24 relative z-10">
-        <Link
+        <BrandLogoLink
           href="/"
-          className="absolute top-8 left-8 flex items-center gap-2.5 group"
-        >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-sm ring-1 ring-primary/20 transition-ui group-hover:shadow-md">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-4.5 w-4.5"
-              aria-hidden
-            >
-              <polygon points="12 2 2 22 22 22" />
-            </svg>
-          </div>
-          <div className="flex flex-col leading-none">
-            <span className="text-base font-extrabold tracking-tight text-foreground group-hover:text-primary transition-ui">
-              FieConnect
-            </span>
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mt-0.5">
-              Ghana Rentals
-            </span>
-          </div>
-        </Link>
+          size="lg"
+          showTagline
+          linkClassName="absolute top-8 left-8 group"
+        />
 
         <div className="mx-auto w-full max-w-sm">{children}</div>
       </div>
