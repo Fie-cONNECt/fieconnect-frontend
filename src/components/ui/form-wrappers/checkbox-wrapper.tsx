@@ -1,8 +1,14 @@
-'use client';
+"use client";
 
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Checkbox } from '@/components/ui/checkbox';
-import type { Control } from 'react-hook-form';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
+import type { Control } from "react-hook-form";
 
 interface CheckboxWrapperProps {
   control: Control<any>;
@@ -44,7 +50,11 @@ export default function CheckboxWrapper({
             </FormLabel>
           </div>
           <FormMessage />
-          {warning && <span className="text-xs font-light text-muted-foreground">{warning}</span>}
+          {warning && (
+            <span className="text-xs font-light text-muted-foreground">
+              {warning}
+            </span>
+          )}
         </FormItem>
       )}
     />

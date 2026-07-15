@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
-import { useUser } from '../../layout';
-import { requestGQL } from '../../../../lib/graphql-client';
-import { TENANCY_QUERY } from '../../../../graphql/operations';
-import { Button } from '../../../../components/ui/button';
-import { toast } from 'sonner';
-import { isLandlord } from '../../../../lib/utils';
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import { useUser } from "../../layout";
+import { requestGQL } from "../../../../lib/graphql-client";
+import { TENANCY_QUERY } from "../../../../graphql/operations";
+import { Button } from "../../../../components/ui/button";
+import { toast } from "sonner";
+import { isLandlord } from "../../../../lib/utils";
 import {
   FileText,
   Clock,
@@ -24,8 +24,8 @@ import {
   ZoomOut,
   Printer,
   ChevronLeft,
-} from 'lucide-react';
-import { Skeleton } from '../../../../components/ui/skeleton';
+} from "lucide-react";
+import { Skeleton } from "../../../../components/ui/skeleton";
 
 interface UserType {
   id: string;
@@ -75,9 +75,9 @@ export default function TenancyDetailsPage() {
           setTenancy(data.tenancy as Tenancy);
         }
       } catch (err: any) {
-        console.error('Failed to load tenancy details:', err);
-        toast.error(err.message || 'Failed to load tenancy details.');
-        router.push('/app/tenancies');
+        console.error("Failed to load tenancy details:", err);
+        toast.error(err.message || "Failed to load tenancy details.");
+        router.push("/app/tenancies");
       } finally {
         setLoading(false);
       }
@@ -112,7 +112,9 @@ export default function TenancyDetailsPage() {
 
   // Calculate lease terms
   const startDate = new Date(
-    isNaN(Number(tenancy.updatedAt)) ? tenancy.updatedAt : parseInt(tenancy.updatedAt),
+    isNaN(Number(tenancy.updatedAt))
+      ? tenancy.updatedAt
+      : parseInt(tenancy.updatedAt),
   );
 
   // End date is 1 year from start date
@@ -133,9 +135,9 @@ export default function TenancyDetailsPage() {
 
   const handleExportPDF = () => {
     if (tenancy.signedAgreementUrl) {
-      window.open(tenancy.signedAgreementUrl, '_blank');
+      window.open(tenancy.signedAgreementUrl, "_blank");
     } else {
-      toast.error('Signed agreement PDF is not available.');
+      toast.error("Signed agreement PDF is not available.");
     }
   };
 
@@ -197,7 +199,9 @@ export default function TenancyDetailsPage() {
           <p className="text-base font-black text-slate-800 mt-2">
             GH₵ {tenancy.property.price.toLocaleString()}
           </p>
-          <p className="text-[10px] text-zinc-500 font-semibold mt-1">Due on 1st of every month</p>
+          <p className="text-[10px] text-zinc-500 font-semibold mt-1">
+            Due on 1st of every month
+          </p>
         </div>
 
         <div className="bg-white border border-zinc-200/80 p-5 rounded-2xl shadow-2xs">
@@ -205,31 +209,33 @@ export default function TenancyDetailsPage() {
             Start Date
           </p>
           <p className="text-base font-black text-slate-800 mt-2">
-            {startDate.toLocaleDateString('en-US', {
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric',
+            {startDate.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
             })}
           </p>
           <p className="text-[10px] text-zinc-500 font-semibold mt-1">
             {diffMonths === 0
-              ? 'Less than a month'
-              : `${diffMonths} month${diffMonths > 1 ? 's' : ''}`}{' '}
+              ? "Less than a month"
+              : `${diffMonths} month${diffMonths > 1 ? "s" : ""}`}{" "}
             elapsed
           </p>
         </div>
 
         <div className="bg-white border border-zinc-200/80 p-5 rounded-2xl shadow-2xs">
-          <p className="text-[10px] text-zinc-400 font-black uppercase tracking-wider">End Date</p>
+          <p className="text-[10px] text-zinc-400 font-black uppercase tracking-wider">
+            End Date
+          </p>
           <p className="text-base font-black text-slate-800 mt-2">
-            {endDate.toLocaleDateString('en-US', {
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric',
+            {endDate.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
             })}
           </p>
           <p className="text-[10px] text-zinc-500 font-semibold mt-1">
-            Renewable in {diffDays} day{diffDays !== 1 ? 's' : ''}
+            Renewable in {diffDays} day{diffDays !== 1 ? "s" : ""}
           </p>
         </div>
       </div>
@@ -294,27 +300,37 @@ export default function TenancyDetailsPage() {
               />
             </div>
             <div>
-              <p className="font-black text-slate-800">{tenancy.property.title}</p>
-              <p className="text-[10px] text-muted-foreground mt-0.5">{tenancy.property.location}</p>
+              <p className="font-black text-slate-800">
+                {tenancy.property.title}
+              </p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">
+                {tenancy.property.location}
+              </p>
             </div>
             <div className="grid grid-cols-3 gap-2 pt-2 border-t border-zinc-50">
               <div className="text-center bg-zinc-50 p-2 rounded-lg">
                 <span className="block text-[11px] font-black text-slate-750">
-                  {tenancy.property.bedrooms || '3'}
+                  {tenancy.property.bedrooms || "3"}
                 </span>
-                <span className="block text-[8px] text-zinc-400 font-bold uppercase">Beds</span>
+                <span className="block text-[8px] text-zinc-400 font-bold uppercase">
+                  Beds
+                </span>
               </div>
               <div className="text-center bg-zinc-50 p-2 rounded-lg">
                 <span className="block text-[11px] font-black text-slate-750">
-                  {tenancy.property.bathrooms || '2.5'}
+                  {tenancy.property.bathrooms || "2.5"}
                 </span>
-                <span className="block text-[8px] text-zinc-400 font-bold uppercase">Baths</span>
+                <span className="block text-[8px] text-zinc-400 font-bold uppercase">
+                  Baths
+                </span>
               </div>
               <div className="text-center bg-zinc-50 p-2 rounded-lg">
                 <span className="block text-[11px] font-black text-slate-750">
-                  {tenancy.property.size || '1,200'}
+                  {tenancy.property.size || "1,200"}
                 </span>
-                <span className="block text-[8px] text-zinc-400 font-bold uppercase">sqft</span>
+                <span className="block text-[8px] text-zinc-400 font-bold uppercase">
+                  sqft
+                </span>
               </div>
             </div>
           </div>
@@ -333,7 +349,9 @@ export default function TenancyDetailsPage() {
                 <p className="font-black text-slate-800">
                   {tenancy.tenant.firstName} {tenancy.tenant.lastName}
                 </p>
-                <p className="text-[9px] text-zinc-400 uppercase font-black">Tenant</p>
+                <p className="text-[9px] text-zinc-400 uppercase font-black">
+                  Tenant
+                </p>
               </div>
             </div>
 
@@ -356,7 +374,9 @@ export default function TenancyDetailsPage() {
 
             <Button
               variant="outline"
-              onClick={() => toast.success('Tenant application history loaded.')}
+              onClick={() =>
+                toast.success("Tenant application history loaded.")
+              }
               className="w-full h-9 border-zinc-200 text-zinc-700 font-bold rounded-xl text-[11px] cursor-pointer"
             >
               View History
@@ -375,9 +395,12 @@ export default function TenancyDetailsPage() {
               </div>
               <div>
                 <p className="font-black text-slate-800">
-                  {tenancy.property.landlord.firstName} {tenancy.property.landlord.lastName}
+                  {tenancy.property.landlord.firstName}{" "}
+                  {tenancy.property.landlord.lastName}
                 </p>
-                <p className="text-[9px] text-zinc-400 uppercase font-black">Landlord</p>
+                <p className="text-[9px] text-zinc-400 uppercase font-black">
+                  Landlord
+                </p>
               </div>
             </div>
 

@@ -1,8 +1,14 @@
-'use client';
+"use client";
 
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Textarea } from '@/components/ui/textarea';
-import type { Control } from 'react-hook-form';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import type { Control } from "react-hook-form";
 
 interface TextareaWrapperProps {
   control: Control<any>;
@@ -50,7 +56,11 @@ export default function TextareaWrapper({
             />
           </FormControl>
           <FormMessage />
-          {warning && <span className="text-xs font-light text-muted-foreground">{warning}</span>}
+          {warning && (
+            <span className="text-xs font-light text-muted-foreground">
+              {warning}
+            </span>
+          )}
         </FormItem>
       )}
     />

@@ -1,29 +1,29 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useUser } from '../layout';
-import { requestGQL } from '../../../lib/graphql-client';
+import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useUser } from "../layout";
+import { requestGQL } from "../../../lib/graphql-client";
 import {
   PROPERTIES_QUERY,
   MY_PROPERTIES_QUERY,
   MY_APPLICATIONS_QUERY,
   MY_TENANCIES_QUERY,
   MY_DISPUTES_QUERY,
-} from '../../../graphql/operations';
-import { isLandlord } from '../../../lib/utils';
+} from "../../../graphql/operations";
+import { isLandlord } from "../../../lib/utils";
 import {
   SEARCH_REGIONS as REGIONS,
   SEARCH_PROPERTY_TYPES as PROPERTY_TYPES,
   RENT_RANGES,
-} from '../../../lib/constants';
-import { Button } from '../../../components/ui/button';
-import { Skeleton } from '../../../components/ui/skeleton';
-import { useForm } from 'react-hook-form';
-import { Form } from '../../../components/ui/form';
-import { SelectWrapper } from '../../../components/ui/form-wrappers';
+} from "../../../lib/constants";
+import { Button } from "../../../components/ui/button";
+import { Skeleton } from "../../../components/ui/skeleton";
+import { useForm } from "react-hook-form";
+import { Form } from "../../../components/ui/form";
+import { SelectWrapper } from "../../../components/ui/form-wrappers";
 import {
   Search,
   MapPin,
@@ -40,7 +40,7 @@ import {
   AlertTriangle,
   Key,
   TrendingUp,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface PropertyItem {
   id: string;
@@ -60,12 +60,12 @@ interface PropertyItem {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  Apartment: 'bg-amber-100 text-amber-700',
-  House: 'bg-emerald-100 text-emerald-700',
-  Studio: 'bg-violet-100 text-violet-700',
-  Villa: 'bg-blue-100 text-blue-700',
-  Townhouse: 'bg-rose-100 text-rose-700',
-  Duplex: 'bg-cyan-100 text-cyan-700',
+  Apartment: "bg-amber-100 text-amber-700",
+  House: "bg-emerald-100 text-emerald-700",
+  Studio: "bg-violet-100 text-violet-700",
+  Villa: "bg-blue-100 text-blue-700",
+  Townhouse: "bg-rose-100 text-rose-700",
+  Duplex: "bg-cyan-100 text-cyan-700",
 };
 
 function formatPrice(price: number) {
@@ -75,10 +75,10 @@ function formatPrice(price: number) {
 function timeSince(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
   const h = Math.floor(diff / 3600000);
-  if (h < 1) return 'Just now';
-  if (h < 24) return `Added ${h} hour${h > 1 ? 's' : ''} ago`;
+  if (h < 1) return "Just now";
+  if (h < 24) return `Added ${h} hour${h > 1 ? "s" : ""} ago`;
   const d = Math.floor(h / 24);
-  return `Added ${d} day${d > 1 ? 's' : ''} ago`;
+  return `Added ${d} day${d > 1 ? "s" : ""} ago`;
 }
 
 interface FilterFormValues {
@@ -101,9 +101,9 @@ export default function TenantPropertiesPage() {
 
   const form = useForm<FilterFormValues>({
     defaultValues: {
-      region: 'All',
-      propType: 'All',
-      rentRange: '0',
+      region: "All",
+      propType: "All",
+      rentRange: "0",
     },
   });
 
@@ -115,22 +115,22 @@ export default function TenantPropertiesPage() {
   }
 
   const fetchProperties = async (
-    r = form.getValues('region'),
-    t = form.getValues('propType'),
-    ri = parseInt(form.getValues('rentRange')) || 0,
+    r = form.getValues("region"),
+    t = form.getValues("propType"),
+    ri = parseInt(form.getValues("rentRange")) || 0,
   ) => {
     setLoading(true);
     try {
       const range = RENT_RANGES[ri];
       const data = await requestGQL(PROPERTIES_QUERY, {
-        region: r === 'All' ? undefined : r,
-        type: t === 'All' ? undefined : t,
+        region: r === "All" ? undefined : r,
+        type: t === "All" ? undefined : t,
         minPrice: range.min,
         maxPrice: range.max,
       });
       if (data?.properties) setProperties(data.properties as PropertyItem[]);
     } catch (err) {
-      console.error('Failed to load properties:', err);
+      console.error("Failed to load properties:", err);
     } finally {
       setLoading(false);
     }
@@ -148,7 +148,10 @@ export default function TenantPropertiesPage() {
       ]).then(([apps, tenancies, disputes]) => {
         setAppCount(apps?.myApplications?.length ?? 0);
         setTenancyCount(tenancies?.myTenancies?.length ?? 0);
-        setDisputeCount(disputes?.myDisputes?.filter((d: any) => d.status === 'OPEN').length ?? 0);
+        setDisputeCount(
+          disputes?.myDisputes?.filter((d: any) => d.status === "OPEN")
+            .length ?? 0,
+        );
       });
     }
   }, [userLoading]);
@@ -156,9 +159,9 @@ export default function TenantPropertiesPage() {
   const handleSearch = () => {
     setShowAll(true);
     fetchProperties(
-      form.getValues('region'),
-      form.getValues('propType'),
-      parseInt(form.getValues('rentRange')) || 0,
+      form.getValues("region"),
+      form.getValues("propType"),
+      parseInt(form.getValues("rentRange")) || 0,
     );
   };
 
@@ -167,9 +170,12 @@ export default function TenantPropertiesPage() {
   const recommended = properties.slice(3, 9);
   const recent = properties.slice(0, 5);
 
-  const scrollRec = (dir: 'left' | 'right') => {
+  const scrollRec = (dir: "left" | "right") => {
     if (recommendedRef.current) {
-      recommendedRef.current.scrollBy({ left: dir === 'left' ? -280 : 280, behavior: 'smooth' });
+      recommendedRef.current.scrollBy({
+        left: dir === "left" ? -280 : 280,
+        behavior: "smooth",
+      });
     }
   };
 
@@ -190,8 +196,8 @@ export default function TenantPropertiesPage() {
             Welcome to FieConnect.
           </h1>
           <p className="text-white/75 text-xs font-semibold mt-2 max-w-sm leading-relaxed">
-            Start exploring available rental properties across Ghana with a platform designed for
-            trust and transparency.
+            Start exploring available rental properties across Ghana with a
+            platform designed for trust and transparency.
           </p>
         </div>
       </div>
@@ -226,7 +232,10 @@ export default function TenantPropertiesPage() {
                 control={form.control as any}
                 name="rentRange"
                 label="Rent Range (GHS)"
-                options={RENT_RANGES.map((r, i) => ({ label: r.label, value: i.toString() }))}
+                options={RENT_RANGES.map((r, i) => ({
+                  label: r.label,
+                  value: i.toString(),
+                }))}
                 className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 border border-zinc-200 w-full"
               />
             </div>
@@ -238,19 +247,19 @@ export default function TenantPropertiesPage() {
               <Search size={13} /> Search
             </Button>
 
-            {(form.watch('region') !== 'All' ||
-              form.watch('propType') !== 'All' ||
-              form.watch('rentRange') !== '0') && (
+            {(form.watch("region") !== "All" ||
+              form.watch("propType") !== "All" ||
+              form.watch("rentRange") !== "0") && (
               <button
                 type="button"
                 onClick={() => {
                   form.reset({
-                    region: 'All',
-                    propType: 'All',
-                    rentRange: '0',
+                    region: "All",
+                    propType: "All",
+                    rentRange: "0",
                   });
                   setShowAll(false);
-                  fetchProperties('All', 'All', 0);
+                  fetchProperties("All", "All", 0);
                 }}
                 className="h-10 px-4 border border-zinc-200 hover:bg-zinc-50 text-zinc-500 hover:text-zinc-700 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
               >
@@ -272,7 +281,7 @@ export default function TenantPropertiesPage() {
           />
           <StatCard
             icon={<Key size={16} className="text-emerald-600" />}
-            value={tenancyCount > 0 ? tenancyCount : 'No'}
+            value={tenancyCount > 0 ? tenancyCount : "No"}
             label="Active Tenancy"
             href="/app/tenancies"
           />
@@ -289,13 +298,13 @@ export default function TenantPropertiesPage() {
       <section className="px-4 sm:px-6 lg:px-8 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-black text-slate-800">
-            {showAll ? 'All Matching Properties' : 'Featured Properties'}
+            {showAll ? "All Matching Properties" : "Featured Properties"}
           </h2>
           <button
             onClick={() => setShowAll(!showAll)}
             className="text-xs font-bold text-primary hover:underline cursor-pointer"
           >
-            {showAll ? 'Show Featured Only' : 'View All'}
+            {showAll ? "Show Featured Only" : "View All"}
           </button>
         </div>
 
@@ -323,18 +332,20 @@ export default function TenantPropertiesPage() {
         <section className="space-y-4">
           <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8">
             <h2 className="text-sm font-black text-slate-800">
-              Recommended in{' '}
-              {form.watch('region') === 'All' ? 'Greater Accra' : form.watch('region')}
+              Recommended in{" "}
+              {form.watch("region") === "All"
+                ? "Greater Accra"
+                : form.watch("region")}
             </h2>
             <div className="flex gap-1">
               <button
-                onClick={() => scrollRec('left')}
+                onClick={() => scrollRec("left")}
                 className="h-7 w-7 rounded-lg border border-zinc-200 flex items-center justify-center text-zinc-500 hover:bg-zinc-100 cursor-pointer"
               >
                 <ChevronLeft size={14} />
               </button>
               <button
-                onClick={() => scrollRec('right')}
+                onClick={() => scrollRec("right")}
                 className="h-7 w-7 rounded-lg border border-zinc-200 flex items-center justify-center text-zinc-500 hover:bg-zinc-100 cursor-pointer"
               >
                 <ChevronRight size={14} />
@@ -402,13 +413,17 @@ function FeaturedCard({ property: p }: { property: PropertyItem }) {
         <div className="p-4 space-y-2">
           <div className="flex items-center justify-between">
             <span
-              className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${TYPE_COLORS[p.type] ?? 'bg-zinc-100 text-zinc-600'}`}
+              className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${TYPE_COLORS[p.type] ?? "bg-zinc-100 text-zinc-600"}`}
             >
               {p.type}
             </span>
-            <span className="text-xs font-extrabold text-primary">{formatPrice(p.price)}</span>
+            <span className="text-xs font-extrabold text-primary">
+              {formatPrice(p.price)}
+            </span>
           </div>
-          <h3 className="text-xs font-black text-slate-800 leading-snug">{p.title}</h3>
+          <h3 className="text-xs font-black text-slate-800 leading-snug">
+            {p.title}
+          </h3>
           <p className="text-[10px] text-zinc-400 font-semibold flex items-center gap-1">
             <MapPin size={10} /> {p.location}
           </p>
@@ -448,7 +463,9 @@ function RecommendedCard({ property: p }: { property: PropertyItem }) {
           <h3 className="text-[11px] font-extrabold text-slate-800 leading-snug line-clamp-1">
             {p.title}
           </h3>
-          <p className="text-[10px] font-bold text-zinc-500">{formatPrice(p.price)}</p>
+          <p className="text-[10px] font-bold text-zinc-500">
+            {formatPrice(p.price)}
+          </p>
           <div className="flex items-center gap-1 text-[10px] text-primary font-extrabold pt-0.5">
             View <ArrowRight size={10} />
           </div>
@@ -467,13 +484,17 @@ function RecentRow({ property: p }: { property: PropertyItem }) {
           <Image src={p.image} alt={p.title} fill className="object-cover" />
         </div>
         <div className="flex-1 min-w-0 space-y-0.5">
-          <p className="text-xs font-extrabold text-slate-800 truncate">{p.title}</p>
+          <p className="text-xs font-extrabold text-slate-800 truncate">
+            {p.title}
+          </p>
           <p className="text-[10px] text-zinc-400 font-semibold flex items-center gap-1">
             <MapPin size={9} /> {p.location} · {timeSince(p.createdAt)}
           </p>
         </div>
         <div className="text-right shrink-0 space-y-1">
-          <p className="text-xs font-extrabold text-slate-800">{formatPrice(p.price)}</p>
+          <p className="text-xs font-extrabold text-slate-800">
+            {formatPrice(p.price)}
+          </p>
           <span className="inline-block bg-emerald-50 text-emerald-700 text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
             New Listing
           </span>
@@ -500,7 +521,9 @@ function StatCard({
       <div className="bg-white border border-zinc-200/85 rounded-xl p-3 sm:p-4 shadow-xs hover:shadow-sm transition-all cursor-pointer space-y-1 text-center sm:text-left">
         <div className="flex items-center justify-center sm:justify-start gap-2">
           {icon}
-          <span className="text-lg font-black text-slate-800 leading-none">{value}</span>
+          <span className="text-lg font-black text-slate-800 leading-none">
+            {value}
+          </span>
         </div>
         <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider leading-tight">
           {label}
@@ -515,12 +538,13 @@ function LandlordPropertiesPage() {
   const { user } = useUser();
   const [properties, setProperties] = useState<PropertyItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
 
   useEffect(() => {
     requestGQL(MY_PROPERTIES_QUERY)
       .then((data) => {
-        if (data?.myProperties) setProperties(data.myProperties as PropertyItem[]);
+        if (data?.myProperties)
+          setProperties(data.myProperties as PropertyItem[]);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -530,7 +554,9 @@ function LandlordPropertiesPage() {
     <div className="space-y-6 text-left">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-xl font-black text-slate-800 tracking-tight">My Properties</h1>
+          <h1 className="text-xl font-black text-slate-800 tracking-tight">
+            My Properties
+          </h1>
           <p className="text-xs font-semibold text-zinc-400 mt-1">
             Manage and track your listed rental properties.
           </p>
@@ -538,14 +564,14 @@ function LandlordPropertiesPage() {
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 bg-zinc-100 p-1 rounded-xl border border-zinc-200">
             <button
-              onClick={() => setViewMode('grid')}
-              className={`h-7 w-7 flex items-center justify-center rounded-lg transition-all cursor-pointer ${viewMode === 'grid' ? 'bg-white shadow-xs text-primary' : 'text-zinc-400'}`}
+              onClick={() => setViewMode("grid")}
+              className={`h-7 w-7 flex items-center justify-center rounded-lg transition-all cursor-pointer ${viewMode === "grid" ? "bg-white shadow-xs text-primary" : "text-zinc-400"}`}
             >
               <Layers size={14} />
             </button>
             <button
-              onClick={() => setViewMode('table')}
-              className={`h-7 w-7 flex items-center justify-center rounded-lg transition-all cursor-pointer ${viewMode === 'table' ? 'bg-white shadow-xs text-primary' : 'text-zinc-400'}`}
+              onClick={() => setViewMode("table")}
+              className={`h-7 w-7 flex items-center justify-center rounded-lg transition-all cursor-pointer ${viewMode === "table" ? "bg-white shadow-xs text-primary" : "text-zinc-400"}`}
             >
               <TrendingUp size={14} />
             </button>
@@ -570,7 +596,9 @@ function LandlordPropertiesPage() {
             <Building2 size={24} />
           </div>
           <div className="space-y-1">
-            <h3 className="text-sm font-bold text-foreground">No properties listed yet</h3>
+            <h3 className="text-sm font-bold text-foreground">
+              No properties listed yet
+            </h3>
             <p className="text-xs text-muted-foreground font-semibold">
               Add your first property to start receiving applications.
             </p>
@@ -581,7 +609,7 @@ function LandlordPropertiesPage() {
             </Button>
           </Link>
         </div>
-      ) : viewMode === 'grid' ? (
+      ) : viewMode === "grid" ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {properties.map((p) => (
             <div
@@ -604,7 +632,7 @@ function LandlordPropertiesPage() {
               <div className="p-4 space-y-2">
                 <div className="flex items-center justify-between">
                   <span
-                    className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${TYPE_COLORS[p.type] ?? 'bg-zinc-100 text-zinc-600'}`}
+                    className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${TYPE_COLORS[p.type] ?? "bg-zinc-100 text-zinc-600"}`}
                   >
                     {p.type}
                   </span>
@@ -612,7 +640,9 @@ function LandlordPropertiesPage() {
                     {formatPrice(p.price)}
                   </span>
                 </div>
-                <h3 className="text-xs font-black text-slate-800 leading-snug">{p.title}</h3>
+                <h3 className="text-xs font-black text-slate-800 leading-snug">
+                  {p.title}
+                </h3>
                 <p className="text-[10px] text-zinc-400 font-semibold flex items-center gap-1">
                   <MapPin size={10} />
                   {p.location}
@@ -643,11 +673,19 @@ function LandlordPropertiesPage() {
             </thead>
             <tbody className="divide-y divide-zinc-100 text-slate-700">
               {properties.map((p) => (
-                <tr key={p.id} className="hover:bg-zinc-50/50 transition-colors">
+                <tr
+                  key={p.id}
+                  className="hover:bg-zinc-50/50 transition-colors"
+                >
                   <td className="p-4 pl-5">
                     <div className="flex items-center gap-3">
                       <div className="relative h-9 w-14 rounded-lg overflow-hidden border border-zinc-100 shrink-0">
-                        <Image src={p.image} alt={p.title} fill className="object-cover" />
+                        <Image
+                          src={p.image}
+                          alt={p.title}
+                          fill
+                          className="object-cover"
+                        />
                       </div>
                       <span className="font-extrabold text-slate-800 truncate max-w-[180px]">
                         {p.title}
@@ -657,12 +695,14 @@ function LandlordPropertiesPage() {
                   <td className="p-4 text-zinc-500">{p.location}</td>
                   <td className="p-4">
                     <span
-                      className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${TYPE_COLORS[p.type] ?? 'bg-zinc-100 text-zinc-600'}`}
+                      className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${TYPE_COLORS[p.type] ?? "bg-zinc-100 text-zinc-600"}`}
                     >
                       {p.type}
                     </span>
                   </td>
-                  <td className="p-4 font-bold text-primary">{formatPrice(p.price)}</td>
+                  <td className="p-4 font-bold text-primary">
+                    {formatPrice(p.price)}
+                  </td>
                   <td className="p-4">
                     {p.verified ? (
                       <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 font-bold text-[9px] uppercase px-2 py-0.5 rounded-full">

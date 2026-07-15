@@ -1,11 +1,17 @@
-'use client';
+"use client";
 
-import React, { useRef, useState } from 'react';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { UploadCloud, File, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import type { Control } from 'react-hook-form';
+import React, { useRef, useState } from "react";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { UploadCloud, File, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { Control } from "react-hook-form";
 
 interface FileUploadWrapperProps {
   control: Control<any>;
@@ -36,9 +42,9 @@ export default function FileUploadWrapper({
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') {
+    if (e.type === "dragenter" || e.type === "dragover") {
       setDragActive(true);
-    } else if (e.type === 'dragleave') {
+    } else if (e.type === "dragleave") {
       setDragActive(false);
     }
   };
@@ -49,7 +55,11 @@ export default function FileUploadWrapper({
       name={name}
       render={({ field }) => {
         const value = field.value;
-        const files: File[] = Array.isArray(value) ? value : value ? [value] : [];
+        const files: File[] = Array.isArray(value)
+          ? value
+          : value
+            ? [value]
+            : [];
 
         const handleFiles = (fileList: FileList | null) => {
           if (!fileList || fileList.length === 0) return;
@@ -108,9 +118,9 @@ export default function FileUploadWrapper({
                     onClick={() => !disabled && fileInputRef.current?.click()}
                     className={`flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${
                       dragActive
-                        ? 'border-indigo-500 bg-indigo-950/20 shadow-lg'
-                        : 'border-zinc-800 hover:border-zinc-700 bg-zinc-950/40 hover:bg-zinc-950/60'
-                    } ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
+                        ? "border-indigo-500 bg-indigo-950/20 shadow-lg"
+                        : "border-zinc-800 hover:border-zinc-700 bg-zinc-950/40 hover:bg-zinc-950/60"
+                    } ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`}
                   >
                     <div className="p-3 bg-zinc-900 border border-zinc-800 rounded-full mb-3 text-zinc-400">
                       <UploadCloud size={24} />
@@ -119,7 +129,9 @@ export default function FileUploadWrapper({
                       Click to upload or drag & drop
                     </p>
                     <p className="text-xs text-zinc-500 mt-1">
-                      {accept ? `Accepted formats: ${accept}` : 'Any files supported'}
+                      {accept
+                        ? `Accepted formats: ${accept}`
+                        : "Any files supported"}
                     </p>
                   </div>
 
@@ -133,7 +145,9 @@ export default function FileUploadWrapper({
                         >
                           <div className="flex items-center gap-2 text-zinc-300">
                             <File size={16} className="text-indigo-400" />
-                            <span className="font-medium truncate max-w-[200px]">{file.name}</span>
+                            <span className="font-medium truncate max-w-[200px]">
+                              {file.name}
+                            </span>
                             <span className="text-zinc-500">
                               ({(file.size / 1024).toFixed(1)} KB)
                             </span>

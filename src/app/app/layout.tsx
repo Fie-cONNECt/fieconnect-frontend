@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { requestGQL } from '../../lib/graphql-client';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { requestGQL } from "../../lib/graphql-client";
 import {
   ME_QUERY,
   LOGOUT_MUTATION,
   MY_NOTIFICATIONS_QUERY,
   MARK_NOTIFICATION_READ_MUTATION,
-} from '../../graphql/operations';
-import Link from 'next/link';
-import Image from 'next/image';
+} from "../../graphql/operations";
+import Link from "next/link";
+import Image from "next/image";
 import {
   LayoutDashboard,
   Building2,
@@ -25,10 +25,10 @@ import {
   Menu,
   X,
   Plus,
-} from 'lucide-react';
-import { toast } from 'sonner';
-import { Skeleton } from '../../components/ui/skeleton';
-import { isLandlord } from '../../lib/utils';
+} from "lucide-react";
+import { toast } from "sonner";
+import { Skeleton } from "../../components/ui/skeleton";
+import { isLandlord } from "../../lib/utils";
 
 export interface AuthenticatedUser {
   id: string;
@@ -53,7 +53,7 @@ const UserContext = createContext<UserContextProps | undefined>(undefined);
 export function useUser() {
   const context = useContext(UserContext);
   if (!context) {
-    throw new Error('useUser must be used within a UserProvider');
+    throw new Error("useUser must be used within a UserProvider");
   }
   return context;
 }
@@ -76,20 +76,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         setNotifications(data.myNotifications);
       }
     } catch (e) {
-      console.error('Failed to load notifications:', e);
+      console.error("Failed to load notifications:", e);
     }
   };
 
   const handleMarkAsRead = async (id: string, link?: string | null) => {
     try {
       await requestGQL(MARK_NOTIFICATION_READ_MUTATION, { id });
-      setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
+      );
       setNotificationsOpen(false);
       if (link) {
         router.push(link);
       }
     } catch (e) {
-      console.error('Failed to mark notification as read:', e);
+      console.error("Failed to mark notification as read:", e);
     }
   };
 
@@ -106,12 +108,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           loadNotifications();
         } else {
           // If no active session, redirect to login
-          toast.error('Session expired. Please log in again.');
-          router.replace('/login');
+          toast.error("Session expired. Please log in again.");
+          router.replace("/login");
         }
       } catch (err) {
-        console.error('Auth verification failed:', err);
-        router.replace('/login');
+        console.error("Auth verification failed:", err);
+        router.replace("/login");
       } finally {
         setLoading(false);
       }
@@ -120,7 +122,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
     // Poll notifications every 8 seconds
     const interval = setInterval(() => {
-      if (localStorage.getItem('token')) {
+      if (localStorage.getItem("token")) {
         loadNotifications();
       }
     }, 8000);
@@ -130,14 +132,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const handleLogout = async () => {
     try {
       await requestGQL(LOGOUT_MUTATION);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
       setUser(null);
-      toast.success('Logged out successfully.');
-      router.replace('/login');
+      toast.success("Logged out successfully.");
+      router.replace("/login");
     } catch (e) {
-      console.error('Logout failed:', e);
-      toast.error('Failed to log out cleanly.');
+      console.error("Logout failed:", e);
+      toast.error("Failed to log out cleanly.");
     }
   };
 
@@ -152,7 +154,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
             <div className="space-y-3">
               {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-10 w-full bg-muted/70 rounded-xl" />
+                <Skeleton
+                  key={i}
+                  className="h-10 w-full bg-muted/70 rounded-xl"
+                />
               ))}
             </div>
           </div>
@@ -195,20 +200,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   const navItems = [
-    { name: 'Home', href: '/app', icon: LayoutDashboard },
-    { name: 'Properties', href: '/app/properties', icon: Building2 },
-    { name: 'Applications', href: '/app/applications', icon: ClipboardList },
-    { name: 'Tenancies', href: '/app/tenancies', icon: Key },
-    { name: 'Disputes', href: '/app/disputes', icon: AlertTriangle },
-    { name: 'Profile', href: '/app/profile', icon: User },
+    { name: "Home", href: "/app", icon: LayoutDashboard },
+    { name: "Properties", href: "/app/properties", icon: Building2 },
+    { name: "Applications", href: "/app/applications", icon: ClipboardList },
+    { name: "Tenancies", href: "/app/tenancies", icon: Key },
+    { name: "Disputes", href: "/app/disputes", icon: AlertTriangle },
+    { name: "Profile", href: "/app/profile", icon: User },
   ];
 
-  const bottomItems = [{ name: 'Settings', href: '#', icon: Settings }];
+  const bottomItems = [{ name: "Settings", href: "#", icon: Settings }];
 
   // Helper to check if a navigation item is active
   const isActive = (itemHref: string) => {
-    if (itemHref === '/app') {
-      return pathname === '/app';
+    if (itemHref === "/app") {
+      return pathname === "/app";
     }
     return pathname.startsWith(itemHref);
   };
@@ -216,7 +221,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-sidebar border-r border-sidebar-border px-5 py-6">
       <div className="flex flex-col mb-8 px-2">
-        <Link href="/app" className="text-xl font-extrabold tracking-tight text-primary flex items-center gap-2">
+        <Link
+          href="/app"
+          className="text-xl font-extrabold tracking-tight text-primary flex items-center gap-2"
+        >
           FieConnect
         </Link>
         <div className="text-overline mt-1">Property Management</div>
@@ -231,14 +239,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               key={item.name}
               href={item.href}
               onClick={() => setMobileMenuOpen(false)}
-              aria-current={active ? 'page' : undefined}
+              aria-current={active ? "page" : undefined}
               className={`flex items-center gap-3 px-3.5 py-2.5 min-h-11 rounded-xl text-sm font-semibold transition-ui ${
                 active
-                  ? 'bg-primary text-primary-foreground shadow-sm border border-primary/30'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  ? "bg-primary text-primary-foreground shadow-sm border border-primary/30"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
             >
-              <Icon size={16} className={active ? 'text-primary-foreground' : 'text-muted-foreground'} aria-hidden />
+              <Icon
+                size={16}
+                className={
+                  active ? "text-primary-foreground" : "text-muted-foreground"
+                }
+                aria-hidden
+              />
               {item.name}
             </Link>
           );
@@ -251,7 +265,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             type="button"
             onClick={() => {
               setMobileMenuOpen(false);
-              router.push('/app/properties/new');
+              router.push("/app/properties/new");
             }}
             className="flex w-full items-center justify-center gap-1.5 px-3.5 py-2.5 mb-2 rounded-xl text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground transition-ui cursor-pointer h-11 shadow-sm border border-primary/30"
           >
@@ -264,7 +278,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           return (
             <Link
               key={item.name}
-              href={item.href === '#' ? '/app/profile' : item.href}
+              href={item.href === "#" ? "/app/profile" : item.href}
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-3 px-3.5 py-2.5 min-h-11 rounded-xl text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-ui"
             >
@@ -291,7 +305,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <UserContext.Provider value={{ user, loading, logout: handleLogout }}>
       <div className="min-h-screen bg-background flex flex-col font-sans">
-        <aside className="hidden lg:block fixed top-0 bottom-0 left-0 w-64 z-20" aria-label="Sidebar">
+        <aside
+          className="hidden lg:block fixed top-0 bottom-0 left-0 w-64 z-20"
+          aria-label="Sidebar"
+        >
           <SidebarContent />
         </aside>
 
@@ -323,7 +340,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         <div className="lg:pl-64 flex flex-col flex-1">
           <header
-            className={`sticky top-0 z-30 bg-card/90 backdrop-blur-md border-b border-border px-4 sm:px-6 flex items-center justify-between transition-ui ${isLandlord(user) ? 'h-20' : 'h-16'}`}
+            className={`sticky top-0 z-30 bg-card/90 backdrop-blur-md border-b border-border px-4 sm:px-6 flex items-center justify-between transition-ui ${isLandlord(user) ? "h-20" : "h-16"}`}
           >
             {isLandlord(user) ? (
               <div className="flex items-center gap-3 min-w-0">
@@ -372,8 +389,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     aria-label="Search properties"
                     className="w-full h-10 pl-9 pr-4 rounded-full bg-muted/80 border border-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:bg-card focus:border-border focus:ring-2 focus:ring-ring/40 transition-ui font-medium"
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        router.push('/app/properties');
+                      if (e.key === "Enter") {
+                        router.push("/app/properties");
                       }
                     }}
                   />
@@ -385,7 +402,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   type="button"
                   onClick={() => setNotificationsOpen(!notificationsOpen)}
                   className="relative p-2.5 min-h-11 min-w-11 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-ui cursor-pointer flex items-center justify-center"
-                  aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
+                  aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
                   aria-expanded={notificationsOpen}
                 >
                   <Bell size={18} />
@@ -403,7 +420,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     aria-label="Notifications"
                   >
                     <div className="p-3 border-b border-border flex justify-between items-center bg-muted/40">
-                      <span className="text-sm font-bold text-foreground">Notifications</span>
+                      <span className="text-sm font-bold text-foreground">
+                        Notifications
+                      </span>
                       {unreadCount > 0 && (
                         <span className="text-[10px] bg-primary/20 text-primary-foreground font-bold px-2 py-0.5 rounded-full bg-primary/30">
                           {unreadCount} new
@@ -423,16 +442,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                             onClick={() => handleMarkAsRead(n.id, n.link)}
                             className={`w-full p-3.5 hover:bg-muted/60 transition-ui cursor-pointer flex flex-col gap-1 text-left ${
                               !n.read
-                                ? 'bg-primary/5 border-l-2 border-primary'
-                                : 'border-l-2 border-transparent'
+                                ? "bg-primary/5 border-l-2 border-primary"
+                                : "border-l-2 border-transparent"
                             }`}
                           >
-                            <span className="text-foreground font-bold text-xs">{n.title}</span>
-                            <span className="text-caption leading-relaxed">{n.message}</span>
+                            <span className="text-foreground font-bold text-xs">
+                              {n.title}
+                            </span>
+                            <span className="text-caption leading-relaxed">
+                              {n.message}
+                            </span>
                             <span className="text-[10px] text-muted-foreground mt-0.5">
                               {new Date(n.createdAt).toLocaleTimeString([], {
-                                hour: '2-digit',
-                                minute: '2-digit',
+                                hour: "2-digit",
+                                minute: "2-digit",
                               })}
                             </span>
                           </button>
@@ -457,7 +480,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     />
                   ) : (
                     <div className="h-full w-full flex items-center justify-center text-[10px] font-bold text-muted-foreground bg-muted">
-                      {`${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase()}
+                      {`${user?.firstName?.[0] ?? ""}${user?.lastName?.[0] ?? ""}`.toUpperCase()}
                     </div>
                   )}
                 </div>
@@ -465,13 +488,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   <span className="text-sm font-semibold text-foreground leading-tight">
                     {user?.firstName} {user?.lastName}
                   </span>
-                  <span className="text-overline">{user?.userType || 'Tenant'}</span>
+                  <span className="text-overline">
+                    {user?.userType || "Tenant"}
+                  </span>
                 </div>
               </Link>
             </div>
           </header>
 
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-background">{children}</main>
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-background">
+            {children}
+          </main>
         </div>
       </div>
     </UserContext.Provider>

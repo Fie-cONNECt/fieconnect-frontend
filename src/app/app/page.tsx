@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useUser } from './layout';
-import { requestGQL } from '../../lib/graphql-client';
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useUser } from "./layout";
+import { requestGQL } from "../../lib/graphql-client";
 import {
   MY_PROPERTIES_QUERY,
   RECEIVED_APPLICATIONS_QUERY,
@@ -14,11 +14,11 @@ import {
   MY_DISPUTES_QUERY,
   MY_NOTIFICATIONS_QUERY,
   MARK_NOTIFICATION_READ_MUTATION,
-} from '../../graphql/operations';
-import { Button } from '../../components/ui/button';
-import { Skeleton } from '../../components/ui/skeleton';
-import { StatCard, EmptyState } from '@/components/layout';
-import { StatusBadge } from '@/components/ui/status-badge';
+} from "../../graphql/operations";
+import { Button } from "../../components/ui/button";
+import { Skeleton } from "../../components/ui/skeleton";
+import { StatCard, EmptyState } from "@/components/layout";
+import { StatusBadge } from "@/components/ui/status-badge";
 import {
   FileText,
   Wrench,
@@ -41,9 +41,9 @@ import {
   X,
   Check,
   Loader2,
-} from 'lucide-react';
-import { toast } from 'sonner';
-import { isLandlord } from '../../lib/utils';
+} from "lucide-react";
+import { toast } from "sonner";
+import { isLandlord } from "../../lib/utils";
 
 export default function DashboardPage() {
   const { user, loading: userLoading } = useUser();
@@ -59,8 +59,10 @@ export default function DashboardPage() {
   const [recentApplications, setRecentApplications] = useState<any[]>([]);
 
   // Tenant stats
-  const [tenantActiveTenanciesCount, setTenantActiveTenanciesCount] = useState(0);
-  const [tenantPendingApplicationsCount, setTenantPendingApplicationsCount] = useState(0);
+  const [tenantActiveTenanciesCount, setTenantActiveTenanciesCount] =
+    useState(0);
+  const [tenantPendingApplicationsCount, setTenantPendingApplicationsCount] =
+    useState(0);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
   const [recentActivities, setRecentActivities] = useState<any[]>([]);
   const [currentTenancy, setCurrentTenancy] = useState<any>(null);
@@ -81,7 +83,9 @@ export default function DashboardPage() {
         // Fetch Landlord data
         const [propsRes, receivedAppsRes, tenanciesRes] = await Promise.all([
           requestGQL(MY_PROPERTIES_QUERY).catch(() => ({ myProperties: [] })),
-          requestGQL(RECEIVED_APPLICATIONS_QUERY).catch(() => ({ receivedApplications: [] })),
+          requestGQL(RECEIVED_APPLICATIONS_QUERY).catch(() => ({
+            receivedApplications: [],
+          })),
           requestGQL(MY_TENANCIES_QUERY).catch(() => ({ myTenancies: [] })),
         ]);
 
@@ -90,17 +94,24 @@ export default function DashboardPage() {
         const myTenancies = tenanciesRes?.myTenancies || [];
 
         setTotalProperties(myProps.length);
-        setPendingApplicationsCount(receivedApps.filter((a: any) => a.status === 'PENDING').length);
+        setPendingApplicationsCount(
+          receivedApps.filter((a: any) => a.status === "PENDING").length,
+        );
         setActiveTenanciesCount(myTenancies.length);
         setRecentApplications(receivedApps.slice(0, 4));
       } else {
         // Fetch Tenant data
-        const [myAppsRes, tenanciesRes, notificationsRes, disputesRes] = await Promise.all([
-          requestGQL(MY_APPLICATIONS_QUERY).catch(() => ({ myApplications: [] })),
-          requestGQL(MY_TENANCIES_QUERY).catch(() => ({ myTenancies: [] })),
-          requestGQL(MY_NOTIFICATIONS_QUERY).catch(() => ({ myNotifications: [] })),
-          requestGQL(MY_DISPUTES_QUERY).catch(() => ({ myDisputes: [] })),
-        ]);
+        const [myAppsRes, tenanciesRes, notificationsRes, disputesRes] =
+          await Promise.all([
+            requestGQL(MY_APPLICATIONS_QUERY).catch(() => ({
+              myApplications: [],
+            })),
+            requestGQL(MY_TENANCIES_QUERY).catch(() => ({ myTenancies: [] })),
+            requestGQL(MY_NOTIFICATIONS_QUERY).catch(() => ({
+              myNotifications: [],
+            })),
+            requestGQL(MY_DISPUTES_QUERY).catch(() => ({ myDisputes: [] })),
+          ]);
 
         const myApps = myAppsRes?.myApplications || [];
         const myTenancies = tenanciesRes?.myTenancies || [];
@@ -108,8 +119,12 @@ export default function DashboardPage() {
         const myDisputes = disputesRes?.myDisputes || [];
 
         setTenantActiveTenanciesCount(myTenancies.length);
-        setTenantPendingApplicationsCount(myApps.filter((a: any) => a.status === 'PENDING').length);
-        setUnreadNotificationsCount(myNotifications.filter((n: any) => !n.read).length);
+        setTenantPendingApplicationsCount(
+          myApps.filter((a: any) => a.status === "PENDING").length,
+        );
+        setUnreadNotificationsCount(
+          myNotifications.filter((n: any) => !n.read).length,
+        );
         setNotifications(myNotifications);
 
         if (myTenancies.length > 0) {
@@ -122,11 +137,11 @@ export default function DashboardPage() {
         myApps.slice(0, 2).forEach((app: any) => {
           activities.push({
             id: app.id,
-            type: 'APPLICATION',
+            type: "APPLICATION",
             title: `Application for ${app.property.title}`,
             subtitle: `Submitted on ${new Date(app.createdAt).toLocaleDateString()}`,
             status: app.status,
-            link: '/app/applications',
+            link: "/app/applications",
             icon: <FileText size={16} />,
           });
         });
@@ -134,7 +149,7 @@ export default function DashboardPage() {
         myDisputes.slice(0, 2).forEach((disp: any) => {
           activities.push({
             id: disp.id,
-            type: 'DISPUTE',
+            type: "DISPUTE",
             title: `Dispute: ${disp.title}`,
             subtitle: `Created on ${new Date(disp.createdAt).toLocaleDateString()}`,
             status: disp.status,
@@ -146,7 +161,7 @@ export default function DashboardPage() {
         setRecentActivities(activities.slice(0, 4));
       }
     } catch (err) {
-      console.error('Failed to load dashboard data:', err);
+      console.error("Failed to load dashboard data:", err);
     } finally {
       setLoading(false);
     }
@@ -160,17 +175,19 @@ export default function DashboardPage() {
     setMarkingId(notif.id);
     try {
       await requestGQL(MARK_NOTIFICATION_READ_MUTATION, { id: notif.id });
-      toast.success('Notification marked as read.');
-      setNotifications((prev) => prev.map((n) => (n.id === notif.id ? { ...n, read: true } : n)));
+      toast.success("Notification marked as read.");
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notif.id ? { ...n, read: true } : n)),
+      );
       setUnreadNotificationsCount((c) => Math.max(0, c - 1));
 
-      if (notif.link && notif.link !== '#') {
+      if (notif.link && notif.link !== "#") {
         setShowNotificationsModal(false);
         router.push(notif.link);
       }
     } catch (err: any) {
       console.error(err);
-      toast.error('Failed to mark notification as read.');
+      toast.error("Failed to mark notification as read.");
     } finally {
       setMarkingId(null);
     }
@@ -192,7 +209,7 @@ export default function DashboardPage() {
     );
   }
 
-  const userName = user?.firstName || 'User';
+  const userName = user?.firstName || "User";
 
   if (landlordMode) {
     return (
@@ -255,7 +272,7 @@ export default function DashboardPage() {
                     {recentApplications.map((app) => (
                       <tr
                         key={app.id}
-                        onClick={() => router.push('/app/applications')}
+                        onClick={() => router.push("/app/applications")}
                         className="hover:bg-zinc-50/50 transition-colors cursor-pointer group"
                       >
                         <td className="py-3.5 flex items-center gap-3">
@@ -304,7 +321,7 @@ export default function DashboardPage() {
                 </Link>
 
                 <button
-                  onClick={() => handleQuickAction('Make Announcement')}
+                  onClick={() => handleQuickAction("Make Announcement")}
                   className="flex flex-col items-center justify-center p-4 rounded-xl bg-white/10 hover:bg-white/15 transition-all gap-2 text-center border border-white/5 cursor-pointer h-full"
                 >
                   <Megaphone size={16} className="text-primary" />
@@ -312,7 +329,7 @@ export default function DashboardPage() {
                 </button>
 
                 <button
-                  onClick={() => handleQuickAction('View Reports')}
+                  onClick={() => handleQuickAction("View Reports")}
                   className="flex flex-col items-center justify-center p-4 rounded-xl bg-white/10 hover:bg-white/15 transition-all gap-2 text-center border border-white/5 cursor-pointer h-full"
                 >
                   <BarChart3 size={16} className="text-primary" />
@@ -320,7 +337,7 @@ export default function DashboardPage() {
                 </button>
 
                 <button
-                  onClick={() => handleQuickAction('Get Support')}
+                  onClick={() => handleQuickAction("Get Support")}
                   className="flex flex-col items-center justify-center p-4 rounded-xl bg-white/10 hover:bg-white/15 transition-all gap-2 text-center border border-white/5 cursor-pointer h-full"
                 >
                   <HelpCircle size={16} className="text-primary" />
@@ -336,7 +353,7 @@ export default function DashboardPage() {
               </h4>
               <div className="space-y-3">
                 <div
-                  onClick={() => handleQuickAction('Inspection Schedule')}
+                  onClick={() => handleQuickAction("Inspection Schedule")}
                   className="flex items-center gap-3 p-3 rounded-xl border border-zinc-100 bg-zinc-50/50 hover:bg-zinc-50 hover:border-zinc-200 transition-all cursor-pointer text-left"
                 >
                   <div className="h-9 w-9 rounded-lg bg-zinc-100 text-zinc-500 flex items-center justify-center shrink-0 border border-zinc-200/40">
@@ -346,7 +363,9 @@ export default function DashboardPage() {
                     <h5 className="text-[11px] font-bold text-slate-700 leading-snug">
                       Property Walkthrough
                     </h5>
-                    <span className="text-[9px] text-zinc-400 font-bold">Configure schedule</span>
+                    <span className="text-[9px] text-zinc-400 font-bold">
+                      Configure schedule
+                    </span>
                   </div>
                 </div>
               </div>
@@ -394,7 +413,11 @@ export default function DashboardPage() {
           tone="warning"
           icon={<ClipboardList size={20} />}
         />
-        <button type="button" onClick={() => setShowNotificationsModal(true)} className="text-left w-full">
+        <button
+          type="button"
+          onClick={() => setShowNotificationsModal(true)}
+          className="text-left w-full"
+        >
           <StatCard
             label="Unread Notifications"
             value={unreadNotificationsCount}
@@ -411,12 +434,15 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 bg-white border border-zinc-200/80 rounded-2xl p-5 sm:p-6 shadow-2xs flex flex-col justify-between text-left">
           <div className="space-y-6">
             <div className="flex items-center justify-between pb-4 border-b border-zinc-100">
-              <h3 className="text-base font-bold text-slate-800">Recent Activity</h3>
+              <h3 className="text-base font-bold text-slate-800">
+                Recent Activity
+              </h3>
             </div>
 
             {recentActivities.length === 0 ? (
               <div className="text-center py-12 text-xs text-zinc-400 font-semibold">
-                No recent activity to show. Explore and apply for properties to get started!
+                No recent activity to show. Explore and apply for properties to
+                get started!
               </div>
             ) : (
               <div className="space-y-3">
@@ -439,9 +465,9 @@ export default function DashboardPage() {
                       <div className="flex items-center gap-2">
                         <span
                           className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
-                            act.status === 'PENDING' || act.status === 'OPEN'
-                              ? 'bg-amber-50 text-[#e69312] border-amber-100'
-                              : 'bg-primary/10 text-primary border-primary/20'
+                            act.status === "PENDING" || act.status === "OPEN"
+                              ? "bg-amber-50 text-[#e69312] border-amber-100"
+                              : "bg-primary/10 text-primary border-primary/20"
                           }`}
                         >
                           {act.status}
@@ -501,7 +527,9 @@ export default function DashboardPage() {
                     <div className="text-xs font-bold text-primary flex items-center gap-1">
                       <Calendar size={12} />
                       {new Date(
-                        currentTenancy.signedAgreementUrl ? currentTenancy.updatedAt : Date.now(),
+                        currentTenancy.signedAgreementUrl
+                          ? currentTenancy.updatedAt
+                          : Date.now(),
                       ).toLocaleDateString()}
                     </div>
                   </div>
@@ -531,9 +559,12 @@ export default function DashboardPage() {
                 <Key size={18} />
               </div>
               <div className="space-y-1">
-                <h4 className="text-xs font-bold text-slate-800">No Active Lease</h4>
+                <h4 className="text-xs font-bold text-slate-800">
+                  No Active Lease
+                </h4>
                 <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
-                  You do not have any active leases. Find a property and apply to get started.
+                  You do not have any active leases. Find a property and apply
+                  to get started.
                 </p>
               </div>
               <Link href="/app/properties">
@@ -552,13 +583,15 @@ export default function DashboardPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <button
-                onClick={() => handleQuickAction('Pay Rent')}
+                onClick={() => handleQuickAction("Pay Rent")}
                 className="flex flex-col items-center justify-center p-4 rounded-xl border border-zinc-100 bg-zinc-50/50 hover:bg-zinc-50 hover:border-zinc-200 transition-all gap-2 text-center group cursor-pointer"
               >
                 <div className="h-9 w-9 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                   <CreditCard size={16} />
                 </div>
-                <span className="text-[10px] font-bold text-slate-700">Pay Rent</span>
+                <span className="text-[10px] font-bold text-slate-700">
+                  Pay Rent
+                </span>
               </button>
 
               <button
@@ -566,7 +599,7 @@ export default function DashboardPage() {
                   if (currentTenancy) {
                     router.push(`/app/disputes?tenancyId=${currentTenancy.id}`);
                   } else {
-                    router.push('/app/disputes');
+                    router.push("/app/disputes");
                   }
                 }}
                 className="flex flex-col items-center justify-center p-4 rounded-xl border border-zinc-100 bg-zinc-50/50 hover:bg-zinc-50 hover:border-zinc-200 transition-all gap-2 text-center group cursor-pointer"
@@ -574,7 +607,9 @@ export default function DashboardPage() {
                 <div className="h-9 w-9 rounded-full bg-amber-50 text-[#f0af2f] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                   <AlertTriangle size={16} />
                 </div>
-                <span className="text-[10px] font-bold text-slate-700">Raise Dispute</span>
+                <span className="text-[10px] font-bold text-slate-700">
+                  Raise Dispute
+                </span>
               </button>
             </div>
           </div>
@@ -586,7 +621,9 @@ export default function DashboardPage() {
           <div className="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-lg space-y-5 text-left border border-zinc-100">
             <div className="flex justify-between items-center pb-3 border-b border-zinc-100">
               <div>
-                <h3 className="text-sm font-black text-slate-800">Unread Notifications</h3>
+                <h3 className="text-sm font-black text-slate-800">
+                  Unread Notifications
+                </h3>
                 <p className="text-[10px] text-zinc-400 font-bold mt-0.5">
                   Click to view and mark as read.
                 </p>
@@ -627,7 +664,9 @@ export default function DashboardPage() {
                         {n.message}
                       </p>
                       <span className="text-[8px] text-zinc-400 mt-1">
-                        {new Date(parseInt(n.createdAt) || n.createdAt).toLocaleString()}
+                        {new Date(
+                          parseInt(n.createdAt) || n.createdAt,
+                        ).toLocaleString()}
                       </span>
                     </div>
                   ))

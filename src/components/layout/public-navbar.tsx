@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { LogOut, Menu, X, LayoutDashboard, Building2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { LogOut, Menu, X, LayoutDashboard, Building2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export interface PublicNavbarUser {
   firstName: string;
@@ -14,21 +14,21 @@ export interface PublicNavbarUser {
 interface PublicNavbarProps {
   user?: PublicNavbarUser | null;
   onLogout?: () => void;
-  activeLink?: 'browse' | 'how' | 'about' | null;
+  activeLink?: "browse" | "how" | "about" | null;
   className?: string;
 }
 
 const NAV_LINKS = [
-  { key: 'browse' as const, label: 'Browse', href: '/#featured' },
-  { key: 'how' as const, label: 'How it Works', href: '/#how-it-works' },
-  { key: 'about' as const, label: 'About', href: '/#about' },
+  { key: "browse" as const, label: "Browse", href: "/#featured" },
+  { key: "how" as const, label: "How it Works", href: "/#how-it-works" },
+  { key: "about" as const, label: "About", href: "/#about" },
 ];
 
 function LogoMark({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-sm ring-1 ring-primary/20',
+        "flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-sm ring-1 ring-primary/20",
         className,
       )}
     >
@@ -52,7 +52,7 @@ function LogoMark({ className }: { className?: string }) {
 export function PublicNavbar({
   user,
   onLogout,
-  activeLink = 'browse',
+  activeLink = "browse",
   className,
 }: PublicNavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -61,14 +61,14 @@ export function PublicNavbar({
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
+    document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, [mobileMenuOpen]);
 
@@ -76,15 +76,18 @@ export function PublicNavbar({
     <>
       <header
         className={cn(
-          'sticky top-0 z-50 w-full transition-ui',
+          "sticky top-0 z-50 w-full transition-ui",
           scrolled
-            ? 'border-b border-border/90 bg-background/90 backdrop-blur-xl shadow-[0_4px_24px_oklch(0.25_0.01_280/0.06)]'
-            : 'border-b border-transparent bg-background/70 backdrop-blur-lg',
+            ? "border-b border-border/90 bg-background/90 backdrop-blur-xl shadow-[0_4px_24px_oklch(0.25_0.01_280/0.06)]"
+            : "border-b border-transparent bg-background/70 backdrop-blur-lg",
           className,
         )}
       >
         {/* Brand accent line */}
-        <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-primary/60 to-transparent" aria-hidden />
+        <div
+          className="h-0.5 w-full bg-gradient-to-r from-transparent via-primary/60 to-transparent"
+          aria-hidden
+        />
 
         <div className="page-container flex h-[4.25rem] items-center justify-between gap-4">
           {/* Logo + desktop nav */}
@@ -115,12 +118,12 @@ export function PublicNavbar({
                     key={link.key}
                     href={link.href}
                     className={cn(
-                      'relative rounded-full px-4 py-2 text-sm font-semibold transition-ui',
+                      "relative rounded-full px-4 py-2 text-sm font-semibold transition-ui",
                       isActive
-                        ? 'bg-card text-foreground shadow-sm ring-1 ring-border/80'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-card/60',
+                        ? "bg-card text-foreground shadow-sm ring-1 ring-border/80"
+                        : "text-muted-foreground hover:text-foreground hover:bg-card/60",
                     )}
-                    aria-current={isActive ? 'page' : undefined}
+                    aria-current={isActive ? "page" : undefined}
                   >
                     {link.label}
                   </Link>
@@ -132,7 +135,7 @@ export function PublicNavbar({
           {/* Desktop actions */}
           <div className="hidden md:flex items-center gap-2 shrink-0">
             <Link
-              href={user ? '/app/properties/new' : '/signup'}
+              href={user ? "/app/properties/new" : "/signup"}
               className="hidden lg:inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-ui px-3 py-2 rounded-full hover:bg-muted/60"
             >
               <Building2 size={15} aria-hidden />
@@ -147,11 +150,15 @@ export function PublicNavbar({
                 >
                   <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-primary/75 flex items-center justify-center text-xs font-bold text-primary-foreground ring-2 ring-background">
                     {user.firstName[0]}
-                    {user.lastName?.[0] ?? ''}
+                    {user.lastName?.[0] ?? ""}
                   </div>
                   <div className="hidden xl:flex flex-col text-left leading-tight">
-                    <span className="text-xs font-bold text-foreground">{user.firstName}</span>
-                    <span className="text-[10px] text-muted-foreground font-medium">Dashboard</span>
+                    <span className="text-xs font-bold text-foreground">
+                      {user.firstName}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground font-medium">
+                      Dashboard
+                    </span>
                   </div>
                 </Link>
                 {onLogout && (
@@ -194,13 +201,13 @@ export function PublicNavbar({
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className={cn(
-              'md:hidden p-2.5 min-h-11 min-w-11 flex items-center justify-center rounded-xl border transition-ui',
+              "md:hidden p-2.5 min-h-11 min-w-11 flex items-center justify-center rounded-xl border transition-ui",
               mobileMenuOpen
-                ? 'bg-primary/10 border-primary/30 text-foreground'
-                : 'border-border/60 text-muted-foreground hover:text-foreground hover:bg-muted/60',
+                ? "bg-primary/10 border-primary/30 text-foreground"
+                : "border-border/60 text-muted-foreground hover:text-foreground hover:bg-muted/60",
             )}
             aria-expanded={mobileMenuOpen}
-            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -209,7 +216,12 @@ export function PublicNavbar({
 
       {/* Mobile drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-label="Navigation menu">
+        <div
+          className="md:hidden fixed inset-0 z-[60]"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation menu"
+        >
           <button
             type="button"
             className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
@@ -226,7 +238,9 @@ export function PublicNavbar({
                 className="flex items-center gap-2"
               >
                 <LogoMark className="h-8 w-8" />
-                <span className="text-sm font-extrabold text-foreground">FieConnect</span>
+                <span className="text-sm font-extrabold text-foreground">
+                  FieConnect
+                </span>
               </Link>
               <button
                 type="button"
@@ -239,7 +253,10 @@ export function PublicNavbar({
             </div>
 
             {/* Nav links */}
-            <nav className="flex-1 overflow-y-auto px-4 py-5 space-y-1" aria-label="Mobile">
+            <nav
+              className="flex-1 overflow-y-auto px-4 py-5 space-y-1"
+              aria-label="Mobile"
+            >
               {NAV_LINKS.map((link) => {
                 const isActive = activeLink === link.key;
                 return (
@@ -248,12 +265,12 @@ export function PublicNavbar({
                     href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
                     className={cn(
-                      'flex items-center rounded-xl px-4 py-3.5 text-sm font-semibold transition-ui',
+                      "flex items-center rounded-xl px-4 py-3.5 text-sm font-semibold transition-ui",
                       isActive
-                        ? 'bg-primary/15 text-foreground border border-primary/25'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-muted',
+                        ? "bg-primary/15 text-foreground border border-primary/25"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted",
                     )}
-                    aria-current={isActive ? 'page' : undefined}
+                    aria-current={isActive ? "page" : undefined}
                   >
                     {link.label}
                   </Link>
@@ -261,7 +278,7 @@ export function PublicNavbar({
               })}
 
               <Link
-                href={user ? '/app/properties/new' : '/signup'}
+                href={user ? "/app/properties/new" : "/signup"}
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center gap-2 rounded-xl px-4 py-3.5 text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-ui"
               >
@@ -282,7 +299,9 @@ export function PublicNavbar({
                       <div className="text-sm font-bold text-foreground">
                         {user.firstName} {user.lastName}
                       </div>
-                      <div className="text-xs text-muted-foreground">Signed in</div>
+                      <div className="text-xs text-muted-foreground">
+                        Signed in
+                      </div>
                     </div>
                   </div>
                   <Link
