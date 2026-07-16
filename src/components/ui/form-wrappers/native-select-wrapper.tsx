@@ -39,20 +39,20 @@ export default function NativeSelectWrapper({
             <select
               {...field}
               disabled={disabled}
-              className={`w-full h-10 rounded-xl bg-zinc-950/40 border border-zinc-800 text-sm px-3 text-white focus:outline-hidden focus:ring-2 focus:ring-primary/50 cursor-pointer ${className}`}
+              className={`w-full h-11 rounded-xl bg-background border border-border text-sm px-3 text-foreground focus:outline-hidden focus:ring-2 focus:ring-primary/50 cursor-pointer ${className ?? ""}`}
             >
               {options.map((opt) => (
                 <option
                   key={opt.value}
                   value={opt.value}
-                  className="bg-zinc-950 text-white"
+                  className="bg-background text-foreground"
                 >
                   {opt.label}
                 </option>
               ))}
             </select>
           </FormControl>
-          <FormMessage />
+          <FormMessage className="text-xs font-medium text-destructive" />
         </FormItem>
       )}
     />

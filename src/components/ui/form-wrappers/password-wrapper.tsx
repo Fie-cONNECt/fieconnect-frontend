@@ -60,7 +60,7 @@ export default function PasswordWrapper({
       case 4:
         return { text: "Strong", color: "bg-emerald-500" };
       default:
-        return { text: "None", color: "bg-zinc-800" };
+        return { text: "None", color: "bg-muted" };
     }
   };
 
@@ -75,9 +75,13 @@ export default function PasswordWrapper({
 
         return (
           <>
-            <FormItem className="w-full relative">
-              <FormLabel>
-                {required && <span className="text-red-500 mr-1">*</span>}
+            <FormItem className="w-full relative space-y-2">
+              <FormLabel className="text-sm font-semibold text-foreground">
+                {required && (
+                  <span className="text-destructive mr-1" aria-hidden>
+                    *
+                  </span>
+                )}
                 {label}
               </FormLabel>
               <div className="relative">
@@ -94,7 +98,7 @@ export default function PasswordWrapper({
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-ui"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -109,18 +113,18 @@ export default function PasswordWrapper({
                         <div
                           key={index}
                           className={`flex-1 h-full rounded-full transition-all duration-300 ${
-                            active ? meta.color : "bg-zinc-800"
+                            active ? meta.color : "bg-muted"
                           }`}
                         />
                       );
                     })}
                   </div>
-                  <div className="flex justify-between text-[10px] text-zinc-400 font-medium px-0.5">
+                  <div className="flex justify-between text-caption text-muted-foreground font-medium px-0.5">
                     <span>Strength: {meta.text}</span>
                     <div className="flex gap-2">
                       <span
                         className={
-                          val.length >= 9 ? "text-emerald-400" : "text-zinc-500"
+                          val.length >= 9 ? "text-success" : "text-muted-foreground"
                         }
                       >
                         9+ Chars
@@ -128,8 +132,8 @@ export default function PasswordWrapper({
                       <span
                         className={
                           /[A-Z]/.test(val)
-                            ? "text-emerald-400"
-                            : "text-zinc-500"
+                            ? "text-success"
+                            : "text-muted-foreground"
                         }
                       >
                         Caps
@@ -137,8 +141,8 @@ export default function PasswordWrapper({
                       <span
                         className={
                           /[0-9]/.test(val)
-                            ? "text-emerald-400"
-                            : "text-zinc-500"
+                            ? "text-success"
+                            : "text-muted-foreground"
                         }
                       >
                         Number
@@ -146,8 +150,8 @@ export default function PasswordWrapper({
                       <span
                         className={
                           /[^A-Za-z0-9]/.test(val)
-                            ? "text-emerald-400"
-                            : "text-zinc-500"
+                            ? "text-success"
+                            : "text-muted-foreground"
                         }
                       >
                         Special
@@ -157,7 +161,7 @@ export default function PasswordWrapper({
                 </div>
               )}
 
-              <FormMessage />
+              <FormMessage className="text-xs font-medium text-destructive" />
             </FormItem>
             {warning && (
               <span className="text-xs text-muted-foreground mt-1 block">

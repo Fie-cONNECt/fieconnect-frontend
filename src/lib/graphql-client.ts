@@ -59,13 +59,19 @@ export async function requestGQL<TResult, TVariables>(
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-  let queryBody = (document as any).loc?.source?.body;
-  if (!queryBody) {
+  // Codegen documents often omit `loc`; fall back to printing the AST.
+  // An empty `{}` means the graphql()` source string no longer matches
+  // the keys in `src/gql/gql.ts` — re-run `yarn codegen` after editing ops.
+  let queryBody = (document as any)?.loc?.source?.body;
+  if (!queryBody && (document as any)?.kind === "Document") {
     queryBody = printAST(document);
   }
 
   if (!queryBody) {
-    throw new Error("GraphQL Document must have a source body");
+    throw new Error(
+      "GraphQL Document must have a source body. " +
+        "The operation string may not match generated documents — run `yarn codegen`.",
+    );
   }
 
   const response = await fetch(GQL_URL, {

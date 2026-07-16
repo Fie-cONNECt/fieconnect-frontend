@@ -504,6 +504,8 @@ export default function Home() {
               {properties.map((prop) => (
                 <PropertyCard
                   key={prop.id}
+                  href={`/app/properties?region=${encodeURIComponent(prop.region)}&type=${encodeURIComponent(prop.type)}`}
+                  ctaLabel="Browse Similar"
                   property={{
                     id: prop.id,
                     title: prop.title,

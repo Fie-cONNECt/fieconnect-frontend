@@ -27,7 +27,6 @@ import {
   Upload,
   Loader2,
   CheckCircle,
-  Clock,
   ArrowRight,
   PlusCircle,
   FileText,
@@ -36,6 +35,8 @@ import {
   Send,
 } from "lucide-react";
 import { Skeleton } from "../../../components/ui/skeleton";
+import { PageHeader, EmptyState } from "@/components/layout";
+import { StatusBadge } from "@/components/ui/status-badge";
 
 interface UserType {
   id: string;
@@ -175,12 +176,12 @@ function DisputesPageContent() {
     return (
       <div className="space-y-6 text-left animate-pulse">
         <div className="space-y-2">
-          <Skeleton className="h-8 w-48 bg-zinc-200" />
-          <Skeleton className="h-4 w-72 bg-zinc-200/85" />
+          <Skeleton className="h-8 w-48 bg-muted" />
+          <Skeleton className="h-4 w-72 bg-muted/80" />
         </div>
         <div className="space-y-4">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-32 w-full bg-zinc-200 rounded-2xl" />
+            <Skeleton key={i} className="h-32 w-full bg-muted rounded-2xl" />
           ))}
         </div>
       </div>
@@ -189,29 +190,25 @@ function DisputesPageContent() {
 
   return (
     <div className="space-y-6 text-left">
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-        <div>
-          <h1 className="text-xl font-black text-slate-800 tracking-tight">
-            Dispute Resolution
-          </h1>
-          <p className="text-xs font-semibold text-zinc-400 mt-1">
-            Resolve issues with property tenancies professionally.
-          </p>
-        </div>
-        {activeTenancies.length > 0 && !showSubmitForm && (
-          <Button
-            onClick={() => setShowSubmitForm(true)}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl text-xs px-5 py-2.5 flex items-center gap-1.5 cursor-pointer shadow-xs"
-          >
-            <PlusCircle size={14} /> File a Dispute
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        title="Dispute Resolution"
+        description="Resolve issues with property tenancies professionally."
+        actions={
+          activeTenancies.length > 0 && !showSubmitForm ? (
+            <Button
+              onClick={() => setShowSubmitForm(true)}
+              className="rounded-xl font-semibold gap-1.5"
+            >
+              <PlusCircle size={14} /> File a Dispute
+            </Button>
+          ) : undefined
+        }
+      />
 
       {showSubmitForm ? (
-        <div className="max-w-2xl bg-white border border-zinc-200/85 p-6 rounded-2xl shadow-xs">
+        <div className="max-w-2xl card-surface p-6">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-sm font-black text-slate-850 uppercase tracking-wide flex items-center gap-2">
+            <h3 className="text-h4 text-foreground flex items-center gap-2">
               <AlertTriangle size={16} className="text-primary" /> Submit a
               Dispute
             </h3>
@@ -221,7 +218,7 @@ function DisputesPageContent() {
                 setEvidenceUrl("");
                 form.reset();
               }}
-              className="text-xs font-bold text-zinc-400 hover:text-zinc-600 cursor-pointer"
+              className="text-caption font-semibold text-muted-foreground hover:text-foreground cursor-pointer transition-ui"
             >
               Cancel
             </button>
@@ -267,8 +264,8 @@ function DisputesPageContent() {
 
               {/* Evidence Upload */}
               <div className="space-y-1.5">
-                <label className="text-zinc-700 font-bold block">
-                  Evidence Upload:
+                <label className="text-sm font-semibold text-foreground block">
+                  Evidence Upload
                 </label>
                 <input
                   type="file"
@@ -281,10 +278,10 @@ function DisputesPageContent() {
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploadingEvidence}
-                  className={`w-full h-28 rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-4 transition-all gap-1.5 cursor-pointer bg-white ${
+                  className={`w-full h-28 rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-4 transition-ui gap-1.5 cursor-pointer bg-card ${
                     evidenceUrl
                       ? "border-primary text-primary bg-primary/5"
-                      : "border-zinc-200 hover:border-primary text-zinc-400"
+                      : "border-border hover:border-primary text-muted-foreground"
                   }`}
                 >
                   {uploadingEvidence ? (
@@ -294,12 +291,12 @@ function DisputesPageContent() {
                   ) : (
                     <Upload className="h-5 w-5 text-primary" />
                   )}
-                  <span className="text-[11px] font-bold text-slate-700">
+                  <span className="text-sm font-semibold text-foreground">
                     {evidenceUrl
                       ? "Evidence Document Uploaded"
                       : "Click to upload or drag and drop"}
                   </span>
-                  <span className="text-[9px] text-zinc-400 font-bold">
+                  <span className="text-caption text-muted-foreground">
                     PNG, JPG or PDF (max. 10MB)
                   </span>
                 </button>
@@ -317,38 +314,31 @@ function DisputesPageContent() {
           </Form>
         </div>
       ) : disputes.length === 0 ? (
-        <div className="bg-white border border-zinc-200/80 rounded-2xl p-12 text-center max-w-lg mx-auto space-y-4 shadow-xs">
-          <div className="h-14 w-14 bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-400 rounded-full mx-auto">
-            <AlertTriangle size={24} />
-          </div>
-          <div className="space-y-1">
-            <h3 className="text-sm font-bold text-foreground">
-              No disputes raised
-            </h3>
-            <p className="text-xs text-muted-foreground font-semibold">
-              Dispute resolutions allow tenants and landlords to submit
-              complaints, share evidence, and resolve conflicts.
-            </p>
-          </div>
-          {activeTenancies.length > 0 ? (
-            <Button
-              onClick={() => setShowSubmitForm(true)}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl text-xs px-5 py-2 cursor-pointer mt-2"
-            >
-              Raise a Dispute
-            </Button>
-          ) : (
-            <p className="text-[10px] text-zinc-400 font-bold">
-              You must have an active tenancy lease before filing a dispute.
-            </p>
-          )}
-        </div>
+        <EmptyState
+          icon={<AlertTriangle size={24} />}
+          title="No disputes raised"
+          description="Dispute resolutions allow tenants and landlords to submit complaints, share evidence, and resolve conflicts."
+          action={
+            activeTenancies.length > 0 ? (
+              <Button
+                onClick={() => setShowSubmitForm(true)}
+                className="rounded-xl font-semibold"
+              >
+                Raise a Dispute
+              </Button>
+            ) : (
+              <p className="text-caption text-muted-foreground font-semibold">
+                You must have an active tenancy lease before filing a dispute.
+              </p>
+            )
+          }
+        />
       ) : (
-        <div className="bg-white border border-zinc-200/85 rounded-2xl shadow-xs overflow-hidden">
+        <div className="card-surface overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-xs font-semibold text-left">
+            <table className="w-full border-collapse text-left">
               <thead>
-                <tr className="bg-zinc-50 border-b border-zinc-150 text-[10px] text-zinc-400 font-black uppercase tracking-wider">
+                <tr className="bg-muted/50 border-b border-border text-overline text-muted-foreground">
                   <th className="p-4 pl-5">Dispute Title</th>
                   <th className="p-4">Property</th>
                   <th className="p-4">Filed By</th>
@@ -357,18 +347,18 @@ function DisputesPageContent() {
                   <th className="p-4 pr-5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-100 text-slate-700">
+              <tbody className="divide-y divide-border text-body">
                 {disputes.map((d) => (
                   <tr
                     key={d.id}
-                    className="hover:bg-zinc-50/50 transition-colors"
+                    className="hover:bg-muted/30 transition-ui"
                   >
-                    <td className="p-4 pl-5 font-bold text-slate-800 max-w-xs truncate">
+                    <td className="p-4 pl-5 font-semibold text-foreground max-w-xs truncate">
                       {d.title}
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <div className="relative h-8 w-12 rounded-md overflow-hidden border border-zinc-200 shrink-0">
+                        <div className="relative h-8 w-12 rounded-md overflow-hidden border border-border shrink-0">
                           <Image
                             src={d.tenancy.property.image}
                             alt={d.tenancy.property.title}
@@ -381,28 +371,27 @@ function DisputesPageContent() {
                         </span>
                       </div>
                     </td>
-                    <td className="p-4 font-bold text-zinc-600">
+                    <td className="p-4 font-semibold text-muted-foreground">
                       {d.creator.firstName} {d.creator.lastName}
                     </td>
                     <td className="p-4">
-                      {d.status === "OPEN" ? (
-                        <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full">
-                          <Clock size={10} /> Open
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 bg-zinc-100 text-zinc-500 font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full">
-                          <CheckCircle size={10} /> Closed
-                        </span>
-                      )}
+                      <StatusBadge
+                        status={d.status === "OPEN" ? "OPEN" : "CLOSED"}
+                        label={d.status === "OPEN" ? "Open" : "Closed"}
+                      />
                     </td>
-                    <td className="p-4 text-zinc-400 font-medium">
+                    <td className="p-4 text-muted-foreground">
                       {new Date(
                         d.createdAt || d.createdAt,
                       ).toLocaleDateString()}
                     </td>
                     <td className="p-4 pr-5 text-right">
                       <Link href={`/app/disputes/${d.id}`}>
-                        <Button className="bg-zinc-50 hover:bg-zinc-100 text-slate-750 font-bold border border-zinc-200/80 rounded-xl text-[10px] px-3.5 py-1.5 flex items-center justify-center gap-1 cursor-pointer transition-all ml-auto">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-xl font-semibold gap-1 ml-auto"
+                        >
                           View Workspace <ArrowRight size={11} />
                         </Button>
                       </Link>
@@ -422,7 +411,7 @@ export default function DisputesPage() {
   return (
     <Suspense
       fallback={
-        <div className="p-6 text-zinc-400 text-xs font-semibold">
+        <div className="p-6 text-muted-foreground text-body">
           Loading disputes workspace...
         </div>
       }

@@ -22,8 +22,6 @@ import {
   FileText,
   Clock,
   CheckCircle,
-  XCircle,
-  HelpCircle,
   Send,
   MessageSquare,
   Building,
@@ -37,6 +35,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { Skeleton } from "../../../components/ui/skeleton";
+import { PageHeader, EmptyState } from "@/components/layout";
+import { StatusBadge } from "@/components/ui/status-badge";
 
 interface Property {
   id: string;
@@ -272,50 +272,43 @@ export default function ApplicationsPage() {
   };
 
   const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "APPROVED":
-        return (
-          <span className="flex items-center gap-1 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-            <CheckCircle size={10} /> Active Lease
-          </span>
-        );
-      case "APPROVED_PENDING_SIGNATURE":
-        return (
-          <span className="flex items-center gap-1 bg-yellow-50 text-yellow-700 dark:bg-yellow-950/20 dark:text-yellow-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider animate-pulse">
-            <Clock size={10} /> Pending Signature
-          </span>
-        );
-      case "REJECTED":
-        return (
-          <span className="flex items-center gap-1 bg-rose-50 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-            <XCircle size={10} /> Rejected
-          </span>
-        );
-      case "INFORMATION_REQUESTED":
-        return (
-          <span className="flex items-center gap-1 bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider animate-pulse">
-            <HelpCircle size={10} /> Action Required
-          </span>
-        );
-      default:
-        return (
-          <span className="flex items-center gap-1 bg-blue-50 text-blue-700 dark:bg-blue-950/20 dark:text-blue-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-            <Clock size={10} /> Under Review
-          </span>
-        );
-    }
+    const config: Record<
+      string,
+      { variant: "APPROVED" | "PENDING" | "REJECTED"; label: string; pulse?: boolean }
+    > = {
+      APPROVED: { variant: "APPROVED", label: "Active Lease" },
+      APPROVED_PENDING_SIGNATURE: {
+        variant: "PENDING",
+        label: "Pending Signature",
+        pulse: true,
+      },
+      REJECTED: { variant: "REJECTED", label: "Rejected" },
+      INFORMATION_REQUESTED: {
+        variant: "PENDING",
+        label: "Action Required",
+        pulse: true,
+      },
+    };
+    const c = config[status] ?? { variant: "PENDING", label: "Under Review" };
+    return (
+      <StatusBadge
+        status={c.variant}
+        label={c.label}
+        className={c.pulse ? "animate-pulse" : undefined}
+      />
+    );
   };
 
   if (loading) {
     return (
       <div className="space-y-6 text-left animate-pulse">
         <div className="space-y-2">
-          <Skeleton className="h-8 w-48 bg-zinc-200" />
-          <Skeleton className="h-4 w-72 bg-zinc-200/85" />
+          <Skeleton className="h-8 w-48 bg-muted" />
+          <Skeleton className="h-4 w-72 bg-muted/80" />
         </div>
         <div className="space-y-4">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-32 w-full bg-zinc-200 rounded-2xl" />
+            <Skeleton key={i} className="h-32 w-full bg-muted rounded-2xl" />
           ))}
         </div>
       </div>
@@ -324,52 +317,46 @@ export default function ApplicationsPage() {
 
   return (
     <div className="space-y-6 text-left">
-      <div>
-        <h1 className="text-xl font-black text-slate-800 tracking-tight">
-          {landlordMode ? "Received Applications" : "My Applications"}
-        </h1>
-        <p className="text-xs font-semibold text-zinc-400 mt-1">
-          {landlordMode
+      <PageHeader
+        title={landlordMode ? "Received Applications" : "My Applications"}
+        description={
+          landlordMode
             ? "Review and manage rental requests for your listings."
-            : "Track the status of your tenancy applications and respond to updates."}
-        </p>
-      </div>
+            : "Track the status of your tenancy applications and respond to updates."
+        }
+      />
 
       {applications.length === 0 ? (
-        <div className="bg-white border border-zinc-200/80 rounded-2xl p-12 text-center max-w-lg mx-auto space-y-4 shadow-xs">
-          <div className="h-14 w-14 bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-400 rounded-full mx-auto">
-            <FileText size={24} />
-          </div>
-          <div className="space-y-1">
-            <h3 className="text-sm font-bold text-foreground">
-              No applications found
-            </h3>
-            <p className="text-xs text-muted-foreground font-semibold">
-              {landlordMode
-                ? "When tenants apply for your properties, they will appear here."
-                : "You haven't submitted any tenancy applications yet."}
-            </p>
-          </div>
-          {!landlordMode && (
-            <Link href="/app/properties">
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl text-xs px-5 py-2 cursor-pointer mt-2">
-                Browse Properties
-              </Button>
-            </Link>
-          )}
-        </div>
+        <EmptyState
+          icon={<FileText size={24} />}
+          title="No applications found"
+          description={
+            landlordMode
+              ? "When tenants apply for your properties, they will appear here."
+              : "You haven't submitted any tenancy applications yet."
+          }
+          action={
+            !landlordMode ? (
+              <Link href="/app/properties">
+                <Button className="rounded-xl font-semibold">
+                  Browse Properties
+                </Button>
+              </Link>
+            ) : undefined
+          }
+        />
       ) : (
         <div className="space-y-4">
           {applications.map((app) => (
             <div
               key={app.id}
-              className="bg-white border border-zinc-200/80 rounded-2xl overflow-hidden shadow-xs hover:border-zinc-300 transition-all"
+              className="card-surface-hover overflow-hidden"
             >
               {/* Main Card Header Bar */}
-              <div className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-100 bg-zinc-50/20">
+              <div className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border bg-muted/50/20">
                 <div className="flex gap-4">
                   {/* Property mini thumbnail */}
-                  <div className="relative h-14 w-20 rounded-lg overflow-hidden border border-zinc-200/60 shrink-0">
+                  <div className="relative h-14 w-20 rounded-lg overflow-hidden border border-border/60 shrink-0">
                     <Image
                       src={app.property.image}
                       alt={app.property.title}
@@ -378,10 +365,10 @@ export default function ApplicationsPage() {
                     />
                   </div>
                   <div>
-                    <h3 className="text-xs font-black text-slate-800 line-clamp-1">
+                    <h3 className="text-xs font-black text-foreground line-clamp-1">
                       {app.property.title}
                     </h3>
-                    <p className="text-[10px] text-zinc-400 font-bold mt-0.5">
+                    <p className="text-[10px] text-muted-foreground font-bold mt-0.5">
                       {app.property.location}
                     </p>
                     <p className="text-[10px] font-extrabold text-primary mt-1">
@@ -392,7 +379,7 @@ export default function ApplicationsPage() {
 
                 <div className="flex items-center justify-between md:justify-end gap-3">
                   <div className="flex flex-col items-end gap-1">
-                    <span className="text-[9px] text-zinc-400 font-semibold">
+                    <span className="text-[9px] text-muted-foreground font-semibold">
                       Applied{" "}
                       {new Date(
                         isNaN(Number(app.createdAt))
@@ -406,7 +393,7 @@ export default function ApplicationsPage() {
                     onClick={() =>
                       setSelectedAppId(selectedAppId === app.id ? null : app.id)
                     }
-                    className="p-1 text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 rounded-lg transition-colors cursor-pointer"
+                    className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors cursor-pointer"
                   >
                     {selectedAppId === app.id ? (
                       <ChevronUp size={16} />
@@ -419,66 +406,66 @@ export default function ApplicationsPage() {
 
               {/* Collapsible Details Body */}
               {selectedAppId === app.id && (
-                <div className="p-5 space-y-6 border-t border-zinc-100/50 animate-in slide-in-from-top-1 duration-200">
+                <div className="p-5 space-y-6 border-t border-border/50 animate-in slide-in-from-top-1 duration-200">
                   {/* LANDLORD MODE SPECIFIC VIEWS */}
                   {landlordMode && app.tenant && (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start text-xs font-semibold">
                       {/* Left: Applicant Bio & Employment */}
                       <div className="lg:col-span-2 space-y-4 text-left">
-                        <h4 className="text-[10px] font-black uppercase text-zinc-400 tracking-wider">
+                        <h4 className="text-[10px] font-black uppercase text-muted-foreground tracking-wider">
                           Applicant Profile
                         </h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div className="flex items-start gap-3 p-3 bg-zinc-50 rounded-xl">
+                          <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-xl">
                             <UserIcon
                               size={16}
-                              className="text-zinc-400 mt-0.5"
+                              className="text-muted-foreground mt-0.5"
                             />
                             <div>
-                              <p className="font-bold text-zinc-800">
+                              <p className="font-bold text-foreground">
                                 {app.tenant.firstName} {app.tenant.lastName}
                               </p>
-                              <p className="text-[10px] text-zinc-400">
+                              <p className="text-[10px] text-muted-foreground">
                                 Applicant Name
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-start gap-3 p-3 bg-zinc-50 rounded-xl">
+                          <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-xl">
                             <Building
                               size={16}
-                              className="text-zinc-400 mt-0.5"
+                              className="text-muted-foreground mt-0.5"
                             />
                             <div>
-                              <p className="font-bold text-zinc-800">
+                              <p className="font-bold text-foreground">
                                 {app.employerName}
                               </p>
-                              <p className="text-[10px] text-zinc-400">
+                              <p className="text-[10px] text-muted-foreground">
                                 Employer Name
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-start gap-3 p-3 bg-zinc-50 rounded-xl">
+                          <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-xl">
                             <FileText
                               size={16}
-                              className="text-zinc-400 mt-0.5"
+                              className="text-muted-foreground mt-0.5"
                             />
                             <div>
-                              <p className="font-bold text-zinc-800">
+                              <p className="font-bold text-foreground">
                                 {app.jobTitle}
                               </p>
-                              <p className="text-[10px] text-zinc-400">
+                              <p className="text-[10px] text-muted-foreground">
                                 Job Title
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-start gap-3 p-3 bg-zinc-50 rounded-xl">
-                            <Clock size={16} className="text-zinc-400 mt-0.5" />
+                          <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-xl">
+                            <Clock size={16} className="text-muted-foreground mt-0.5" />
                             <div>
-                              <p className="font-bold text-zinc-800">
+                              <p className="font-bold text-foreground">
                                 {app.lengthOfEmployment} ({app.monthlyIncome}{" "}
                                 GH₵/mo)
                               </p>
-                              <p className="text-[10px] text-zinc-400">
+                              <p className="text-[10px] text-muted-foreground">
                                 Tenure & Income Range
                               </p>
                             </div>
@@ -486,11 +473,11 @@ export default function ApplicationsPage() {
                         </div>
 
                         {/* Personal Statement */}
-                        <div className="space-y-1 bg-zinc-50 p-4 rounded-xl">
-                          <p className="text-[9px] font-black uppercase text-zinc-400 tracking-wider">
+                        <div className="space-y-1 bg-muted/50 p-4 rounded-xl">
+                          <p className="text-[9px] font-black uppercase text-muted-foreground tracking-wider">
                             Personal Statement
                           </p>
-                          <p className="text-zinc-700 leading-relaxed font-medium">
+                          <p className="text-foreground leading-relaxed font-medium">
                             "{app.personalStatement}"
                           </p>
                         </div>
@@ -498,22 +485,22 @@ export default function ApplicationsPage() {
 
                       {/* Right: Contact & Documents */}
                       <div className="space-y-4 text-left">
-                        <h4 className="text-[10px] font-black uppercase text-zinc-400 tracking-wider">
+                        <h4 className="text-[10px] font-black uppercase text-muted-foreground tracking-wider">
                           Contact & Documents
                         </h4>
                         <div className="space-y-2">
                           <a
                             href={`tel:${app.tenant.phone}`}
-                            className="flex items-center gap-2 p-2.5 bg-zinc-50 hover:bg-zinc-100 rounded-xl transition-all"
+                            className="flex items-center gap-2 p-2.5 bg-muted/50 hover:bg-muted rounded-xl transition-all"
                           >
-                            <Phone size={14} className="text-zinc-400" />
+                            <Phone size={14} className="text-muted-foreground" />
                             <span>{app.tenant.phone}</span>
                           </a>
                           <a
                             href={`mailto:${app.tenant.email}`}
-                            className="flex items-center gap-2 p-2.5 bg-zinc-50 hover:bg-zinc-100 rounded-xl transition-all"
+                            className="flex items-center gap-2 p-2.5 bg-muted/50 hover:bg-muted rounded-xl transition-all"
                           >
-                            <Mail size={14} className="text-zinc-400" />
+                            <Mail size={14} className="text-muted-foreground" />
                             <span>{app.tenant.email}</span>
                           </a>
                         </div>
@@ -523,7 +510,7 @@ export default function ApplicationsPage() {
                             href={app.nationalIdUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="flex items-center justify-between p-3 border border-zinc-200 rounded-xl hover:bg-zinc-50 transition-colors"
+                            className="flex items-center justify-between p-3 border border-border rounded-xl hover:bg-muted/50 transition-colors"
                           >
                             <div className="flex items-center gap-2">
                               <FileText size={16} className="text-primary" />
@@ -540,7 +527,7 @@ export default function ApplicationsPage() {
                               href={app.supportingDocsUrl}
                               target="_blank"
                               rel="noreferrer"
-                              className="flex items-center justify-between p-3 border border-zinc-200 rounded-xl hover:bg-zinc-50 transition-colors"
+                              className="flex items-center justify-between p-3 border border-border rounded-xl hover:bg-muted/50 transition-colors"
                             >
                               <div className="flex items-center gap-2">
                                 <FileText size={16} className="text-primary" />
@@ -562,35 +549,35 @@ export default function ApplicationsPage() {
                   {!landlordMode && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs font-semibold text-left">
                       <div className="space-y-4">
-                        <h4 className="text-[10px] font-black uppercase text-zinc-400 tracking-wider">
+                        <h4 className="text-[10px] font-black uppercase text-muted-foreground tracking-wider">
                           My Application Data
                         </h4>
-                        <div className="space-y-2 bg-zinc-50 p-4 rounded-xl">
+                        <div className="space-y-2 bg-muted/50 p-4 rounded-xl">
                           <div className="flex justify-between">
-                            <span className="text-zinc-400">
+                            <span className="text-muted-foreground">
                               Employer Name:
                             </span>
-                            <span className="font-bold text-zinc-800">
+                            <span className="font-bold text-foreground">
                               {app.employerName}
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-zinc-400">Job Title:</span>
-                            <span className="font-bold text-zinc-800">
+                            <span className="text-muted-foreground">Job Title:</span>
+                            <span className="font-bold text-foreground">
                               {app.jobTitle}
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-zinc-400">
+                            <span className="text-muted-foreground">
                               Employment Length:
                             </span>
-                            <span className="font-bold text-zinc-800">
+                            <span className="font-bold text-foreground">
                               {app.lengthOfEmployment}
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-zinc-400">Income Range:</span>
-                            <span className="font-bold text-zinc-800">
+                            <span className="text-muted-foreground">Income Range:</span>
+                            <span className="font-bold text-foreground">
                               {app.monthlyIncome} GH₵
                             </span>
                           </div>
@@ -598,14 +585,14 @@ export default function ApplicationsPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <h4 className="text-[10px] font-black uppercase text-zinc-400 tracking-wider">
+                        <h4 className="text-[10px] font-black uppercase text-muted-foreground tracking-wider">
                           Uploaded Documents
                         </h4>
                         <a
                           href={app.nationalIdUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center justify-between p-3 bg-zinc-50 hover:bg-zinc-100 rounded-xl transition-all"
+                          className="flex items-center justify-between p-3 bg-muted/50 hover:bg-muted rounded-xl transition-all"
                         >
                           <span className="font-bold">
                             National ID (Ghanacard)
@@ -619,7 +606,7 @@ export default function ApplicationsPage() {
                             href={app.supportingDocsUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="flex items-center justify-between p-3 bg-zinc-50 hover:bg-zinc-100 rounded-xl transition-all"
+                            className="flex items-center justify-between p-3 bg-muted/50 hover:bg-muted rounded-xl transition-all"
                           >
                             <span className="font-bold">
                               Supporting Documents
@@ -635,8 +622,8 @@ export default function ApplicationsPage() {
 
                   {/* ACTIVE AGREEMENT VIEW SECTION (Shared by both) */}
                   {(app.agreementUrl || app.signedAgreementUrl) && (
-                    <div className="p-4 bg-zinc-50 rounded-xl border border-zinc-200/50 text-left space-y-3 text-xs font-semibold">
-                      <h4 className="text-[10px] font-black uppercase text-zinc-400 tracking-wider">
+                    <div className="p-4 bg-muted/50 rounded-xl border border-border/50 text-left space-y-3 text-xs font-semibold">
+                      <h4 className="text-[10px] font-black uppercase text-muted-foreground tracking-wider">
                         Tenancy Agreement Documents
                       </h4>
                       <div className="flex flex-col sm:flex-row gap-3">
@@ -645,7 +632,7 @@ export default function ApplicationsPage() {
                             href={app.agreementUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="flex-1 flex items-center justify-between p-3 bg-white border border-zinc-200 rounded-xl hover:bg-zinc-50/50 transition-all"
+                            className="flex-1 flex items-center justify-between p-3 bg-white border border-border rounded-xl hover:bg-muted/50/50 transition-all"
                           >
                             <div className="flex items-center gap-2">
                               <Download size={14} className="text-primary" />
@@ -695,18 +682,18 @@ export default function ApplicationsPage() {
                           <p className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase">
                             Landlord Question:
                           </p>
-                          <p className="text-xs text-zinc-700 dark:text-muted-foreground font-medium">
+                          <p className="text-xs text-foreground dark:text-muted-foreground font-medium">
                             "{app.furtherDetailsRequest}"
                           </p>
                         </div>
                       )}
 
                       {app.furtherDetailsResponse && (
-                        <div className="space-y-1 pl-6 relative before:absolute before:left-2 before:top-2 before:bottom-2 before:w-px before:bg-primary/40 pt-2 border-t border-zinc-100">
+                        <div className="space-y-1 pl-6 relative before:absolute before:left-2 before:top-2 before:bottom-2 before:w-px before:bg-primary/40 pt-2 border-t border-border">
                           <p className="text-[10px] font-bold text-primary uppercase">
                             Tenant Response:
                           </p>
-                          <p className="text-xs text-zinc-700 dark:text-muted-foreground font-medium">
+                          <p className="text-xs text-foreground dark:text-muted-foreground font-medium">
                             "{app.furtherDetailsResponse}"
                           </p>
                         </div>
@@ -717,14 +704,14 @@ export default function ApplicationsPage() {
                   {/* ACTION SECTION PANEL */}
                   {/* Landlord Action controls */}
                   {landlordMode && app.status === "PENDING" && (
-                    <div className="pt-4 border-t border-zinc-100 flex flex-col items-end gap-3">
+                    <div className="pt-4 border-t border-border flex flex-col items-end gap-3">
                       {activeRequestAppId !== app.id &&
                         activeApproveAppId !== app.id && (
                           <div className="flex flex-wrap gap-3 justify-end">
                             <Button
                               onClick={() => setActiveRequestAppId(app.id)}
                               variant="outline"
-                              className="h-10 px-5 border-zinc-200 text-zinc-700 hover:bg-zinc-50 text-xs font-bold rounded-xl cursor-pointer"
+                              className="h-10 px-5 border-border text-foreground hover:bg-muted/50 text-xs font-bold rounded-xl cursor-pointer"
                             >
                               Request Info
                             </Button>
@@ -754,7 +741,7 @@ export default function ApplicationsPage() {
                           className="w-full space-y-3 text-left"
                         >
                           <div className="space-y-1">
-                            <label className="text-xs font-semibold text-zinc-750">
+                            <label className="text-xs font-semibold text-foreground">
                               Type request message to tenant:
                             </label>
                             <textarea
@@ -764,7 +751,7 @@ export default function ApplicationsPage() {
                               onChange={(e) =>
                                 setRequestMessage(e.target.value)
                               }
-                              className="w-full p-3 rounded-xl border border-zinc-200 text-xs focus:outline-hidden focus:border-primary transition-colors bg-white resize-none font-medium leading-relaxed"
+                              className="w-full p-3 rounded-xl border border-border text-xs focus:outline-hidden focus:border-primary transition-colors bg-white resize-none font-medium leading-relaxed"
                               required
                             />
                           </div>
@@ -776,7 +763,7 @@ export default function ApplicationsPage() {
                                 setRequestMessage("");
                               }}
                               variant="outline"
-                              className="h-9 px-4 border-zinc-200 text-zinc-700 text-xs font-bold rounded-xl cursor-pointer"
+                              className="h-9 px-4 border-border text-foreground text-xs font-bold rounded-xl cursor-pointer"
                             >
                               Cancel
                             </Button>
@@ -802,7 +789,7 @@ export default function ApplicationsPage() {
                             <h4 className="text-xs font-black text-primary uppercase">
                               Approve listing & send tenancy agreement
                             </h4>
-                            <p className="text-[10px] text-zinc-500 font-semibold leading-relaxed">
+                            <p className="text-[10px] text-muted-foreground font-semibold leading-relaxed">
                               Upload the draft tenancy agreement PDF. The tenant
                               must download, sign, and return this file to
                               activate their tenancy.
@@ -824,7 +811,7 @@ export default function ApplicationsPage() {
                               className={`w-full h-24 rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-4 transition-all gap-1.5 cursor-pointer bg-white ${
                                 uploadedAgreementUrl
                                   ? "border-primary text-primary"
-                                  : "border-zinc-200 hover:border-primary text-zinc-400"
+                                  : "border-border hover:border-primary text-muted-foreground"
                               }`}
                             >
                               {uploadingAgreement ? (
@@ -834,7 +821,7 @@ export default function ApplicationsPage() {
                               ) : (
                                 <Upload className="h-5 w-5" />
                               )}
-                              <span className="text-[11px] font-bold text-slate-700">
+                              <span className="text-[11px] font-bold text-foreground">
                                 {uploadedAgreementUrl
                                   ? "Tenancy Agreement Uploaded"
                                   : "Upload Tenancy Agreement PDF"}
@@ -850,7 +837,7 @@ export default function ApplicationsPage() {
                                 setUploadedAgreementUrl("");
                               }}
                               variant="outline"
-                              className="h-9 px-4 border-zinc-200 text-zinc-750 text-xs font-bold rounded-xl cursor-pointer"
+                              className="h-9 px-4 border-border text-foreground text-xs font-bold rounded-xl cursor-pointer"
                             >
                               Cancel
                             </Button>
@@ -869,7 +856,7 @@ export default function ApplicationsPage() {
 
                   {/* Tenant Response details request form */}
                   {!landlordMode && app.status === "INFORMATION_REQUESTED" && (
-                    <div className="pt-4 border-t border-zinc-100">
+                    <div className="pt-4 border-t border-border">
                       {activeReplyAppId !== app.id ? (
                         <div className="flex justify-end">
                           <Button
@@ -885,7 +872,7 @@ export default function ApplicationsPage() {
                           className="space-y-3 text-left"
                         >
                           <div className="space-y-1">
-                            <label className="text-xs font-semibold text-zinc-750 block">
+                            <label className="text-xs font-semibold text-foreground block">
                               Your Response:
                             </label>
                             <textarea
@@ -895,7 +882,7 @@ export default function ApplicationsPage() {
                               onChange={(e) =>
                                 setTenantResponse(e.target.value)
                               }
-                              className="w-full p-3 rounded-xl border border-zinc-200 text-xs focus:outline-hidden focus:border-primary transition-colors bg-white resize-none font-medium leading-relaxed"
+                              className="w-full p-3 rounded-xl border border-border text-xs focus:outline-hidden focus:border-primary transition-colors bg-white resize-none font-medium leading-relaxed"
                               required
                             />
                           </div>
@@ -907,7 +894,7 @@ export default function ApplicationsPage() {
                                 setTenantResponse("");
                               }}
                               variant="outline"
-                              className="h-9 px-4 border-zinc-200 text-zinc-700 text-xs font-bold rounded-xl cursor-pointer"
+                              className="h-9 px-4 border-border text-foreground text-xs font-bold rounded-xl cursor-pointer"
                             >
                               Cancel
                             </Button>
@@ -926,10 +913,10 @@ export default function ApplicationsPage() {
                   {/* Tenant Lease Signing action panel */}
                   {!landlordMode &&
                     app.status === "APPROVED_PENDING_SIGNATURE" && (
-                      <div className="pt-4 border-t border-zinc-100 text-left">
+                      <div className="pt-4 border-t border-border text-left">
                         {activeSignAppId !== app.id ? (
                           <div className="flex justify-between items-center gap-4 bg-primary/5 p-4 rounded-xl border border-primary/10">
-                            <p className="text-[11px] text-zinc-500 font-semibold leading-relaxed">
+                            <p className="text-[11px] text-muted-foreground font-semibold leading-relaxed">
                               Your application is approved! Please download the
                               Tenancy Agreement above, sign it, and upload the
                               signed copy here to activate your lease.
@@ -952,7 +939,7 @@ export default function ApplicationsPage() {
                               <h4 className="text-xs font-black text-primary uppercase">
                                 Submit Signed Tenancy Agreement
                               </h4>
-                              <p className="text-[10px] text-zinc-500 font-semibold leading-relaxed">
+                              <p className="text-[10px] text-muted-foreground font-semibold leading-relaxed">
                                 Attach a scanned PDF copy of the fully signed
                                 tenancy agreement document.
                               </p>
@@ -973,7 +960,7 @@ export default function ApplicationsPage() {
                                 className={`w-full h-24 rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-4 transition-all gap-1.5 cursor-pointer bg-white ${
                                   uploadedSignedUrl
                                     ? "border-primary text-primary"
-                                    : "border-zinc-200 hover:border-primary text-zinc-400"
+                                    : "border-border hover:border-primary text-muted-foreground"
                                 }`}
                               >
                                 {uploadingSigned ? (
@@ -983,7 +970,7 @@ export default function ApplicationsPage() {
                                 ) : (
                                   <Upload className="h-5 w-5" />
                                 )}
-                                <span className="text-[11px] font-bold text-slate-700">
+                                <span className="text-[11px] font-bold text-foreground">
                                   {uploadedSignedUrl
                                     ? "Signed Agreement Uploaded"
                                     : "Click to Upload Signed PDF"}
@@ -999,7 +986,7 @@ export default function ApplicationsPage() {
                                   setUploadedSignedUrl("");
                                 }}
                                 variant="outline"
-                                className="h-9 px-4 border-zinc-200 text-zinc-700 text-xs font-bold rounded-xl cursor-pointer"
+                                className="h-9 px-4 border-border text-foreground text-xs font-bold rounded-xl cursor-pointer"
                               >
                                 Cancel
                               </Button>

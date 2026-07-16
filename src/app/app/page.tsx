@@ -261,22 +261,22 @@ export default function DashboardPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-xs text-left border-collapse">
                   <thead>
-                    <tr className="border-b border-zinc-100 text-[10px] font-extrabold uppercase text-zinc-400 tracking-wider">
+                    <tr className="border-b border-border text-[10px] font-extrabold uppercase text-muted-foreground tracking-wider">
                       <th className="pb-3 font-bold">Property Name</th>
                       <th className="pb-3 font-bold">Applicant Name</th>
                       <th className="pb-3 font-bold">Status</th>
                       <th className="pb-3 font-bold">Date</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-zinc-50">
+                  <tbody className="divide-y divide-border">
                     {recentApplications.map((app) => (
                       <tr
                         key={app.id}
                         onClick={() => router.push("/app/applications")}
-                        className="hover:bg-zinc-50/50 transition-colors cursor-pointer group"
+                        className="hover:bg-muted/50/50 transition-colors cursor-pointer group"
                       >
                         <td className="py-3.5 flex items-center gap-3">
-                          <div className="relative h-10 w-10 rounded-lg overflow-hidden shrink-0 border border-zinc-100 bg-zinc-100">
+                          <div className="relative h-10 w-10 rounded-lg overflow-hidden shrink-0 border border-border bg-muted">
                             <Image
                               src={app.property.image}
                               alt={app.property.title}
@@ -284,17 +284,17 @@ export default function DashboardPage() {
                               className="object-cover"
                             />
                           </div>
-                          <span className="font-bold text-slate-700 group-hover:text-primary transition-colors">
+                          <span className="font-bold text-foreground group-hover:text-primary transition-colors">
                             {app.property.title}
                           </span>
                         </td>
-                        <td className="py-3.5 text-zinc-500 font-bold">
+                        <td className="py-3.5 text-muted-foreground font-bold">
                           {app.tenant.firstName} {app.tenant.lastName}
                         </td>
                         <td className="py-3.5">
                           <StatusBadge status={app.status} />
                         </td>
-                        <td className="py-3.5 text-zinc-400 font-medium">
+                        <td className="py-3.5 text-muted-foreground font-medium">
                           {new Date(app.createdAt).toLocaleDateString()}
                         </td>
                       </tr>
@@ -347,23 +347,23 @@ export default function DashboardPage() {
             </div>
 
             {/* Upcoming Inspections */}
-            <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 shadow-2xs space-y-4">
-              <h4 className="text-[10px] font-extrabold uppercase text-zinc-400 tracking-widest leading-none mb-1">
+            <div className="card-surface p-5 shadow-2xs space-y-4">
+              <h4 className="text-[10px] font-extrabold uppercase text-muted-foreground tracking-widest leading-none mb-1">
                 Upcoming Inspections
               </h4>
               <div className="space-y-3">
                 <div
                   onClick={() => handleQuickAction("Inspection Schedule")}
-                  className="flex items-center gap-3 p-3 rounded-xl border border-zinc-100 bg-zinc-50/50 hover:bg-zinc-50 hover:border-zinc-200 transition-all cursor-pointer text-left"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-border bg-muted/50/50 hover:bg-muted/50 hover:border-border transition-all cursor-pointer text-left"
                 >
-                  <div className="h-9 w-9 rounded-lg bg-zinc-100 text-zinc-500 flex items-center justify-center shrink-0 border border-zinc-200/40">
+                  <div className="h-9 w-9 rounded-lg bg-muted text-muted-foreground flex items-center justify-center shrink-0 border border-border/40">
                     <Calendar size={16} />
                   </div>
                   <div>
-                    <h5 className="text-[11px] font-bold text-slate-700 leading-snug">
+                    <h5 className="text-[11px] font-bold text-foreground leading-snug">
                       Property Walkthrough
                     </h5>
-                    <span className="text-[9px] text-zinc-400 font-bold">
+                    <span className="text-[9px] text-muted-foreground font-bold">
                       Configure schedule
                     </span>
                   </div>
@@ -431,16 +431,16 @@ export default function DashboardPage() {
       {/* 3. Main Dashboard Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left column: Recent Activity */}
-        <div className="lg:col-span-2 bg-white border border-zinc-200/80 rounded-2xl p-5 sm:p-6 shadow-2xs flex flex-col justify-between text-left">
+        <div className="lg:col-span-2 card-surface p-5 sm:p-6 shadow-2xs flex flex-col justify-between text-left">
           <div className="space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-zinc-100">
-              <h3 className="text-base font-bold text-slate-800">
+            <div className="flex items-center justify-between pb-4 border-b border-border">
+              <h3 className="text-base font-bold text-foreground">
                 Recent Activity
               </h3>
             </div>
 
             {recentActivities.length === 0 ? (
-              <div className="text-center py-12 text-xs text-zinc-400 font-semibold">
+              <div className="text-center py-12 text-xs text-muted-foreground font-semibold">
                 No recent activity to show. Explore and apply for properties to
                 get started!
               </div>
@@ -448,16 +448,16 @@ export default function DashboardPage() {
               <div className="space-y-3">
                 {recentActivities.map((act) => (
                   <Link key={act.id} href={act.link}>
-                    <div className="group flex items-center justify-between p-3.5 rounded-xl border border-zinc-100 bg-zinc-50/50 hover:bg-zinc-50 hover:border-zinc-200 transition-all cursor-pointer mb-2">
+                    <div className="group flex items-center justify-between p-3.5 rounded-xl border border-border bg-muted/50/50 hover:bg-muted/50 hover:border-border transition-all cursor-pointer mb-2">
                       <div className="flex items-center gap-3">
                         <div className="h-9 w-9 rounded-lg bg-zinc-200/60 text-zinc-600 flex items-center justify-center shrink-0 group-hover:bg-zinc-200 transition-colors">
                           {act.icon}
                         </div>
                         <div>
-                          <h4 className="text-xs font-bold text-slate-700 leading-snug">
+                          <h4 className="text-xs font-bold text-foreground leading-snug">
                             {act.title}
                           </h4>
-                          <span className="text-[10px] text-zinc-400 font-medium">
+                          <span className="text-[10px] text-muted-foreground font-medium">
                             {act.subtitle}
                           </span>
                         </div>
@@ -474,7 +474,7 @@ export default function DashboardPage() {
                         </span>
                         <ChevronRight
                           size={14}
-                          className="text-zinc-400 group-hover:translate-x-0.5 transition-transform"
+                          className="text-muted-foreground group-hover:translate-x-0.5 transition-transform"
                         />
                       </div>
                     </div>
@@ -484,8 +484,8 @@ export default function DashboardPage() {
             )}
           </div>
 
-          <div className="mt-8 border-t border-zinc-100 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <span className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider">
+          <div className="mt-8 border-t border-border pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">
               Need assistance? Support team is online
             </span>
           </div>
@@ -495,8 +495,8 @@ export default function DashboardPage() {
         <div className="space-y-6 text-left">
           {/* Current Tenancy card */}
           {currentTenancy ? (
-            <div className="bg-white border border-zinc-200/80 rounded-2xl overflow-hidden shadow-2xs">
-              <div className="relative h-40 w-full bg-zinc-100">
+            <div className="card-surface overflow-hidden shadow-2xs">
+              <div className="relative h-40 w-full bg-muted">
                 <Image
                   src={currentTenancy.property.image}
                   alt={currentTenancy.property.title}
@@ -510,18 +510,18 @@ export default function DashboardPage() {
 
               <div className="p-5 space-y-4">
                 <div className="space-y-1">
-                  <h4 className="text-sm font-bold text-slate-800">
+                  <h4 className="text-sm font-bold text-foreground">
                     {currentTenancy.property.title}
                   </h4>
-                  <div className="flex items-center gap-1 text-[10px] text-zinc-400 font-bold">
-                    <MapPin size={10} className="text-zinc-400" />
+                  <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-bold">
+                    <MapPin size={10} className="text-muted-foreground" />
                     {currentTenancy.property.location}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 border-t border-b border-zinc-100 py-3">
+                <div className="grid grid-cols-2 gap-4 border-t border-b border-border py-3">
                   <div className="space-y-0.5">
-                    <span className="text-[9px] font-bold uppercase text-zinc-400 tracking-wider">
+                    <span className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">
                       Lease Commenced
                     </span>
                     <div className="text-xs font-bold text-primary flex items-center gap-1">
@@ -534,10 +534,10 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="space-y-0.5">
-                    <span className="text-[9px] font-bold uppercase text-zinc-400 tracking-wider">
+                    <span className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">
                       Monthly Rent
                     </span>
-                    <div className="text-xs font-black text-slate-700">
+                    <div className="text-xs font-black text-foreground">
                       GHC {currentTenancy.property.price.toLocaleString()}
                     </div>
                   </div>
@@ -546,7 +546,7 @@ export default function DashboardPage() {
                 <Link href={`/app/tenancies/${currentTenancy.id}`}>
                   <Button
                     variant="outline"
-                    className="w-full text-xs rounded-xl font-bold border-zinc-200 hover:bg-zinc-50 cursor-pointer h-10 mt-1"
+                    className="w-full text-xs rounded-xl font-bold border-border hover:bg-muted/50 cursor-pointer h-10 mt-1"
                   >
                     View Tenancy
                   </Button>
@@ -554,12 +554,12 @@ export default function DashboardPage() {
               </div>
             </div>
           ) : (
-            <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 shadow-2xs space-y-4 text-center py-8">
-              <div className="h-10 w-10 rounded-full bg-zinc-50 flex items-center justify-center text-zinc-400 mx-auto">
+            <div className="card-surface p-5 shadow-2xs space-y-4 text-center py-8">
+              <div className="h-10 w-10 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground mx-auto">
                 <Key size={18} />
               </div>
               <div className="space-y-1">
-                <h4 className="text-xs font-bold text-slate-800">
+                <h4 className="text-xs font-bold text-foreground">
                   No Active Lease
                 </h4>
                 <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
@@ -576,20 +576,20 @@ export default function DashboardPage() {
           )}
 
           {/* Quick Actions */}
-          <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 space-y-4">
-            <h4 className="text-[10px] font-extrabold uppercase text-zinc-400 tracking-widest leading-none mb-1">
+          <div className="card-surface p-5 space-y-4">
+            <h4 className="text-[10px] font-extrabold uppercase text-muted-foreground tracking-widest leading-none mb-1">
               Quick Actions
             </h4>
 
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => handleQuickAction("Pay Rent")}
-                className="flex flex-col items-center justify-center p-4 rounded-xl border border-zinc-100 bg-zinc-50/50 hover:bg-zinc-50 hover:border-zinc-200 transition-all gap-2 text-center group cursor-pointer"
+                className="flex flex-col items-center justify-center p-4 rounded-xl border border-border bg-muted/50/50 hover:bg-muted/50 hover:border-border transition-all gap-2 text-center group cursor-pointer"
               >
                 <div className="h-9 w-9 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                   <CreditCard size={16} />
                 </div>
-                <span className="text-[10px] font-bold text-slate-700">
+                <span className="text-[10px] font-bold text-foreground">
                   Pay Rent
                 </span>
               </button>
@@ -602,12 +602,12 @@ export default function DashboardPage() {
                     router.push("/app/disputes");
                   }
                 }}
-                className="flex flex-col items-center justify-center p-4 rounded-xl border border-zinc-100 bg-zinc-50/50 hover:bg-zinc-50 hover:border-zinc-200 transition-all gap-2 text-center group cursor-pointer"
+                className="flex flex-col items-center justify-center p-4 rounded-xl border border-border bg-muted/50/50 hover:bg-muted/50 hover:border-border transition-all gap-2 text-center group cursor-pointer"
               >
                 <div className="h-9 w-9 rounded-full bg-amber-50 text-[#f0af2f] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                   <AlertTriangle size={16} />
                 </div>
-                <span className="text-[10px] font-bold text-slate-700">
+                <span className="text-[10px] font-bold text-foreground">
                   Raise Dispute
                 </span>
               </button>
@@ -618,19 +618,19 @@ export default function DashboardPage() {
 
       {showNotificationsModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-lg space-y-5 text-left border border-zinc-100">
-            <div className="flex justify-between items-center pb-3 border-b border-zinc-100">
+          <div className="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-lg space-y-5 text-left border border-border">
+            <div className="flex justify-between items-center pb-3 border-b border-border">
               <div>
-                <h3 className="text-sm font-black text-slate-800">
+                <h3 className="text-sm font-black text-foreground">
                   Unread Notifications
                 </h3>
-                <p className="text-[10px] text-zinc-400 font-bold mt-0.5">
+                <p className="text-[10px] text-muted-foreground font-bold mt-0.5">
                   Click to view and mark as read.
                 </p>
               </div>
               <button
                 onClick={() => setShowNotificationsModal(false)}
-                className="h-8 w-8 rounded-xl bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center text-zinc-500 cursor-pointer transition-colors"
+                className="h-8 w-8 rounded-xl bg-muted hover:bg-zinc-200 flex items-center justify-center text-muted-foreground cursor-pointer transition-colors"
               >
                 <X size={14} />
               </button>
@@ -638,7 +638,7 @@ export default function DashboardPage() {
 
             <div className="max-h-[300px] overflow-y-auto space-y-2 pr-1 no-scrollbar">
               {notifications.filter((n) => !n.read).length === 0 ? (
-                <div className="text-center py-8 text-xs text-zinc-400 font-semibold">
+                <div className="text-center py-8 text-xs text-muted-foreground font-semibold">
                   All caught up! No unread notifications.
                 </div>
               ) : (
@@ -651,7 +651,7 @@ export default function DashboardPage() {
                       className="p-3.5 bg-primary/5 hover:bg-primary/10 border border-primary/20 rounded-xl transition-all cursor-pointer text-left flex flex-col gap-1 relative group"
                     >
                       <div className="flex justify-between items-start">
-                        <span className="text-slate-800 font-extrabold text-[11px] pr-6">
+                        <span className="text-foreground font-extrabold text-[11px] pr-6">
                           {n.title}
                         </span>
                         {markingId === n.id ? (
@@ -660,10 +660,10 @@ export default function DashboardPage() {
                           <Check className="h-3 w-3 text-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity" />
                         )}
                       </div>
-                      <p className="text-[10px] text-zinc-500 font-medium leading-relaxed">
+                      <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
                         {n.message}
                       </p>
-                      <span className="text-[8px] text-zinc-400 mt-1">
+                      <span className="text-[8px] text-muted-foreground mt-1">
                         {new Date(
                           parseInt(n.createdAt) || n.createdAt,
                         ).toLocaleString()}
@@ -673,10 +673,10 @@ export default function DashboardPage() {
               )}
             </div>
 
-            <div className="flex justify-end pt-2 border-t border-zinc-100">
+            <div className="flex justify-end pt-2 border-t border-border">
               <button
                 onClick={() => setShowNotificationsModal(false)}
-                className="text-xs font-bold text-zinc-400 hover:text-zinc-700 cursor-pointer transition-colors"
+                className="text-xs font-bold text-muted-foreground hover:text-zinc-700 cursor-pointer transition-colors"
               >
                 Close
               </button>

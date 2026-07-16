@@ -367,10 +367,10 @@ export default function PropertyPage() {
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8 sm:px-6 lg:px-8 space-y-8">
           {/* Back link and actions skeleton */}
           <div className="flex items-center justify-between">
-            <Skeleton className="h-4 w-24 bg-zinc-200" />
+            <Skeleton className="h-4 w-24 bg-muted" />
             <div className="flex gap-2">
-              <Skeleton className="h-8 w-8 bg-zinc-200 rounded-lg" />
-              <Skeleton className="h-8 w-8 bg-zinc-200 rounded-lg" />
+              <Skeleton className="h-8 w-8 bg-muted rounded-lg" />
+              <Skeleton className="h-8 w-8 bg-muted rounded-lg" />
             </div>
           </div>
 
@@ -380,34 +380,34 @@ export default function PropertyPage() {
               {/* Main title + Price */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-2">
-                  <Skeleton className="h-8 w-64 bg-zinc-200 rounded-lg" />
-                  <Skeleton className="h-4 w-48 bg-zinc-200/70" />
+                  <Skeleton className="h-8 w-64 bg-muted rounded-lg" />
+                  <Skeleton className="h-4 w-48 bg-muted/70" />
                 </div>
-                <Skeleton className="h-8 w-32 bg-zinc-200 rounded-xl" />
+                <Skeleton className="h-8 w-32 bg-muted rounded-xl" />
               </div>
 
               {/* Gallery skeleton */}
               <div className="grid grid-cols-1 md:grid-cols-[1fr_200px] gap-4">
-                <Skeleton className="h-96 bg-zinc-200 rounded-2xl" />
+                <Skeleton className="h-96 bg-muted rounded-2xl" />
                 <div className="hidden md:flex flex-col gap-3">
-                  <Skeleton className="h-28 bg-zinc-200 rounded-xl" />
-                  <Skeleton className="h-28 bg-zinc-200 rounded-xl" />
-                  <Skeleton className="h-28 bg-zinc-200 rounded-xl" />
+                  <Skeleton className="h-28 bg-muted rounded-xl" />
+                  <Skeleton className="h-28 bg-muted rounded-xl" />
+                  <Skeleton className="h-28 bg-muted rounded-xl" />
                 </div>
               </div>
 
               {/* Specs cards */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <Skeleton className="h-20 bg-zinc-100 rounded-xl" />
-                <Skeleton className="h-20 bg-zinc-100 rounded-xl" />
-                <Skeleton className="h-20 bg-zinc-100 rounded-xl" />
-                <Skeleton className="h-20 bg-zinc-100 rounded-xl" />
+                <Skeleton className="h-20 bg-muted/50 rounded-xl" />
+                <Skeleton className="h-20 bg-muted/50 rounded-xl" />
+                <Skeleton className="h-20 bg-muted/50 rounded-xl" />
+                <Skeleton className="h-20 bg-muted/50 rounded-xl" />
               </div>
             </div>
 
             <div className="lg:col-span-1 space-y-6">
-              <Skeleton className="h-72 w-full bg-zinc-200 rounded-2xl" />
-              <Skeleton className="h-48 w-full bg-zinc-200 rounded-2xl" />
+              <Skeleton className="h-72 w-full bg-muted rounded-2xl" />
+              <Skeleton className="h-48 w-full bg-muted rounded-2xl" />
             </div>
           </div>
         </main>

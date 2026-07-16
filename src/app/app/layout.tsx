@@ -29,6 +29,8 @@ import {
 import { toast } from "sonner";
 import { Skeleton } from "../../components/ui/skeleton";
 import { isLandlord } from "../../lib/utils";
+import { clearAuthSession } from "@/lib/auth-session";
+import { BrandLogoLink } from "@/components/layout/brand-logo";
 
 export interface AuthenticatedUser {
   id: string;
@@ -64,6 +66,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthenticatedUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Notification states
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -132,8 +135,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const handleLogout = async () => {
     try {
       await requestGQL(LOGOUT_MUTATION);
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      clearAuthSession();
       setUser(null);
       toast.success("Logged out successfully.");
       router.replace("/login");
@@ -208,7 +210,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { name: "Profile", href: "/app/profile", icon: User },
   ];
 
-  const bottomItems = [{ name: "Settings", href: "#", icon: Settings }];
+  const bottomItems = [{ name: "Settings", href: "/app/profile", icon: Settings }];
 
   // Helper to check if a navigation item is active
   const isActive = (itemHref: string) => {
@@ -221,13 +223,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-sidebar border-r border-sidebar-border px-5 py-6">
       <div className="flex flex-col mb-8 px-2">
-        <Link
-          href="/app"
-          className="text-xl font-extrabold tracking-tight text-primary flex items-center gap-2"
-        >
-          FieConnect
-        </Link>
-        <div className="text-overline mt-1">Property Management</div>
+        <BrandLogoLink href="/app" size="md" showTagline linkClassName="mb-2" />
+        <div className="text-overline">Property Management</div>
       </div>
 
       <nav className="space-y-1.5 flex-1" aria-label="Dashboard">
@@ -278,7 +275,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           return (
             <Link
               key={item.name}
-              href={item.href === "#" ? "/app/profile" : item.href}
+              href={item.href}
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-3 px-3.5 py-2.5 min-h-11 rounded-xl text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-ui"
             >
@@ -387,10 +384,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     type="search"
                     placeholder="Search properties..."
                     aria-label="Search properties"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full h-10 pl-9 pr-4 rounded-full bg-muted/80 border border-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:bg-card focus:border-border focus:ring-2 focus:ring-ring/40 transition-ui font-medium"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
-                        router.push("/app/properties");
+                        const query = searchQuery.trim();
+                        router.push(
+                          query
+                            ? `/app/properties?q=${encodeURIComponent(query)}`
+                            : "/app/properties",
+                        );
                       }
                     }}
                   />

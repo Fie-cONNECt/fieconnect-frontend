@@ -9,6 +9,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BrandLogoLink } from "@/components/layout/brand-logo";
 
 const EXPLORE_LINKS = [
   { label: "Browse Rentals", href: "/app/properties" },
@@ -29,26 +30,6 @@ const LEGAL_LINKS = [
   { label: "Terms of Service", href: "#" },
   { label: "Cookie Policy", href: "#" },
 ];
-
-function FooterLogo() {
-  return (
-    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-md ring-1 ring-primary/25">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="h-5 w-5"
-        aria-hidden
-      >
-        <polygon points="12 2 2 22 22 22" />
-      </svg>
-    </div>
-  );
-}
 
 function FooterLinkGroup({
   title,
@@ -145,17 +126,13 @@ export function PublicFooter({ className, id = "about" }: PublicFooterProps) {
         <div className="py-12 sm:py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
           {/* Brand column */}
           <div className="lg:col-span-4 space-y-5">
-            <Link href="/" className="inline-flex items-center gap-3 group">
-              <FooterLogo />
-              <div className="flex flex-col leading-none">
-                <span className="text-lg font-extrabold tracking-tight text-white group-hover:text-primary transition-ui">
-                  FieConnect
-                </span>
-                <span className="text-[10px] font-semibold uppercase tracking-widest text-white/45 mt-1">
-                  Ghana Rentals
-                </span>
-              </div>
-            </Link>
+            <BrandLogoLink
+              href="/"
+              size="lg"
+              tone="light"
+              showTagline
+              linkClassName="group"
+            />
             <p className="text-sm leading-relaxed text-white/50 max-w-sm">
               Modernizing the digital tenancy experience in Ghana with trust,
               transparency, and efficiency. Connecting reliable landlords with
@@ -235,14 +212,7 @@ export function PublicFooterCompact({ className }: { className?: string }) {
         aria-hidden
       />
       <div className="page-container py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/90 text-primary-foreground text-xs font-extrabold shadow-sm">
-            F
-          </div>
-          <span className="text-sm font-bold text-white group-hover:text-primary transition-ui">
-            FieConnect
-          </span>
-        </Link>
+        <BrandLogoLink href="/" size="sm" tone="light" linkClassName="group" />
 
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs font-medium text-white/45">
           <Link href="#" className="hover:text-white/80 transition-ui">

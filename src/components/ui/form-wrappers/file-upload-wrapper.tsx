@@ -8,9 +8,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { UploadCloud, File, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import type { Control } from "react-hook-form";
 
 interface FileUploadWrapperProps {
@@ -90,90 +88,90 @@ export default function FileUploadWrapper({
         };
 
         return (
-          <>
-            <FormItem className="w-full">
-              <FormLabel>
-                {required && <span className="text-red-500 mr-1">*</span>}
-                {label}
-              </FormLabel>
-              <FormControl>
-                <div className="space-y-3">
-                  {/* Invisible input element */}
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    accept={accept}
-                    multiple={multiple}
-                    disabled={disabled}
-                    onChange={(e) => handleFiles(e.target.files)}
-                    className="hidden"
-                  />
+          <FormItem className="w-full space-y-2">
+            <FormLabel className="text-sm font-semibold text-foreground">
+              {required && (
+                <span className="text-destructive mr-1" aria-hidden>
+                  *
+                </span>
+              )}
+              {label}
+            </FormLabel>
+            <FormControl>
+              <div className="space-y-3">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept={accept}
+                  multiple={multiple}
+                  disabled={disabled}
+                  onChange={(e) => handleFiles(e.target.files)}
+                  className="hidden"
+                />
 
-                  {/* Drop zone container */}
-                  <div
-                    onDragEnter={handleDrag}
-                    onDragOver={handleDrag}
-                    onDragLeave={handleDrag}
-                    onDrop={handleDrop}
-                    onClick={() => !disabled && fileInputRef.current?.click()}
-                    className={`flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${
-                      dragActive
-                        ? "border-indigo-500 bg-indigo-950/20 shadow-lg"
-                        : "border-zinc-800 hover:border-zinc-700 bg-zinc-950/40 hover:bg-zinc-950/60"
-                    } ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`}
-                  >
-                    <div className="p-3 bg-zinc-900 border border-zinc-800 rounded-full mb-3 text-zinc-400">
-                      <UploadCloud size={24} />
-                    </div>
-                    <p className="text-sm font-semibold text-zinc-200">
-                      Click to upload or drag & drop
-                    </p>
-                    <p className="text-xs text-zinc-500 mt-1">
-                      {accept
-                        ? `Accepted formats: ${accept}`
-                        : "Any files supported"}
-                    </p>
+                <div
+                  onDragEnter={handleDrag}
+                  onDragOver={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDrop={handleDrop}
+                  onClick={() => !disabled && fileInputRef.current?.click()}
+                  className={`flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-ui ${
+                    dragActive
+                      ? "border-primary bg-primary/5 shadow-sm"
+                      : "border-border hover:border-primary/40 bg-muted/30 hover:bg-muted/50"
+                  } ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className ?? ""}`}
+                >
+                  <div className="p-3 bg-card border border-border rounded-full mb-3 text-primary">
+                    <UploadCloud size={24} aria-hidden />
                   </div>
-
-                  {/* File preview list */}
-                  {files.length > 0 && (
-                    <div className="space-y-2">
-                      {files.map((file, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center justify-between p-3 border border-zinc-800 bg-zinc-900/60 rounded-lg text-xs"
-                        >
-                          <div className="flex items-center gap-2 text-zinc-300">
-                            <File size={16} className="text-indigo-400" />
-                            <span className="font-medium truncate max-w-[200px]">
-                              {file.name}
-                            </span>
-                            <span className="text-zinc-500">
-                              ({(file.size / 1024).toFixed(1)} KB)
-                            </span>
-                          </div>
-                          {!disabled && (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleRemoveFile(idx);
-                              }}
-                              className="text-zinc-500 hover:text-zinc-300 transition-colors"
-                            >
-                              <X size={16} />
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <p className="text-sm font-semibold text-foreground">
+                    Click to upload or drag & drop
+                  </p>
+                  <p className="text-caption text-muted-foreground mt-1">
+                    {accept
+                      ? `Accepted formats: ${accept}`
+                      : "Any files supported"}
+                  </p>
                 </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-            <span className="font-light">{warning}</span>
-          </>
+
+                {files.length > 0 && (
+                  <div className="space-y-2">
+                    {files.map((file, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between p-3 border border-border bg-card rounded-lg text-xs"
+                      >
+                        <div className="flex items-center gap-2 text-foreground min-w-0">
+                          <File size={16} className="text-primary shrink-0" />
+                          <span className="font-medium truncate max-w-[200px]">
+                            {file.name}
+                          </span>
+                          <span className="text-muted-foreground shrink-0">
+                            ({(file.size / 1024).toFixed(1)} KB)
+                          </span>
+                        </div>
+                        {!disabled && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveFile(idx);
+                            }}
+                            className="text-muted-foreground hover:text-foreground transition-ui"
+                            aria-label={`Remove ${file.name}`}
+                          >
+                            <X size={16} />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </FormControl>
+            <FormMessage className="text-xs font-medium text-destructive" />
+            {warning && <span className="text-caption">{warning}</span>}
+          </FormItem>
         );
       }}
     />

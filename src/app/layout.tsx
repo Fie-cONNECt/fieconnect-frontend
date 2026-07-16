@@ -17,6 +17,10 @@ export const metadata: Metadata = {
   title: "FieConnect | Premium Property Management & Rental Portal",
   description:
     "Browse verified rental properties, submit digital tenancy agreements, and manage leases seamlessly across Ghana.",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({
