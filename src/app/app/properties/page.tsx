@@ -19,8 +19,11 @@ import {
   SEARCH_PROPERTY_TYPES as PROPERTY_TYPES,
   RENT_RANGES,
 } from "../../../lib/constants";
-import { Button } from "../../../components/ui/button";
-import { Skeleton } from "../../../components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { PropertyCard } from "@/components/property/property-card";
+import { StatCard, PageHeader, EmptyState } from "@/components/layout";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { useForm } from "react-hook-form";
 import { Form } from "../../../components/ui/form";
 import { SelectWrapper } from "../../../components/ui/form-wrappers";
@@ -31,12 +34,7 @@ import {
   Plus,
   ChevronRight,
   ChevronLeft,
-  Bed,
-  Bath,
-  ArrowRight,
-  CheckCircle,
   Layers,
-  Clock,
   AlertTriangle,
   Key,
   TrendingUp,
@@ -59,14 +57,6 @@ interface PropertyItem {
   createdAt: string;
 }
 
-const TYPE_COLORS: Record<string, string> = {
-  Apartment: "bg-amber-100 text-amber-700",
-  House: "bg-emerald-100 text-emerald-700",
-  Studio: "bg-violet-100 text-violet-700",
-  Villa: "bg-blue-100 text-blue-700",
-  Townhouse: "bg-rose-100 text-rose-700",
-  Duplex: "bg-cyan-100 text-cyan-700",
-};
 
 function formatPrice(price: number) {
   return `GHC ${price.toLocaleString()}/mo`;
@@ -183,7 +173,7 @@ export default function TenantPropertiesPage() {
     <div className="space-y-8 -mx-4 sm:-mx-6 lg:-mx-8 text-left">
       {/* ── Hero Banner ── */}
       <div className="relative mx-4 sm:mx-6 lg:mx-8 overflow-hidden rounded-2xl min-h-[180px] flex items-end">
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/80 via-emerald-800/70 to-emerald-600/60 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-green-dark/90 via-brand-green/75 to-brand-green-medium/65 z-10" />
         <Image
           src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2000&auto=format&fit=crop"
           alt="Hero"
@@ -192,10 +182,10 @@ export default function TenantPropertiesPage() {
           priority
         />
         <div className="relative z-20 p-7 pb-8">
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
+          <h1 className="text-h1 text-white tracking-tight leading-tight">
             Welcome to FieConnect.
           </h1>
-          <p className="text-white/75 text-xs font-semibold mt-2 max-w-sm leading-relaxed">
+          <p className="text-white/75 text-sm font-medium mt-2 max-w-sm leading-relaxed">
             Start exploring available rental properties across Ghana with a
             platform designed for trust and transparency.
           </p>
@@ -215,7 +205,7 @@ export default function TenantPropertiesPage() {
                 name="region"
                 label="Region"
                 options={REGIONS.map((r) => ({ label: r, value: r }))}
-                className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 border border-zinc-200 w-full"
+                className="h-10 rounded-xl bg-card text-sm font-medium text-foreground border border-border w-full"
               />
             </div>
             <div className="min-w-[160px] text-left">
@@ -224,7 +214,7 @@ export default function TenantPropertiesPage() {
                 name="propType"
                 label="Property Type"
                 options={PROPERTY_TYPES.map((t) => ({ label: t, value: t }))}
-                className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 border border-zinc-200  w-full"
+                className="h-10 rounded-xl bg-card text-sm font-medium text-foreground border border-border w-full"
               />
             </div>
             <div className="min-w-[180px] text-left">
@@ -236,7 +226,7 @@ export default function TenantPropertiesPage() {
                   label: r.label,
                   value: i.toString(),
                 }))}
-                className="h-10 rounded-xl bg-white text-xs font-semibold text-slate-700 border border-zinc-200 w-full"
+                className="h-10 rounded-xl bg-card text-sm font-medium text-foreground border border-border w-full"
               />
             </div>
 
@@ -261,7 +251,7 @@ export default function TenantPropertiesPage() {
                   setShowAll(false);
                   fetchProperties("All", "All", 0);
                 }}
-                className="h-10 px-4 border border-zinc-200 hover:bg-zinc-50 text-zinc-500 hover:text-zinc-700 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
+                className="h-10 px-4 border border-border hover:bg-muted text-muted-foreground hover:text-foreground font-semibold rounded-xl text-sm flex items-center justify-center gap-1.5 cursor-pointer transition-ui"
               >
                 Clear Filters
               </button>
@@ -274,22 +264,25 @@ export default function TenantPropertiesPage() {
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-3 gap-3">
           <StatCard
-            icon={<Layers size={16} className="text-primary" />}
+            icon={<Layers size={18} />}
             value={appCount}
             label="Applications Submitted"
             href="/app/applications"
+            tone="primary"
           />
           <StatCard
-            icon={<Key size={16} className="text-emerald-600" />}
-            value={tenancyCount > 0 ? tenancyCount : "No"}
+            icon={<Key size={18} />}
+            value={tenancyCount > 0 ? tenancyCount : "0"}
             label="Active Tenancy"
             href="/app/tenancies"
+            tone="success"
           />
           <StatCard
-            icon={<AlertTriangle size={16} className="text-amber-500" />}
+            icon={<AlertTriangle size={18} />}
             value={disputeCount}
             label="Active Disputes"
             href="/app/disputes"
+            tone="warning"
           />
         </div>
       </div>
@@ -297,7 +290,7 @@ export default function TenantPropertiesPage() {
       {/* ── Featured Properties ── */}
       <section className="px-4 sm:px-6 lg:px-8 space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-black text-slate-800">
+          <h2 className="text-h3 text-foreground">
             {showAll ? "All Matching Properties" : "Featured Properties"}
           </h2>
           <button
@@ -311,17 +304,33 @@ export default function TenantPropertiesPage() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-64 rounded-2xl bg-zinc-200" />
+              <Skeleton key={i} className="h-64 rounded-2xl bg-muted" />
             ))}
           </div>
         ) : displayedProperties.length === 0 ? (
-          <div className="text-center py-12 text-xs text-zinc-400 font-semibold">
-            No properties match your filters.
-          </div>
+          <EmptyState
+            icon={<Building2 size={18} />}
+            title="No properties found"
+            description="No properties match your current filters. Try adjusting region, type, or rent range."
+            className="py-10"
+          />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayedProperties.map((p) => (
-              <FeaturedCard key={p.id} property={p} />
+              <PropertyCard
+                key={p.id}
+                property={{
+                  id: p.id,
+                  title: p.title,
+                  type: p.type,
+                  location: p.location,
+                  price: p.price,
+                  image: p.image,
+                  verified: p.verified,
+                  bedrooms: p.bedrooms,
+                  bathrooms: p.bathrooms,
+                }}
+              />
             ))}
           </div>
         )}
@@ -331,7 +340,7 @@ export default function TenantPropertiesPage() {
       {!showAll && recommended.length > 0 && (
         <section className="space-y-4">
           <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8">
-            <h2 className="text-sm font-black text-slate-800">
+            <h2 className="text-h3 text-foreground">
               Recommended in{" "}
               {form.watch("region") === "All"
                 ? "Greater Accra"
@@ -340,13 +349,13 @@ export default function TenantPropertiesPage() {
             <div className="flex gap-1">
               <button
                 onClick={() => scrollRec("left")}
-                className="h-7 w-7 rounded-lg border border-zinc-200 flex items-center justify-center text-zinc-500 hover:bg-zinc-100 cursor-pointer"
+                className="h-8 w-8 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:bg-muted transition-ui cursor-pointer"
               >
                 <ChevronLeft size={14} />
               </button>
               <button
                 onClick={() => scrollRec("right")}
-                className="h-7 w-7 rounded-lg border border-zinc-200 flex items-center justify-center text-zinc-500 hover:bg-zinc-100 cursor-pointer"
+                className="h-8 w-8 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:bg-muted transition-ui cursor-pointer"
               >
                 <ChevronRight size={14} />
               </button>
@@ -357,7 +366,20 @@ export default function TenantPropertiesPage() {
             className="flex gap-4 overflow-x-auto scroll-smooth pb-2 px-4 sm:px-6 lg:px-8 no-scrollbar"
           >
             {recommended.map((p) => (
-              <RecommendedCard key={p.id} property={p} />
+              <div key={p.id} className="shrink-0 w-64">
+                <PropertyCard
+                  compact
+                  property={{
+                    id: p.id,
+                    title: p.title,
+                    type: p.type,
+                    location: p.district || p.region,
+                    price: p.price,
+                    image: p.image,
+                    verified: p.verified,
+                  }}
+                />
+              </div>
             ))}
           </div>
         </section>
@@ -367,7 +389,7 @@ export default function TenantPropertiesPage() {
       {!showAll && recent.length > 0 && (
         <section className="px-4 sm:px-6 lg:px-8 space-y-4">
           <h2 className="text-sm font-black text-slate-800">Recent Listings</h2>
-          <div className="bg-white border border-zinc-200/85 rounded-2xl shadow-xs divide-y divide-zinc-100 overflow-hidden">
+          <div className="card-surface divide-y divide-border overflow-hidden">
             {recent.map((p) => (
               <RecentRow key={p.id} property={p} />
             ))}
@@ -397,143 +419,31 @@ export default function TenantPropertiesPage() {
   );
 }
 
-// ── Featured Card ───────────────────────────────────────────────────
-function FeaturedCard({ property: p }: { property: PropertyItem }) {
-  return (
-    <Link href={`/property/${p.id}`}>
-      <div className="group bg-white rounded-2xl border border-zinc-200/85 overflow-hidden shadow-xs hover:shadow-md transition-all cursor-pointer">
-        <div className="relative h-44 w-full overflow-hidden">
-          <Image
-            src={p.image}
-            alt={p.title}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        </div>
-        <div className="p-4 space-y-2">
-          <div className="flex items-center justify-between">
-            <span
-              className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${TYPE_COLORS[p.type] ?? "bg-zinc-100 text-zinc-600"}`}
-            >
-              {p.type}
-            </span>
-            <span className="text-xs font-extrabold text-primary">
-              {formatPrice(p.price)}
-            </span>
-          </div>
-          <h3 className="text-xs font-black text-slate-800 leading-snug">
-            {p.title}
-          </h3>
-          <p className="text-[10px] text-zinc-400 font-semibold flex items-center gap-1">
-            <MapPin size={10} /> {p.location}
-          </p>
-          {p.about && (
-            <p className="text-[10px] text-zinc-500 font-medium leading-relaxed line-clamp-2">
-              {p.about}
-            </p>
-          )}
-          <div className="pt-1">
-            <div className="w-full h-8 bg-primary/90 hover:bg-primary rounded-xl flex items-center justify-center text-white text-[10px] font-extrabold gap-1 transition-colors">
-              View Details <ArrowRight size={11} />
-            </div>
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
-}
-
-// ── Recommended Card ────────────────────────────────────────────────
-function RecommendedCard({ property: p }: { property: PropertyItem }) {
-  return (
-    <Link href={`/property/${p.id}`}>
-      <div className="group shrink-0 w-56 bg-white rounded-2xl border border-zinc-200/85 overflow-hidden shadow-xs hover:shadow-md transition-all cursor-pointer">
-        <div className="relative h-32 w-full overflow-hidden">
-          <Image
-            src={p.image}
-            alt={p.title}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-          <div className="absolute top-2 left-2 bg-black/60 text-white text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-wider">
-            {p.district || p.region}
-          </div>
-        </div>
-        <div className="p-3 space-y-1">
-          <h3 className="text-[11px] font-extrabold text-slate-800 leading-snug line-clamp-1">
-            {p.title}
-          </h3>
-          <p className="text-[10px] font-bold text-zinc-500">
-            {formatPrice(p.price)}
-          </p>
-          <div className="flex items-center gap-1 text-[10px] text-primary font-extrabold pt-0.5">
-            View <ArrowRight size={10} />
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
-}
-
-// ── Recent Row ──────────────────────────────────────────────────────
 function RecentRow({ property: p }: { property: PropertyItem }) {
   return (
     <Link href={`/property/${p.id}`}>
-      <div className="flex items-center gap-4 p-4 hover:bg-zinc-50/60 transition-colors cursor-pointer group">
-        <div className="relative h-14 w-20 rounded-xl overflow-hidden shrink-0 border border-zinc-100">
+      <div className="flex items-center gap-4 p-4 hover:bg-muted/40 transition-ui cursor-pointer group">
+        <div className="relative h-14 w-20 rounded-xl overflow-hidden shrink-0 border border-border">
           <Image src={p.image} alt={p.title} fill className="object-cover" />
         </div>
         <div className="flex-1 min-w-0 space-y-0.5">
-          <p className="text-xs font-extrabold text-slate-800 truncate">
+          <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-ui">
             {p.title}
           </p>
-          <p className="text-[10px] text-zinc-400 font-semibold flex items-center gap-1">
-            <MapPin size={9} /> {p.location} · {timeSince(p.createdAt)}
+          <p className="text-caption flex items-center gap-1">
+            <MapPin size={10} aria-hidden /> {p.location} · {timeSince(p.createdAt)}
           </p>
         </div>
-        <div className="text-right shrink-0 space-y-1">
-          <p className="text-xs font-extrabold text-slate-800">
-            {formatPrice(p.price)}
-          </p>
-          <span className="inline-block bg-emerald-50 text-emerald-700 text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
-            New Listing
-          </span>
+        <div className="text-right shrink-0 space-y-1.5">
+          <p className="text-sm font-bold text-primary">{formatPrice(p.price)}</p>
+          <StatusBadge status="ACTIVE" label="New Listing" />
         </div>
       </div>
     </Link>
   );
 }
 
-// ── Stat Card ───────────────────────────────────────────────────────
-function StatCard({
-  icon,
-  value,
-  label,
-  href,
-}: {
-  icon: React.ReactNode;
-  value: number | string;
-  label: string;
-  href: string;
-}) {
-  return (
-    <Link href={href}>
-      <div className="bg-white border border-zinc-200/85 rounded-xl p-3 sm:p-4 shadow-xs hover:shadow-sm transition-all cursor-pointer space-y-1 text-center sm:text-left">
-        <div className="flex items-center justify-center sm:justify-start gap-2">
-          {icon}
-          <span className="text-lg font-black text-slate-800 leading-none">
-            {value}
-          </span>
-        </div>
-        <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider leading-tight">
-          {label}
-        </p>
-      </div>
-    </Link>
-  );
-}
-
-// ── Landlord Management View (unchanged) ────────────────────────────
+// ── Landlord Management View ─────────────────────────────────────────
 function LandlordPropertiesPage() {
   const { user } = useUser();
   const [properties, setProperties] = useState<PropertyItem[]>([]);
@@ -551,38 +461,38 @@ function LandlordPropertiesPage() {
   }, []);
 
   return (
-    <div className="space-y-6 text-left">
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-        <div>
-          <h1 className="text-xl font-black text-slate-800 tracking-tight">
-            My Properties
-          </h1>
-          <p className="text-xs font-semibold text-zinc-400 mt-1">
-            Manage and track your listed rental properties.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-zinc-100 p-1 rounded-xl border border-zinc-200">
-            <button
-              onClick={() => setViewMode("grid")}
-              className={`h-7 w-7 flex items-center justify-center rounded-lg transition-all cursor-pointer ${viewMode === "grid" ? "bg-white shadow-xs text-primary" : "text-zinc-400"}`}
-            >
-              <Layers size={14} />
-            </button>
-            <button
-              onClick={() => setViewMode("table")}
-              className={`h-7 w-7 flex items-center justify-center rounded-lg transition-all cursor-pointer ${viewMode === "table" ? "bg-white shadow-xs text-primary" : "text-zinc-400"}`}
-            >
-              <TrendingUp size={14} />
-            </button>
+    <div className="section-spacing text-left">
+      <PageHeader
+        title="My Properties"
+        description="Manage and track your listed rental properties."
+        actions={
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 bg-muted p-1 rounded-xl border border-border">
+              <button
+                type="button"
+                onClick={() => setViewMode("grid")}
+                className={`h-8 w-8 flex items-center justify-center rounded-lg transition-ui cursor-pointer ${viewMode === "grid" ? "bg-card shadow-sm text-primary" : "text-muted-foreground"}`}
+                aria-label="Grid view"
+              >
+                <Layers size={14} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("table")}
+                className={`h-8 w-8 flex items-center justify-center rounded-lg transition-ui cursor-pointer ${viewMode === "table" ? "bg-card shadow-sm text-primary" : "text-muted-foreground"}`}
+                aria-label="Table view"
+              >
+                <TrendingUp size={14} />
+              </button>
+            </div>
+            <Link href="/app/properties/new">
+              <Button className="h-10 px-4 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl text-sm flex items-center gap-1.5 cursor-pointer shadow-sm">
+                <Plus size={14} aria-hidden /> Add Property
+              </Button>
+            </Link>
           </div>
-          <Link href="/app/properties/new">
-            <Button className="h-9 px-4 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-xs">
-              <Plus size={13} /> Add Property
-            </Button>
-          </Link>
-        </div>
-      </div>
+        }
+      />
 
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -591,79 +501,42 @@ function LandlordPropertiesPage() {
           ))}
         </div>
       ) : properties.length === 0 ? (
-        <div className="bg-white border border-zinc-200/80 rounded-2xl p-12 text-center max-w-lg mx-auto shadow-xs space-y-4">
-          <div className="h-14 w-14 bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-400 rounded-full mx-auto">
-            <Building2 size={24} />
-          </div>
-          <div className="space-y-1">
-            <h3 className="text-sm font-bold text-foreground">
-              No properties listed yet
-            </h3>
-            <p className="text-xs text-muted-foreground font-semibold">
-              Add your first property to start receiving applications.
-            </p>
-          </div>
-          <Link href="/app/properties/new">
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl text-xs px-5 py-2 cursor-pointer">
-              <Plus size={13} className="mr-1" /> Add Property
-            </Button>
-          </Link>
-        </div>
+        <EmptyState
+          icon={<Building2 size={20} />}
+          title="No properties listed yet"
+          description="Add your first property to start receiving applications from verified tenants."
+          action={
+            <Link href="/app/properties/new">
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl text-sm px-5 h-10 cursor-pointer">
+                <Plus size={14} className="mr-1" aria-hidden /> Add Property
+              </Button>
+            </Link>
+          }
+        />
       ) : viewMode === "grid" ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {properties.map((p) => (
-            <div
+            <PropertyCard
               key={p.id}
-              className="bg-white rounded-2xl border border-zinc-200/85 overflow-hidden shadow-xs hover:shadow-md transition-all group"
-            >
-              <div className="relative h-44 overflow-hidden">
-                <Image
-                  src={p.image}
-                  alt={p.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                {p.verified && (
-                  <div className="absolute top-2 right-2 bg-emerald-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <CheckCircle size={9} /> Verified
-                  </div>
-                )}
-              </div>
-              <div className="p-4 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span
-                    className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${TYPE_COLORS[p.type] ?? "bg-zinc-100 text-zinc-600"}`}
-                  >
-                    {p.type}
-                  </span>
-                  <span className="text-xs font-extrabold text-primary">
-                    {formatPrice(p.price)}
-                  </span>
-                </div>
-                <h3 className="text-xs font-black text-slate-800 leading-snug">
-                  {p.title}
-                </h3>
-                <p className="text-[10px] text-zinc-400 font-semibold flex items-center gap-1">
-                  <MapPin size={10} />
-                  {p.location}
-                </p>
-                <div className="flex gap-3 text-[10px] text-zinc-500 font-semibold pt-1">
-                  <span className="flex items-center gap-1">
-                    <Bed size={10} /> {p.bedrooms} bed
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Bath size={10} /> {p.bathrooms} bath
-                  </span>
-                </div>
-              </div>
-            </div>
+              property={{
+                id: p.id,
+                title: p.title,
+                type: p.type,
+                location: p.location,
+                price: p.price,
+                image: p.image,
+                verified: p.verified,
+                bedrooms: p.bedrooms,
+                bathrooms: p.bathrooms,
+              }}
+            />
           ))}
         </div>
       ) : (
-        <div className="bg-white border border-zinc-200/85 rounded-2xl shadow-xs overflow-hidden">
-          <table className="w-full text-xs font-semibold text-left">
+        <div className="card-surface overflow-hidden">
+          <table className="w-full text-sm font-medium text-left">
             <thead>
-              <tr className="bg-zinc-50 border-b border-zinc-150 text-[10px] text-zinc-400 font-black uppercase tracking-wider">
+              <tr className="bg-muted/50 border-b border-border text-overline">
                 <th className="p-4 pl-5">Property</th>
                 <th className="p-4">Location</th>
                 <th className="p-4">Type</th>
@@ -671,15 +544,12 @@ function LandlordPropertiesPage() {
                 <th className="p-4">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100 text-slate-700">
+            <tbody className="divide-y divide-border text-foreground">
               {properties.map((p) => (
-                <tr
-                  key={p.id}
-                  className="hover:bg-zinc-50/50 transition-colors"
-                >
+                <tr key={p.id} className="hover:bg-muted/30 transition-ui">
                   <td className="p-4 pl-5">
                     <div className="flex items-center gap-3">
-                      <div className="relative h-9 w-14 rounded-lg overflow-hidden border border-zinc-100 shrink-0">
+                      <div className="relative h-9 w-14 rounded-lg overflow-hidden border border-border shrink-0">
                         <Image
                           src={p.image}
                           alt={p.title}
@@ -687,31 +557,23 @@ function LandlordPropertiesPage() {
                           className="object-cover"
                         />
                       </div>
-                      <span className="font-extrabold text-slate-800 truncate max-w-[180px]">
+                      <span className="font-semibold truncate max-w-[180px]">
                         {p.title}
                       </span>
                     </div>
                   </td>
-                  <td className="p-4 text-zinc-500">{p.location}</td>
+                  <td className="p-4 text-muted-foreground">{p.location}</td>
                   <td className="p-4">
-                    <span
-                      className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${TYPE_COLORS[p.type] ?? "bg-zinc-100 text-zinc-600"}`}
-                    >
-                      {p.type}
-                    </span>
+                    <span className="text-caption font-bold uppercase">{p.type}</span>
                   </td>
                   <td className="p-4 font-bold text-primary">
                     {formatPrice(p.price)}
                   </td>
                   <td className="p-4">
                     {p.verified ? (
-                      <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 font-bold text-[9px] uppercase px-2 py-0.5 rounded-full">
-                        <CheckCircle size={9} /> Verified
-                      </span>
+                      <StatusBadge status="VERIFIED" />
                     ) : (
-                      <span className="inline-flex items-center gap-1 bg-zinc-100 text-zinc-400 font-bold text-[9px] uppercase px-2 py-0.5 rounded-full">
-                        <Clock size={9} /> Pending
-                      </span>
+                      <StatusBadge status="PENDING" label="Pending" />
                     )}
                   </td>
                 </tr>

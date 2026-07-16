@@ -38,6 +38,7 @@ import {
   EyeOff,
   Eye,
 } from "lucide-react";
+import { PageHeader } from "@/components/layout";
 
 interface ProfileFormValues {
   firstName: string;
@@ -165,15 +166,10 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-6 text-left">
-      {/* Page header */}
-      <div>
-        <h1 className="text-xl font-black text-slate-800 tracking-tight">
-          My Profile
-        </h1>
-        <p className="text-xs font-semibold text-zinc-400 mt-1">
-          Manage your personal information and account settings.
-        </p>
-      </div>
+      <PageHeader
+        title="My Profile"
+        description="Manage your personal information and account settings."
+      />
 
       {/* Hero banner */}
       <div className="relative overflow-hidden bg-gradient-to-br from-primary/90 via-primary to-primary/70 rounded-3xl p-8 text-white shadow-lg">
@@ -209,7 +205,7 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute -bottom-2 -right-2 h-8 w-8 bg-white rounded-xl border border-zinc-100 shadow-md flex items-center justify-center text-primary hover:bg-zinc-50 transition-colors cursor-pointer"
+                  className="absolute -bottom-2 -right-2 h-8 w-8 bg-white rounded-xl border border-border shadow-md flex items-center justify-center text-primary hover:bg-muted/50 transition-colors cursor-pointer"
                   title="Upload profile photo"
                 >
                   {uploadingAvatar ? (
@@ -267,9 +263,9 @@ export default function ProfilePage() {
 
       {/* ── Edit profile form ── */}
       {editMode ? (
-        <div className="bg-white border border-zinc-200/85 rounded-2xl p-6 shadow-xs">
+        <div className="card-surface p-6">
           <div className="flex items-center justify-between mb-5">
-            <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+            <h3 className="text-xs font-black text-foreground uppercase tracking-wider flex items-center gap-2">
               <Sparkles size={14} className="text-primary" /> Edit Your
               Information
             </h3>
@@ -333,13 +329,13 @@ export default function ProfilePage() {
 
               {/* Email — read-only */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-zinc-700 block">
+                <label className="text-xs font-bold text-foreground block">
                   Email Address
                 </label>
-                <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-zinc-150 bg-zinc-50 text-xs font-semibold text-zinc-400">
+                <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-border bg-muted/50 text-xs font-semibold text-muted-foreground">
                   <Mail size={13} className="text-muted-foreground shrink-0" />
                   <span>{user.email}</span>
-                  <span className="ml-auto text-[9px] font-black uppercase tracking-wider text-zinc-300">
+                  <span className="ml-auto text-[9px] font-black uppercase tracking-wider text-muted-foreground/60">
                     Cannot be changed
                   </span>
                 </div>
@@ -353,7 +349,7 @@ export default function ProfilePage() {
                 rows={3}
               />
 
-              <div className="flex items-center justify-end gap-3 pt-2 border-t border-zinc-100">
+              <div className="flex items-center justify-end gap-3 pt-2 border-t border-border">
                 <button
                   type="button"
                   onClick={() => {
@@ -366,7 +362,7 @@ export default function ProfilePage() {
                     });
                     setAvatarUrl(user.avatarUrl || "");
                   }}
-                  className="text-xs font-bold text-zinc-400 hover:text-zinc-700 cursor-pointer transition-colors"
+                  className="text-xs font-bold text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
                 >
                   Cancel
                 </button>
@@ -389,8 +385,8 @@ export default function ProfilePage() {
       ) : (
         /* ── Read-only info cards ── */
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-white border border-zinc-200/85 rounded-2xl p-5 shadow-xs space-y-4">
-            <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+          <div className="card-surface p-5 space-y-4">
+            <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
               <UserIcon size={12} /> Personal Information
             </h3>
             <div className="space-y-3">
@@ -412,8 +408,8 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="bg-white border border-zinc-200/85 rounded-2xl p-5 shadow-xs space-y-4">
-            <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+          <div className="card-surface p-5 space-y-4">
+            <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
               <Shield size={12} /> Account Details
             </h3>
             <div className="space-y-3">
@@ -442,11 +438,11 @@ export default function ProfilePage() {
           </div>
 
           {user.bio && (
-            <div className="sm:col-span-2 bg-white border border-zinc-200/85 rounded-2xl p-5 shadow-xs space-y-3">
-              <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+            <div className="sm:col-span-2 card-surface p-5 space-y-3">
+              <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                 <FileText size={12} /> Bio
               </h3>
-              <p className="text-xs text-slate-700 leading-relaxed font-medium">
+              <p className="text-xs text-foreground leading-relaxed font-medium">
                 {user.bio}
               </p>
             </div>
@@ -455,33 +451,33 @@ export default function ProfilePage() {
       )}
 
       {/* ── Security / Change Password section ── */}
-      <div className="bg-white border border-zinc-200/85 rounded-2xl shadow-xs overflow-hidden">
+      <div className="card-surface overflow-hidden">
         <button
           onClick={() => setShowPasswordSection((v) => !v)}
-          className="w-full flex items-center justify-between p-5 text-left cursor-pointer hover:bg-zinc-50/50 transition-colors"
+          className="w-full flex items-center justify-between p-5 text-left cursor-pointer hover:bg-muted/50/50 transition-colors"
         >
           <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-xl bg-zinc-100 flex items-center justify-center text-zinc-500 shrink-0">
+            <div className="h-8 w-8 rounded-xl bg-muted flex items-center justify-center text-muted-foreground shrink-0">
               <Lock size={14} />
             </div>
             <div>
-              <p className="text-xs font-black text-slate-800">
+              <p className="text-xs font-black text-foreground">
                 Change Password
               </p>
-              <p className="text-[10px] text-zinc-400 font-semibold mt-0.5">
+              <p className="text-[10px] text-muted-foreground font-semibold mt-0.5">
                 Update your account password. Must be at least 8 characters.
               </p>
             </div>
           </div>
           <span
-            className={`text-[10px] font-black uppercase tracking-wider transition-colors ${showPasswordSection ? "text-primary" : "text-zinc-400"}`}
+            className={`text-[10px] font-black uppercase tracking-wider transition-colors ${showPasswordSection ? "text-primary" : "text-muted-foreground"}`}
           >
             {showPasswordSection ? "Cancel" : "Update →"}
           </span>
         </button>
 
         {showPasswordSection && (
-          <div className="px-5 pb-6 border-t border-zinc-100 pt-5">
+          <div className="px-5 pb-6 border-t border-border pt-5">
             <Form {...passwordForm}>
               <form
                 onSubmit={passwordForm.handleSubmit(handleChangePassword)}
@@ -489,7 +485,7 @@ export default function ProfilePage() {
               >
                 {/* Current password */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-zinc-700 block">
+                  <label className="text-xs font-bold text-foreground block">
                     Current Password
                   </label>
                   <div className="relative">
@@ -499,12 +495,12 @@ export default function ProfilePage() {
                       {...passwordForm.register("currentPassword", {
                         required: true,
                       })}
-                      className="w-full pr-10 p-3 rounded-xl border border-zinc-200 text-xs focus:outline-hidden focus:border-primary transition-colors bg-white font-medium"
+                      className="w-full pr-10 p-3 rounded-xl border border-border text-xs focus:outline-hidden focus:border-primary transition-colors bg-white font-medium"
                     />
                     <button
                       type="button"
                       onClick={() => setShowCurrent((v) => !v)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                     >
                       {showCurrent ? <EyeOff size={14} /> : <Eye size={14} />}
                     </button>
@@ -513,7 +509,7 @@ export default function ProfilePage() {
 
                 {/* New password */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-zinc-700 block">
+                  <label className="text-xs font-bold text-foreground block">
                     New Password
                   </label>
                   <div className="relative">
@@ -524,12 +520,12 @@ export default function ProfilePage() {
                         required: true,
                         minLength: 8,
                       })}
-                      className="w-full pr-10 p-3 rounded-xl border border-zinc-200 text-xs focus:outline-hidden focus:border-primary transition-colors bg-white font-medium"
+                      className="w-full pr-10 p-3 rounded-xl border border-border text-xs focus:outline-hidden focus:border-primary transition-colors bg-white font-medium"
                     />
                     <button
                       type="button"
                       onClick={() => setShowNew((v) => !v)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                     >
                       {showNew ? <EyeOff size={14} /> : <Eye size={14} />}
                     </button>
@@ -538,7 +534,7 @@ export default function ProfilePage() {
 
                 {/* Confirm new password */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-zinc-700 block">
+                  <label className="text-xs font-bold text-foreground block">
                     Confirm New Password
                   </label>
                   <div className="relative">
@@ -548,12 +544,12 @@ export default function ProfilePage() {
                       {...passwordForm.register("confirmPassword", {
                         required: true,
                       })}
-                      className="w-full pr-10 p-3 rounded-xl border border-zinc-200 text-xs focus:outline-hidden focus:border-primary transition-colors bg-white font-medium"
+                      className="w-full pr-10 p-3 rounded-xl border border-border text-xs focus:outline-hidden focus:border-primary transition-colors bg-white font-medium"
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirm((v) => !v)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                     >
                       {showConfirm ? <EyeOff size={14} /> : <Eye size={14} />}
                     </button>
@@ -594,14 +590,14 @@ function InfoRow({
 }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="h-7 w-7 rounded-lg bg-zinc-50 border border-zinc-100 flex items-center justify-center shrink-0">
+      <div className="h-7 w-7 rounded-lg bg-muted/50 border border-border flex items-center justify-center shrink-0">
         {icon}
       </div>
       <div>
-        <p className="text-[9px] text-zinc-400 font-extrabold uppercase tracking-wider">
+        <p className="text-[9px] text-muted-foreground font-extrabold uppercase tracking-wider">
           {label}
         </p>
-        <p className="text-xs text-slate-800 font-semibold mt-0.5">{value}</p>
+        <p className="text-xs text-foreground font-semibold mt-0.5">{value}</p>
       </div>
     </div>
   );

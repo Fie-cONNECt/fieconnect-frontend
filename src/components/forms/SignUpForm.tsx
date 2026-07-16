@@ -22,6 +22,7 @@ import {
 import { requestGQL } from "@/lib/graphql-client";
 import { REGISTER_MUTATION } from "@/graphql/operations";
 import { toast } from "sonner";
+import { persistAuthSession } from "@/lib/auth-session";
 import { useRouter } from "next/navigation";
 import { User, Home, Eye, EyeOff, Check } from "lucide-react";
 
@@ -62,6 +63,9 @@ const countryOptions = [
   { label: "+234 🇳🇬", value: "+234" },
 ];
 
+const authInputClass =
+  "rounded-xl h-11 bg-background border-border text-foreground";
+
 export default function SignUpForm() {
   const router = useRouter();
 
@@ -98,12 +102,11 @@ export default function SignUpForm() {
       const { token, user } = response.register;
 
       if (typeof window !== "undefined") {
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(user));
+        persistAuthSession(token, user);
       }
 
       toast.success("Registration successful! Welcome to FieConnect.");
-      router.push("/");
+      router.push("/app");
     } catch (error: any) {
       console.error("Signup error:", error);
       toast.error(error.message || "Signup failed. Please try again.");
@@ -118,17 +121,17 @@ export default function SignUpForm() {
           <button
             type="button"
             onClick={() => form.setValue("userType", "TENANT")}
-            className={`flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-all cursor-pointer ${
+            className={`flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-ui cursor-pointer ${
               form.watch("userType") === "TENANT"
-                ? "border-primary bg-primary/5 text-primary shadow-sm"
-                : "border-zinc-800 bg-zinc-950/20 text-zinc-400 hover:border-zinc-700"
+                ? "border-primary bg-primary/10 text-primary shadow-sm"
+                : "border-border bg-card text-muted-foreground hover:border-primary/30 hover:bg-muted/50"
             }`}
           >
             <div
               className={`p-2 rounded-full ${
                 form.watch("userType") === "TENANT"
-                  ? "bg-primary/10"
-                  : "bg-zinc-900"
+                  ? "bg-primary/15"
+                  : "bg-muted"
               }`}
             >
               <User size={24} />
@@ -139,17 +142,17 @@ export default function SignUpForm() {
           <button
             type="button"
             onClick={() => form.setValue("userType", "LANDLORD")}
-            className={`flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-all cursor-pointer ${
+            className={`flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-ui cursor-pointer ${
               form.watch("userType") === "LANDLORD"
-                ? "border-primary bg-primary/5 text-primary shadow-sm"
-                : "border-zinc-800 bg-zinc-950/20 text-zinc-400 hover:border-zinc-700"
+                ? "border-primary bg-primary/10 text-primary shadow-sm"
+                : "border-border bg-card text-muted-foreground hover:border-primary/30 hover:bg-muted/50"
             }`}
           >
             <div
               className={`p-2 rounded-full ${
                 form.watch("userType") === "LANDLORD"
-                  ? "bg-primary/10"
-                  : "bg-zinc-900"
+                  ? "bg-primary/15"
+                  : "bg-muted"
               }`}
             >
               <Home size={24} />
@@ -167,7 +170,7 @@ export default function SignUpForm() {
               label="First Name"
               type="text"
               placeholder="John"
-              className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/50 text-white"
+              className={authInputClass}
               required
             />
           </div>
@@ -178,7 +181,7 @@ export default function SignUpForm() {
               label="Last Name"
               type="text"
               placeholder="Doe"
-              className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/50 text-white"
+              className={authInputClass}
               required
             />
           </div>
@@ -191,24 +194,26 @@ export default function SignUpForm() {
           label="Email Address"
           type="email"
           placeholder="john@example.com"
-          className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/50 text-white"
+          className={authInputClass}
           required
         />
 
         {/* Phone Number Field */}
         <div className="space-y-2">
-          <label className="text-xs font-medium text-zinc-300 flex items-center gap-1">
-            <span className="text-red-500">*</span> Phone Number
+          <label className="text-sm font-semibold text-foreground flex items-center gap-1">
+            <span className="text-destructive" aria-hidden>
+              *
+            </span>{" "}
+            Phone Number
           </label>
           <div className="grid grid-cols-[110px_1fr] gap-3">
-            {/* Country code selector */}
             <NativeSelectWrapper
               control={form.control as any}
               name="countryCode"
               options={countryOptions}
+              className={authInputClass}
             />
 
-            {/* Phone digits input */}
             <FormField
               control={form.control}
               name="phoneNumber"
@@ -219,10 +224,10 @@ export default function SignUpForm() {
                       {...field}
                       type="tel"
                       placeholder="24 123 4567"
-                      className="w-full h-10 rounded-xl bg-zinc-950/40 border border-zinc-800 text-sm px-4 text-white focus:outline-hidden focus:ring-2 focus:ring-primary/50"
+                      className={`w-full ${authInputClass} text-sm px-4 focus:outline-hidden focus:ring-2 focus:ring-primary/50`}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs font-medium text-destructive" />
                 </FormItem>
               )}
             />
@@ -236,7 +241,7 @@ export default function SignUpForm() {
             name="password"
             label="Password"
             placeholder="••••••••"
-            className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/50 text-white"
+            className={authInputClass}
             required
             showStrength={true}
           />
@@ -246,7 +251,7 @@ export default function SignUpForm() {
             name="confirmPassword"
             label="Confirm Password"
             placeholder="••••••••"
-            className="rounded-xl bg-zinc-950/40 border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/50 text-white"
+            className={authInputClass}
             required
           />
         </div>
@@ -262,28 +267,28 @@ export default function SignUpForm() {
                   type="checkbox"
                   checked={field.value}
                   onChange={(e) => field.onChange(e.target.checked)}
-                  className="mt-1 h-4 w-4 rounded-sm border border-zinc-850 bg-zinc-950 text-primary focus:ring-2 focus:ring-primary/50 cursor-pointer"
+                  className="mt-1 h-4 w-4 rounded-sm border border-border bg-background text-primary focus:ring-2 focus:ring-primary/50 cursor-pointer"
                 />
               </FormControl>
-              <div className="space-y-1 leading-none text-zinc-400 text-xs">
+              <div className="space-y-1 leading-none text-muted-foreground text-caption">
                 <span>
                   I agree to the{" "}
                   <a
                     href="#"
-                    className="text-zinc-200 hover:underline hover:text-white font-medium"
+                    className="text-foreground hover:underline font-medium"
                   >
                     Terms of Service
                   </a>{" "}
                   and{" "}
                   <a
                     href="#"
-                    className="text-zinc-200 hover:underline hover:text-white font-medium"
+                    className="text-foreground hover:underline font-medium"
                   >
                     Privacy Policy
                   </a>{" "}
                   of FieConnect.
                 </span>
-                <FormMessage />
+                <FormMessage className="text-xs font-medium text-destructive" />
               </div>
             </FormItem>
           )}

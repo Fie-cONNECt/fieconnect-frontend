@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import { requestGQL } from "@/lib/graphql-client";
 import { LOGIN_MUTATION } from "@/graphql/operations";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { Form } from "@/components/ui/form";
+import { persistAuthSession } from "@/lib/auth-session";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -21,6 +22,8 @@ export type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/app";
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -44,12 +47,11 @@ export default function LoginForm() {
       const { token, user } = response.login;
 
       if (typeof window !== "undefined") {
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(user));
+        persistAuthSession(token, user);
       }
 
       toast.success("Login successful!");
-      router.push("/app");
+      router.push(redirectTo.startsWith("/app") ? redirectTo : "/app");
     } catch (error: any) {
       console.error("Login error:", error);
       toast.error(

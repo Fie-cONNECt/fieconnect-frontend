@@ -5,6 +5,7 @@ import Link from "next/link";
 import { LogOut, Menu, X, LayoutDashboard, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { BrandLogoLink } from "@/components/layout/brand-logo";
 
 export interface PublicNavbarUser {
   firstName: string;
@@ -23,31 +24,6 @@ const NAV_LINKS = [
   { key: "how" as const, label: "How it Works", href: "/#how-it-works" },
   { key: "about" as const, label: "About", href: "/#about" },
 ];
-
-function LogoMark({ className }: { className?: string }) {
-  return (
-    <div
-      className={cn(
-        "flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-sm ring-1 ring-primary/20",
-        className,
-      )}
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="h-4.5 w-4.5"
-        aria-hidden
-      >
-        <polygon points="12 2 2 22 22 22" />
-      </svg>
-    </div>
-  );
-}
 
 export function PublicNavbar({
   user,
@@ -92,20 +68,12 @@ export function PublicNavbar({
         <div className="page-container flex h-[4.25rem] items-center justify-between gap-4">
           {/* Logo + desktop nav */}
           <div className="flex items-center gap-8 min-w-0">
-            <Link
+            <BrandLogoLink
               href="/"
-              className="group flex items-center gap-2.5 shrink-0 focus-visible:rounded-xl"
-            >
-              <LogoMark className="transition-ui group-hover:shadow-md group-hover:scale-[1.02]" />
-              <div className="flex flex-col leading-none">
-                <span className="text-base font-extrabold tracking-tight text-foreground">
-                  FieConnect
-                </span>
-                <span className="hidden sm:block text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mt-0.5">
-                  Ghana Rentals
-                </span>
-              </div>
-            </Link>
+              size="lg"
+              showTagline
+              linkClassName="group"
+            />
 
             <nav
               className="hidden lg:flex items-center gap-0.5 p-1 rounded-full bg-muted/50 border border-border/60"
@@ -232,16 +200,11 @@ export function PublicNavbar({
           <div className="absolute top-0 right-0 bottom-0 w-[min(100%,20rem)] bg-card border-l border-border shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
             {/* Drawer header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-              <Link
+              <BrandLogoLink
                 href="/"
+                size="sm"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-2"
-              >
-                <LogoMark className="h-8 w-8" />
-                <span className="text-sm font-extrabold text-foreground">
-                  FieConnect
-                </span>
-              </Link>
+              />
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(false)}
@@ -358,8 +321,7 @@ export function PublicNavbarSkeleton() {
       <div className="h-0.5 w-full bg-muted animate-pulse" aria-hidden />
       <div className="page-container flex h-[4.25rem] items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-9 w-9 bg-muted animate-pulse rounded-xl" />
-          <div className="h-4 w-24 bg-muted animate-pulse rounded-md" />
+          <div className="h-10 w-28 bg-muted animate-pulse rounded-lg" />
         </div>
         <div className="hidden md:flex items-center gap-2">
           <div className="h-10 w-16 bg-muted animate-pulse rounded-full" />
