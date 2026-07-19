@@ -1,13 +1,8 @@
-"use client";
+'use client';
 
-import React from "react";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
-import type { Control } from "react-hook-form";
+import React from 'react';
+import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import type { Control } from 'react-hook-form';
 
 interface Option {
   label: string;
@@ -39,14 +34,10 @@ export default function NativeSelectWrapper({
             <select
               {...field}
               disabled={disabled}
-              className={`w-full h-11 rounded-xl bg-background border border-border text-sm px-3 text-foreground focus:outline-hidden focus:ring-2 focus:ring-primary/50 cursor-pointer ${className ?? ""}`}
+              className={`w-full h-11 rounded-xl bg-background border border-border text-sm px-3 text-foreground focus:outline-hidden focus:ring-2 focus:ring-primary/50 cursor-pointer ${className ?? ''}`}
             >
               {options.map((opt) => (
-                <option
-                  key={opt.value}
-                  value={opt.value}
-                  className="bg-background text-foreground"
-                >
+                <option key={opt.value} value={opt.value} className="bg-background text-foreground">
                   {opt.label}
                 </option>
               ))}

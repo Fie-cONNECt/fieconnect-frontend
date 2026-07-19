@@ -1,32 +1,32 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useUser } from "../layout";
-import { requestGQL } from "../../../lib/graphql-client";
+import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useUser } from '../layout';
+import { requestGQL } from '../../../lib/graphql-client';
 import {
   PROPERTIES_QUERY,
   MY_PROPERTIES_QUERY,
   MY_APPLICATIONS_QUERY,
   MY_TENANCIES_QUERY,
   MY_DISPUTES_QUERY,
-} from "../../../graphql/operations";
-import { isLandlord } from "../../../lib/utils";
+} from '../../../graphql/operations';
+import { isLandlord } from '../../../lib/utils';
 import {
   SEARCH_REGIONS as REGIONS,
   SEARCH_PROPERTY_TYPES as PROPERTY_TYPES,
   RENT_RANGES,
-} from "../../../lib/constants";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { PropertyCard } from "@/components/property/property-card";
-import { StatCard, PageHeader, EmptyState } from "@/components/layout";
-import { StatusBadge } from "@/components/ui/status-badge";
-import { useForm } from "react-hook-form";
-import { Form } from "../../../components/ui/form";
-import { SelectWrapper } from "../../../components/ui/form-wrappers";
+} from '../../../lib/constants';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { PropertyCard } from '@/components/property/property-card';
+import { StatCard, PageHeader, EmptyState } from '@/components/layout';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { useForm } from 'react-hook-form';
+import { Form } from '../../../components/ui/form';
+import { SelectWrapper } from '../../../components/ui/form-wrappers';
 import {
   Search,
   MapPin,
@@ -38,7 +38,7 @@ import {
   AlertTriangle,
   Key,
   TrendingUp,
-} from "lucide-react";
+} from 'lucide-react';
 
 interface PropertyItem {
   id: string;
@@ -57,7 +57,6 @@ interface PropertyItem {
   createdAt: string;
 }
 
-
 function formatPrice(price: number) {
   return `GHC ${price.toLocaleString()}/mo`;
 }
@@ -65,10 +64,10 @@ function formatPrice(price: number) {
 function timeSince(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
   const h = Math.floor(diff / 3600000);
-  if (h < 1) return "Just now";
-  if (h < 24) return `Added ${h} hour${h > 1 ? "s" : ""} ago`;
+  if (h < 1) return 'Just now';
+  if (h < 24) return `Added ${h} hour${h > 1 ? 's' : ''} ago`;
   const d = Math.floor(h / 24);
-  return `Added ${d} day${d > 1 ? "s" : ""} ago`;
+  return `Added ${d} day${d > 1 ? 's' : ''} ago`;
 }
 
 interface FilterFormValues {
@@ -91,9 +90,9 @@ export default function TenantPropertiesPage() {
 
   const form = useForm<FilterFormValues>({
     defaultValues: {
-      region: "All",
-      propType: "All",
-      rentRange: "0",
+      region: 'All',
+      propType: 'All',
+      rentRange: '0',
     },
   });
 
@@ -105,22 +104,22 @@ export default function TenantPropertiesPage() {
   }
 
   const fetchProperties = async (
-    r = form.getValues("region"),
-    t = form.getValues("propType"),
-    ri = parseInt(form.getValues("rentRange")) || 0,
+    r = form.getValues('region'),
+    t = form.getValues('propType'),
+    ri = parseInt(form.getValues('rentRange')) || 0,
   ) => {
     setLoading(true);
     try {
       const range = RENT_RANGES[ri];
-      const data = await requestGQL(PROPERTIES_QUERY, {
-        region: r === "All" ? undefined : r,
-        type: t === "All" ? undefined : t,
+      const data = (await requestGQL(PROPERTIES_QUERY as any, {
+        region: r === 'All' ? undefined : r,
+        type: t === 'All' ? undefined : t,
         minPrice: range.min,
         maxPrice: range.max,
-      });
+      })) as any;
       if (data?.properties) setProperties(data.properties as PropertyItem[]);
     } catch (err) {
-      console.error("Failed to load properties:", err);
+      console.error('Failed to load properties:', err);
     } finally {
       setLoading(false);
     }
@@ -138,10 +137,7 @@ export default function TenantPropertiesPage() {
       ]).then(([apps, tenancies, disputes]) => {
         setAppCount(apps?.myApplications?.length ?? 0);
         setTenancyCount(tenancies?.myTenancies?.length ?? 0);
-        setDisputeCount(
-          disputes?.myDisputes?.filter((d: any) => d.status === "OPEN")
-            .length ?? 0,
-        );
+        setDisputeCount(disputes?.myDisputes?.filter((d: any) => d.status === 'OPEN').length ?? 0);
       });
     }
   }, [userLoading]);
@@ -149,9 +145,9 @@ export default function TenantPropertiesPage() {
   const handleSearch = () => {
     setShowAll(true);
     fetchProperties(
-      form.getValues("region"),
-      form.getValues("propType"),
-      parseInt(form.getValues("rentRange")) || 0,
+      form.getValues('region'),
+      form.getValues('propType'),
+      parseInt(form.getValues('rentRange')) || 0,
     );
   };
 
@@ -160,11 +156,11 @@ export default function TenantPropertiesPage() {
   const recommended = properties.slice(3, 9);
   const recent = properties.slice(0, 5);
 
-  const scrollRec = (dir: "left" | "right") => {
+  const scrollRec = (dir: 'left' | 'right') => {
     if (recommendedRef.current) {
       recommendedRef.current.scrollBy({
-        left: dir === "left" ? -280 : 280,
-        behavior: "smooth",
+        left: dir === 'left' ? -280 : 280,
+        behavior: 'smooth',
       });
     }
   };
@@ -186,8 +182,8 @@ export default function TenantPropertiesPage() {
             Welcome to FieConnect.
           </h1>
           <p className="text-white/75 text-sm font-medium mt-2 max-w-sm leading-relaxed">
-            Start exploring available rental properties across Ghana with a
-            platform designed for trust and transparency.
+            Start exploring available rental properties across Ghana with a platform designed for
+            trust and transparency.
           </p>
         </div>
       </div>
@@ -237,19 +233,19 @@ export default function TenantPropertiesPage() {
               <Search size={13} /> Search
             </Button>
 
-            {(form.watch("region") !== "All" ||
-              form.watch("propType") !== "All" ||
-              form.watch("rentRange") !== "0") && (
+            {(form.watch('region') !== 'All' ||
+              form.watch('propType') !== 'All' ||
+              form.watch('rentRange') !== '0') && (
               <button
                 type="button"
                 onClick={() => {
                   form.reset({
-                    region: "All",
-                    propType: "All",
-                    rentRange: "0",
+                    region: 'All',
+                    propType: 'All',
+                    rentRange: '0',
                   });
                   setShowAll(false);
-                  fetchProperties("All", "All", 0);
+                  fetchProperties('All', 'All', 0);
                 }}
                 className="h-10 px-4 border border-border hover:bg-muted text-muted-foreground hover:text-foreground font-semibold rounded-xl text-sm flex items-center justify-center gap-1.5 cursor-pointer transition-ui"
               >
@@ -272,7 +268,7 @@ export default function TenantPropertiesPage() {
           />
           <StatCard
             icon={<Key size={18} />}
-            value={tenancyCount > 0 ? tenancyCount : "0"}
+            value={tenancyCount > 0 ? tenancyCount : '0'}
             label="Active Tenancy"
             href="/app/tenancies"
             tone="success"
@@ -291,13 +287,13 @@ export default function TenantPropertiesPage() {
       <section className="px-4 sm:px-6 lg:px-8 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-h3 text-foreground">
-            {showAll ? "All Matching Properties" : "Featured Properties"}
+            {showAll ? 'All Matching Properties' : 'Featured Properties'}
           </h2>
           <button
             onClick={() => setShowAll(!showAll)}
             className="text-xs font-bold text-primary hover:underline cursor-pointer"
           >
-            {showAll ? "Show Featured Only" : "View All"}
+            {showAll ? 'Show Featured Only' : 'View All'}
           </button>
         </div>
 
@@ -341,20 +337,18 @@ export default function TenantPropertiesPage() {
         <section className="space-y-4">
           <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8">
             <h2 className="text-h3 text-foreground">
-              Recommended in{" "}
-              {form.watch("region") === "All"
-                ? "Greater Accra"
-                : form.watch("region")}
+              Recommended in{' '}
+              {form.watch('region') === 'All' ? 'Greater Accra' : form.watch('region')}
             </h2>
             <div className="flex gap-1">
               <button
-                onClick={() => scrollRec("left")}
+                onClick={() => scrollRec('left')}
                 className="h-8 w-8 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:bg-muted transition-ui cursor-pointer"
               >
                 <ChevronLeft size={14} />
               </button>
               <button
-                onClick={() => scrollRec("right")}
+                onClick={() => scrollRec('right')}
                 className="h-8 w-8 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:bg-muted transition-ui cursor-pointer"
               >
                 <ChevronRight size={14} />
@@ -448,13 +442,12 @@ function LandlordPropertiesPage() {
   const { user } = useUser();
   const [properties, setProperties] = useState<PropertyItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
   useEffect(() => {
     requestGQL(MY_PROPERTIES_QUERY)
       .then((data) => {
-        if (data?.myProperties)
-          setProperties(data.myProperties as PropertyItem[]);
+        if (data?.myProperties) setProperties(data.myProperties as PropertyItem[]);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -470,16 +463,16 @@ function LandlordPropertiesPage() {
             <div className="flex items-center gap-1 bg-muted p-1 rounded-xl border border-border">
               <button
                 type="button"
-                onClick={() => setViewMode("grid")}
-                className={`h-8 w-8 flex items-center justify-center rounded-lg transition-ui cursor-pointer ${viewMode === "grid" ? "bg-card shadow-sm text-primary" : "text-muted-foreground"}`}
+                onClick={() => setViewMode('grid')}
+                className={`h-8 w-8 flex items-center justify-center rounded-lg transition-ui cursor-pointer ${viewMode === 'grid' ? 'bg-card shadow-sm text-primary' : 'text-muted-foreground'}`}
                 aria-label="Grid view"
               >
                 <Layers size={14} />
               </button>
               <button
                 type="button"
-                onClick={() => setViewMode("table")}
-                className={`h-8 w-8 flex items-center justify-center rounded-lg transition-ui cursor-pointer ${viewMode === "table" ? "bg-card shadow-sm text-primary" : "text-muted-foreground"}`}
+                onClick={() => setViewMode('table')}
+                className={`h-8 w-8 flex items-center justify-center rounded-lg transition-ui cursor-pointer ${viewMode === 'table' ? 'bg-card shadow-sm text-primary' : 'text-muted-foreground'}`}
                 aria-label="Table view"
               >
                 <TrendingUp size={14} />
@@ -513,7 +506,7 @@ function LandlordPropertiesPage() {
             </Link>
           }
         />
-      ) : viewMode === "grid" ? (
+      ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {properties.map((p) => (
             <PropertyCard
@@ -550,25 +543,16 @@ function LandlordPropertiesPage() {
                   <td className="p-4 pl-5">
                     <div className="flex items-center gap-3">
                       <div className="relative h-9 w-14 rounded-lg overflow-hidden border border-border shrink-0">
-                        <Image
-                          src={p.image}
-                          alt={p.title}
-                          fill
-                          className="object-cover"
-                        />
+                        <Image src={p.image} alt={p.title} fill className="object-cover" />
                       </div>
-                      <span className="font-semibold truncate max-w-[180px]">
-                        {p.title}
-                      </span>
+                      <span className="font-semibold truncate max-w-[180px]">{p.title}</span>
                     </div>
                   </td>
                   <td className="p-4 text-muted-foreground">{p.location}</td>
                   <td className="p-4">
                     <span className="text-caption font-bold uppercase">{p.type}</span>
                   </td>
-                  <td className="p-4 font-bold text-primary">
-                    {formatPrice(p.price)}
-                  </td>
+                  <td className="p-4 font-bold text-primary">{formatPrice(p.price)}</td>
                   <td className="p-4">
                     {p.verified ? (
                       <StatusBadge status="VERIFIED" />

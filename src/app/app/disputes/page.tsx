@@ -1,27 +1,23 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useRef, Suspense } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { useUser } from "../layout";
-import { requestGQL } from "../../../lib/graphql-client";
+import React, { useState, useEffect, useRef, Suspense } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useUser } from '../layout';
+import { requestGQL } from '../../../lib/graphql-client';
 import {
   MY_DISPUTES_QUERY,
   MY_TENANCIES_QUERY,
   CREATE_DISPUTE_MUTATION,
-} from "../../../graphql/operations";
-import { Button } from "../../../components/ui/button";
-import { toast } from "sonner";
-import { isLandlord } from "../../../lib/utils";
-import { uploadToSupabase } from "../../../lib/supabase";
-import { useForm } from "react-hook-form";
-import { Form } from "../../../components/ui/form";
-import { useSearchParams } from "next/navigation";
-import {
-  InputWrapper,
-  SelectWrapper,
-  TextareaWrapper,
-} from "../../../components/ui/form-wrappers";
+} from '../../../graphql/operations';
+import { Button } from '../../../components/ui/button';
+import { toast } from 'sonner';
+import { isLandlord } from '../../../lib/utils';
+import { uploadToSupabase } from '../../../lib/supabase';
+import { useForm } from 'react-hook-form';
+import { Form } from '../../../components/ui/form';
+import { useSearchParams } from 'next/navigation';
+import { InputWrapper, SelectWrapper, TextareaWrapper } from '../../../components/ui/form-wrappers';
 import {
   AlertTriangle,
   Upload,
@@ -33,10 +29,10 @@ import {
   User as UserIcon,
   MessageSquare,
   Send,
-} from "lucide-react";
-import { Skeleton } from "../../../components/ui/skeleton";
-import { PageHeader, EmptyState } from "@/components/layout";
-import { StatusBadge } from "@/components/ui/status-badge";
+} from 'lucide-react';
+import { Skeleton } from '../../../components/ui/skeleton';
+import { PageHeader, EmptyState } from '@/components/layout';
+import { StatusBadge } from '@/components/ui/status-badge';
 
 interface UserType {
   id: string;
@@ -82,7 +78,7 @@ function DisputesPageContent() {
   const { user } = useUser();
   const landlordMode = isLandlord(user);
   const searchParams = useSearchParams();
-  const tenancyIdParam = searchParams.get("tenancyId");
+  const tenancyIdParam = searchParams.get('tenancyId');
 
   const [disputes, setDisputes] = useState<Dispute[]>([]);
   const [activeTenancies, setActiveTenancies] = useState<Tenancy[]>([]);
@@ -90,7 +86,7 @@ function DisputesPageContent() {
 
   // Form states
   const [showSubmitForm, setShowSubmitForm] = useState(false);
-  const [evidenceUrl, setEvidenceUrl] = useState("");
+  const [evidenceUrl, setEvidenceUrl] = useState('');
   const [uploadingEvidence, setUploadingEvidence] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -98,16 +94,16 @@ function DisputesPageContent() {
   // Initialize react-hook-form with wrappers context
   const form = useForm<DisputeFormValues>({
     defaultValues: {
-      tenancyId: "",
-      title: "",
-      description: "",
+      tenancyId: '',
+      title: '',
+      description: '',
     },
   });
 
   // Pre-fill tenancyId form value if passed via search params
   useEffect(() => {
     if (tenancyIdParam) {
-      form.setValue("tenancyId", tenancyIdParam);
+      form.setValue('tenancyId', tenancyIdParam);
       setShowSubmitForm(true);
     }
   }, [tenancyIdParam, form]);
@@ -124,7 +120,7 @@ function DisputesPageContent() {
         setActiveTenancies(tenanciesData.myTenancies as Tenancy[]);
       }
     } catch (err) {
-      console.error("Failed to load disputes data:", err);
+      console.error('Failed to load disputes data:', err);
     } finally {
       setLoading(false);
     }
@@ -141,11 +137,11 @@ function DisputesPageContent() {
     if (!file) return;
     setUploadingEvidence(true);
     try {
-      const url = await uploadToSupabase(file, "agreements");
+      const url = await uploadToSupabase(file, 'agreements');
       setEvidenceUrl(url);
-      toast.success("Evidence file uploaded successfully!");
+      toast.success('Evidence file uploaded successfully!');
     } catch (err: any) {
-      toast.error(err.message || "Failed to upload evidence.");
+      toast.error(err.message || 'Failed to upload evidence.');
     } finally {
       setUploadingEvidence(false);
     }
@@ -160,15 +156,13 @@ function DisputesPageContent() {
         evidenceUrl: evidenceUrl || null,
       });
 
-      toast.success(
-        "Dispute raised successfully! The other party has been notified.",
-      );
+      toast.success('Dispute raised successfully! The other party has been notified.');
       form.reset();
-      setEvidenceUrl("");
+      setEvidenceUrl('');
       setShowSubmitForm(false);
       loadData();
     } catch (err: any) {
-      toast.error(err.message || "Failed to file dispute.");
+      toast.error(err.message || 'Failed to file dispute.');
     }
   };
 
@@ -209,13 +203,12 @@ function DisputesPageContent() {
         <div className="max-w-2xl card-surface p-6">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-h4 text-foreground flex items-center gap-2">
-              <AlertTriangle size={16} className="text-primary" /> Submit a
-              Dispute
+              <AlertTriangle size={16} className="text-primary" /> Submit a Dispute
             </h3>
             <button
               onClick={() => {
                 setShowSubmitForm(false);
-                setEvidenceUrl("");
+                setEvidenceUrl('');
                 form.reset();
               }}
               className="text-caption font-semibold text-muted-foreground hover:text-foreground cursor-pointer transition-ui"
@@ -280,8 +273,8 @@ function DisputesPageContent() {
                   disabled={uploadingEvidence}
                   className={`w-full h-28 rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-4 transition-ui gap-1.5 cursor-pointer bg-card ${
                     evidenceUrl
-                      ? "border-primary text-primary bg-primary/5"
-                      : "border-border hover:border-primary text-muted-foreground"
+                      ? 'border-primary text-primary bg-primary/5'
+                      : 'border-border hover:border-primary text-muted-foreground'
                   }`}
                 >
                   {uploadingEvidence ? (
@@ -293,8 +286,8 @@ function DisputesPageContent() {
                   )}
                   <span className="text-sm font-semibold text-foreground">
                     {evidenceUrl
-                      ? "Evidence Document Uploaded"
-                      : "Click to upload or drag and drop"}
+                      ? 'Evidence Document Uploaded'
+                      : 'Click to upload or drag and drop'}
                   </span>
                   <span className="text-caption text-muted-foreground">
                     PNG, JPG or PDF (max. 10MB)
@@ -320,10 +313,7 @@ function DisputesPageContent() {
           description="Dispute resolutions allow tenants and landlords to submit complaints, share evidence, and resolve conflicts."
           action={
             activeTenancies.length > 0 ? (
-              <Button
-                onClick={() => setShowSubmitForm(true)}
-                className="rounded-xl font-semibold"
-              >
+              <Button onClick={() => setShowSubmitForm(true)} className="rounded-xl font-semibold">
                 Raise a Dispute
               </Button>
             ) : (
@@ -349,10 +339,7 @@ function DisputesPageContent() {
               </thead>
               <tbody className="divide-y divide-border text-body">
                 {disputes.map((d) => (
-                  <tr
-                    key={d.id}
-                    className="hover:bg-muted/30 transition-ui"
-                  >
+                  <tr key={d.id} className="hover:bg-muted/30 transition-ui">
                     <td className="p-4 pl-5 font-semibold text-foreground max-w-xs truncate">
                       {d.title}
                     </td>
@@ -366,9 +353,7 @@ function DisputesPageContent() {
                             className="object-cover"
                           />
                         </div>
-                        <span className="truncate max-w-[150px]">
-                          {d.tenancy.property.title}
-                        </span>
+                        <span className="truncate max-w-[150px]">{d.tenancy.property.title}</span>
                       </div>
                     </td>
                     <td className="p-4 font-semibold text-muted-foreground">
@@ -376,14 +361,12 @@ function DisputesPageContent() {
                     </td>
                     <td className="p-4">
                       <StatusBadge
-                        status={d.status === "OPEN" ? "OPEN" : "CLOSED"}
-                        label={d.status === "OPEN" ? "Open" : "Closed"}
+                        status={d.status === 'OPEN' ? 'OPEN' : 'CLOSED'}
+                        label={d.status === 'OPEN' ? 'Open' : 'Closed'}
                       />
                     </td>
                     <td className="p-4 text-muted-foreground">
-                      {new Date(
-                        d.createdAt || d.createdAt,
-                      ).toLocaleDateString()}
+                      {new Date(d.createdAt || d.createdAt).toLocaleDateString()}
                     </td>
                     <td className="p-4 pr-5 text-right">
                       <Link href={`/app/disputes/${d.id}`}>
@@ -411,9 +394,7 @@ export default function DisputesPage() {
   return (
     <Suspense
       fallback={
-        <div className="p-6 text-muted-foreground text-body">
-          Loading disputes workspace...
-        </div>
+        <div className="p-6 text-muted-foreground text-body">Loading disputes workspace...</div>
       }
     >
       <DisputesPageContent />

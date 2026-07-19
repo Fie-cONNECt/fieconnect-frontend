@@ -1,23 +1,17 @@
-"use client";
+'use client';
 
-import React, { useState, useRef, useEffect } from "react";
-import Image from "next/image";
-import { useUser } from "../layout";
-import { requestGQL } from "../../../lib/graphql-client";
-import {
-  UPDATE_PROFILE_MUTATION,
-  CHANGE_PASSWORD_MUTATION,
-} from "../../../graphql/operations";
-import { uploadToSupabase } from "../../../lib/supabase";
-import { Button } from "../../../components/ui/button";
-import { useForm } from "react-hook-form";
-import { Form } from "../../../components/ui/form";
-import {
-  InputWrapper,
-  TextareaWrapper,
-} from "../../../components/ui/form-wrappers";
-import { toast } from "sonner";
-import { isLandlord } from "../../../lib/utils";
+import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
+import { useUser } from '../layout';
+import { requestGQL } from '../../../lib/graphql-client';
+import { UPDATE_PROFILE_MUTATION, CHANGE_PASSWORD_MUTATION } from '../../../graphql/operations';
+import { uploadToSupabase } from '../../../lib/supabase';
+import { Button } from '../../../components/ui/button';
+import { useForm } from 'react-hook-form';
+import { Form } from '../../../components/ui/form';
+import { InputWrapper, TextareaWrapper } from '../../../components/ui/form-wrappers';
+import { toast } from 'sonner';
+import { isLandlord } from '../../../lib/utils';
 import {
   Camera,
   User as UserIcon,
@@ -37,8 +31,8 @@ import {
   Lock,
   EyeOff,
   Eye,
-} from "lucide-react";
-import { PageHeader } from "@/components/layout";
+} from 'lucide-react';
+import { PageHeader } from '@/components/layout';
 
 interface ProfileFormValues {
   firstName: string;
@@ -59,7 +53,7 @@ export default function ProfilePage() {
 
   const [editMode, setEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string>("");
+  const [avatarUrl, setAvatarUrl] = useState<string>('');
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   // Password section
@@ -72,14 +66,14 @@ export default function ProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<ProfileFormValues>({
-    defaultValues: { firstName: "", lastName: "", phone: "", bio: "" },
+    defaultValues: { firstName: '', lastName: '', phone: '', bio: '' },
   });
 
   const passwordForm = useForm<PasswordFormValues>({
     defaultValues: {
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
     },
   });
 
@@ -88,10 +82,10 @@ export default function ProfilePage() {
       form.reset({
         firstName: user.firstName,
         lastName: user.lastName,
-        phone: user.phone || "",
-        bio: user.bio || "",
+        phone: user.phone || '',
+        bio: user.bio || '',
       });
-      setAvatarUrl(user.avatarUrl || "");
+      setAvatarUrl(user.avatarUrl || '');
     }
   }, [user, form]);
 
@@ -100,11 +94,11 @@ export default function ProfilePage() {
     if (!file) return;
     setUploadingAvatar(true);
     try {
-      const url = await uploadToSupabase(file, "agreements");
+      const url = await uploadToSupabase(file, 'agreements');
       setAvatarUrl(url);
-      toast.success("Photo ready — save your profile to apply it.");
+      toast.success('Photo ready — save your profile to apply it.');
     } catch (err: any) {
-      toast.error(err.message || "Failed to upload photo.");
+      toast.error(err.message || 'Failed to upload photo.');
     } finally {
       setUploadingAvatar(false);
     }
@@ -120,11 +114,11 @@ export default function ProfilePage() {
         bio: values.bio || null,
         avatarUrl: avatarUrl || null,
       });
-      toast.success("Profile updated successfully!");
+      toast.success('Profile updated successfully!');
       setEditMode(false);
       window.location.reload();
     } catch (err: any) {
-      toast.error(err.message || "Failed to update profile.");
+      toast.error(err.message || 'Failed to update profile.');
     } finally {
       setSaving(false);
     }
@@ -132,11 +126,11 @@ export default function ProfilePage() {
 
   const handleChangePassword = async (values: PasswordFormValues) => {
     if (values.newPassword !== values.confirmPassword) {
-      toast.error("New passwords do not match.");
+      toast.error('New passwords do not match.');
       return;
     }
     if (values.newPassword.length < 8) {
-      toast.error("New password must be at least 8 characters.");
+      toast.error('New password must be at least 8 characters.');
       return;
     }
     setChangingPassword(true);
@@ -145,11 +139,11 @@ export default function ProfilePage() {
         currentPassword: values.currentPassword,
         newPassword: values.newPassword,
       });
-      toast.success("Password changed successfully!");
+      toast.success('Password changed successfully!');
       passwordForm.reset();
       setShowPasswordSection(false);
     } catch (err: any) {
-      toast.error(err.message || "Failed to change password.");
+      toast.error(err.message || 'Failed to change password.');
     } finally {
       setChangingPassword(false);
     }
@@ -157,11 +151,10 @@ export default function ProfilePage() {
 
   if (!user) return null;
 
-  const initials =
-    `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase();
-  const memberSince = new Date(user.createdAt).toLocaleDateString("en-GB", {
-    month: "long",
-    year: "numeric",
+  const initials = `${user.firstName?.[0] ?? ''}${user.lastName?.[0] ?? ''}`.toUpperCase();
+  const memberSince = new Date(user.createdAt).toLocaleDateString('en-GB', {
+    month: 'long',
+    year: 'numeric',
   });
 
   return (
@@ -181,12 +174,7 @@ export default function ProfilePage() {
           <div className="relative shrink-0">
             <div className="h-24 w-24 rounded-2xl overflow-hidden border-2 border-white/20 shadow-lg bg-white/10">
               {avatarUrl ? (
-                <Image
-                  src={avatarUrl}
-                  alt="Profile photo"
-                  fill
-                  className="object-cover"
-                />
+                <Image src={avatarUrl} alt="Profile photo" fill className="object-cover" />
               ) : (
                 <div className="h-full w-full flex items-center justify-center text-2xl font-black text-white/90">
                   {initials}
@@ -227,17 +215,15 @@ export default function ProfilePage() {
               <span
                 className={`inline-flex items-center gap-1 text-[10px] font-extrabold px-2.5 py-1 rounded-full border ${
                   landlordMode
-                    ? "bg-amber-400/20 border-amber-300/30 text-amber-200"
-                    : "bg-emerald-400/20 border-emerald-300/30 text-emerald-200"
+                    ? 'bg-amber-400/20 border-amber-300/30 text-amber-200'
+                    : 'bg-emerald-400/20 border-emerald-300/30 text-emerald-200'
                 }`}
               >
                 {landlordMode ? <Building2 size={10} /> : <Home size={10} />}
-                {landlordMode ? "Landlord" : "Tenant"}
+                {landlordMode ? 'Landlord' : 'Tenant'}
               </span>
             </div>
-            <p className="text-white/60 text-xs font-semibold mt-1">
-              {user.email}
-            </p>
+            <p className="text-white/60 text-xs font-semibold mt-1">{user.email}</p>
             {user.bio && (
               <p className="text-white/80 text-xs font-medium mt-2 max-w-xs leading-relaxed italic">
                 "{user.bio}"
@@ -266,14 +252,13 @@ export default function ProfilePage() {
         <div className="card-surface p-6">
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-xs font-black text-foreground uppercase tracking-wider flex items-center gap-2">
-              <Sparkles size={14} className="text-primary" /> Edit Your
-              Information
+              <Sparkles size={14} className="text-primary" /> Edit Your Information
             </h3>
             <div className="flex items-center gap-3">
               {avatarUrl && (
                 <button
                   type="button"
-                  onClick={() => setAvatarUrl("")}
+                  onClick={() => setAvatarUrl('')}
                   className="flex items-center gap-1 text-[10px] font-bold text-red-400 hover:text-red-600 cursor-pointer transition-colors"
                 >
                   <Trash2 size={11} /> Remove photo
@@ -290,16 +275,13 @@ export default function ProfilePage() {
                 ) : (
                   <Camera size={11} />
                 )}
-                {avatarUrl ? "Change photo" : "Upload photo"}
+                {avatarUrl ? 'Change photo' : 'Upload photo'}
               </button>
             </div>
           </div>
 
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(handleSave)}
-              className="space-y-5"
-            >
+            <form onSubmit={form.handleSubmit(handleSave)} className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <InputWrapper
                   control={form.control as any}
@@ -329,9 +311,7 @@ export default function ProfilePage() {
 
               {/* Email — read-only */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-foreground block">
-                  Email Address
-                </label>
+                <label className="text-xs font-bold text-foreground block">Email Address</label>
                 <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-border bg-muted/50 text-xs font-semibold text-muted-foreground">
                   <Mail size={13} className="text-muted-foreground shrink-0" />
                   <span>{user.email}</span>
@@ -357,10 +337,10 @@ export default function ProfilePage() {
                     form.reset({
                       firstName: user.firstName,
                       lastName: user.lastName,
-                      phone: user.phone || "",
-                      bio: user.bio || "",
+                      phone: user.phone || '',
+                      bio: user.bio || '',
                     });
-                    setAvatarUrl(user.avatarUrl || "");
+                    setAvatarUrl(user.avatarUrl || '');
                   }}
                   className="text-xs font-bold text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
                 >
@@ -398,7 +378,7 @@ export default function ProfilePage() {
               <InfoRow
                 icon={<Phone size={13} className="text-primary/70" />}
                 label="Phone"
-                value={user.phone || "—"}
+                value={user.phone || '—'}
               />
               <InfoRow
                 icon={<Calendar size={13} className="text-primary/70" />}
@@ -422,7 +402,7 @@ export default function ProfilePage() {
                   )
                 }
                 label="Account Type"
-                value={landlordMode ? "Landlord" : "Tenant"}
+                value={landlordMode ? 'Landlord' : 'Tenant'}
               />
               <InfoRow
                 icon={<Key size={13} className="text-primary/70" />}
@@ -442,9 +422,7 @@ export default function ProfilePage() {
               <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                 <FileText size={12} /> Bio
               </h3>
-              <p className="text-xs text-foreground leading-relaxed font-medium">
-                {user.bio}
-              </p>
+              <p className="text-xs text-foreground leading-relaxed font-medium">{user.bio}</p>
             </div>
           )}
         </div>
@@ -461,18 +439,16 @@ export default function ProfilePage() {
               <Lock size={14} />
             </div>
             <div>
-              <p className="text-xs font-black text-foreground">
-                Change Password
-              </p>
+              <p className="text-xs font-black text-foreground">Change Password</p>
               <p className="text-[10px] text-muted-foreground font-semibold mt-0.5">
                 Update your account password. Must be at least 8 characters.
               </p>
             </div>
           </div>
           <span
-            className={`text-[10px] font-black uppercase tracking-wider transition-colors ${showPasswordSection ? "text-primary" : "text-muted-foreground"}`}
+            className={`text-[10px] font-black uppercase tracking-wider transition-colors ${showPasswordSection ? 'text-primary' : 'text-muted-foreground'}`}
           >
-            {showPasswordSection ? "Cancel" : "Update →"}
+            {showPasswordSection ? 'Cancel' : 'Update →'}
           </span>
         </button>
 
@@ -490,9 +466,9 @@ export default function ProfilePage() {
                   </label>
                   <div className="relative">
                     <input
-                      type={showCurrent ? "text" : "password"}
+                      type={showCurrent ? 'text' : 'password'}
                       placeholder="Enter your current password"
-                      {...passwordForm.register("currentPassword", {
+                      {...passwordForm.register('currentPassword', {
                         required: true,
                       })}
                       className="w-full pr-10 p-3 rounded-xl border border-border text-xs focus:outline-hidden focus:border-primary transition-colors bg-white font-medium"
@@ -509,14 +485,12 @@ export default function ProfilePage() {
 
                 {/* New password */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-foreground block">
-                    New Password
-                  </label>
+                  <label className="text-xs font-bold text-foreground block">New Password</label>
                   <div className="relative">
                     <input
-                      type={showNew ? "text" : "password"}
+                      type={showNew ? 'text' : 'password'}
                       placeholder="At least 8 characters"
-                      {...passwordForm.register("newPassword", {
+                      {...passwordForm.register('newPassword', {
                         required: true,
                         minLength: 8,
                       })}
@@ -539,9 +513,9 @@ export default function ProfilePage() {
                   </label>
                   <div className="relative">
                     <input
-                      type={showConfirm ? "text" : "password"}
+                      type={showConfirm ? 'text' : 'password'}
                       placeholder="Repeat your new password"
-                      {...passwordForm.register("confirmPassword", {
+                      {...passwordForm.register('confirmPassword', {
                         required: true,
                       })}
                       className="w-full pr-10 p-3 rounded-xl border border-border text-xs focus:outline-hidden focus:border-primary transition-colors bg-white font-medium"
@@ -579,15 +553,7 @@ export default function ProfilePage() {
   );
 }
 
-function InfoRow({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
+function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div className="flex items-center gap-3">
       <div className="h-7 w-7 rounded-lg bg-muted/50 border border-border flex items-center justify-center shrink-0">

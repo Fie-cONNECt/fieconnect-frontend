@@ -1,21 +1,17 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { useUser } from "../layout";
-import { requestGQL } from "../../../lib/graphql-client";
-import { MY_TENANCIES_QUERY } from "../../../graphql/operations";
-import { Button } from "../../../components/ui/button";
-import { isLandlord } from "../../../lib/utils";
-import {
-  Key,
-  Calendar,
-  ArrowRight,
-} from "lucide-react";
-import { Skeleton } from "../../../components/ui/skeleton";
-import { PageHeader, EmptyState } from "@/components/layout";
-import { StatusBadge } from "@/components/ui/status-badge";
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useUser } from '../layout';
+import { requestGQL } from '../../../lib/graphql-client';
+import { MY_TENANCIES_QUERY } from '../../../graphql/operations';
+import { Button } from '../../../components/ui/button';
+import { isLandlord } from '../../../lib/utils';
+import { Key, Calendar, ArrowRight } from 'lucide-react';
+import { Skeleton } from '../../../components/ui/skeleton';
+import { PageHeader, EmptyState } from '@/components/layout';
+import { StatusBadge } from '@/components/ui/status-badge';
 
 interface UserType {
   id: string;
@@ -62,7 +58,7 @@ export default function TenanciesListPage() {
           setTenancies(data.myTenancies as Tenancy[]);
         }
       } catch (err) {
-        console.error("Failed to load tenancies:", err);
+        console.error('Failed to load tenancies:', err);
       } finally {
         setLoading(false);
       }
@@ -95,8 +91,8 @@ export default function TenanciesListPage() {
         title="Active Tenancies"
         description={
           landlordMode
-            ? "Manage and monitor all active leases and tenants for your properties."
-            : "Access your active tenancy agreement details and contact information."
+            ? 'Manage and monitor all active leases and tenants for your properties.'
+            : 'Access your active tenancy agreement details and contact information.'
         }
       />
 
@@ -107,18 +103,14 @@ export default function TenanciesListPage() {
           description="Active lease agreements will appear here once tenancy agreements are signed by both parties."
           action={
             <Link href="/app/applications">
-              <Button className="rounded-xl font-semibold">
-                Check Applications
-              </Button>
+              <Button className="rounded-xl font-semibold">Check Applications</Button>
             </Link>
           }
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {tenancies.map((tenancy) => {
-            const oppositeParty = landlordMode
-              ? tenancy.tenant
-              : tenancy.property.landlord;
+            const oppositeParty = landlordMode ? tenancy.tenant : tenancy.property.landlord;
             return (
               <div
                 key={tenancy.id}
@@ -160,7 +152,7 @@ export default function TenanciesListPage() {
                           {oppositeParty.firstName} {oppositeParty.lastName}
                         </p>
                         <p className="text-overline text-muted-foreground">
-                          {landlordMode ? "Tenant" : "Landlord"}
+                          {landlordMode ? 'Tenant' : 'Landlord'}
                         </p>
                       </div>
                     </div>
@@ -168,7 +160,7 @@ export default function TenanciesListPage() {
                     <div className="flex items-center gap-2 text-caption text-muted-foreground">
                       <Calendar size={13} />
                       <span>
-                        Lease commenced:{" "}
+                        Lease commenced:{' '}
                         {new Date(
                           isNaN(Number(tenancy.updatedAt))
                             ? tenancy.updatedAt
@@ -181,10 +173,7 @@ export default function TenanciesListPage() {
 
                 <div className="p-4 pt-0 mt-auto">
                   <Link href={`/app/tenancies/${tenancy.id}`}>
-                    <Button
-                      variant="outline"
-                      className="w-full rounded-xl font-semibold gap-1.5"
-                    >
+                    <Button variant="outline" className="w-full rounded-xl font-semibold gap-1.5">
                       View Tenancy Details <ArrowRight size={13} />
                     </Button>
                   </Link>

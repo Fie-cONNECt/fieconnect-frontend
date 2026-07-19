@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useMemo } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { requestGQL } from "@/lib/graphql-client";
-import { ME_QUERY, LOGOUT_MUTATION } from "@/graphql/operations";
-import { Button } from "@/components/ui/button";
-import { REGIONS, PROPERTY_TYPES } from "@/lib/constants";
+import React, { useState, useEffect, useMemo } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { requestGQL } from '@/lib/graphql-client';
+import { ME_QUERY, LOGOUT_MUTATION } from '@/graphql/operations';
+import { Button } from '@/components/ui/button';
+import { REGIONS, PROPERTY_TYPES } from '@/lib/constants';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
+} from '@/components/ui/accordion';
 import {
   MapPin,
   Search,
@@ -36,15 +36,10 @@ import {
   Wallet,
   CheckCircle2,
   MessagesSquare,
-} from "lucide-react";
-import { propertiesDb } from "@/data/properties";
-import {
-  PublicNavbar,
-  PublicNavbarSkeleton,
-  PublicFooter,
-  EmptyState,
-} from "@/components/layout";
-import { PropertyCard } from "@/components/property/property-card";
+} from 'lucide-react';
+import { propertiesDb } from '@/data/properties';
+import { PublicNavbar, PublicNavbarSkeleton, PublicFooter, EmptyState } from '@/components/layout';
+import { PropertyCard } from '@/components/property/property-card';
 
 interface User {
   id: string;
@@ -54,130 +49,123 @@ interface User {
   createdAt: string;
 }
 
-const featuredProperties = propertiesDb.filter((p) =>
-  [1, 6, 11].includes(p.id),
-);
+const featuredProperties = propertiesDb.filter((p) => [1, 6, 11].includes(p.id));
 
 const HOW_IT_WORKS = [
   {
     icon: Search,
-    title: "Discover",
+    title: 'Discover',
     description:
-      "Search verified listings across all 16 regions of Ghana. Filter by location, price, and property type to find your perfect match.",
+      'Search verified listings across all 16 regions of Ghana. Filter by location, price, and property type to find your perfect match.',
   },
   {
     icon: FileCheck2,
-    title: "Apply Digitally",
+    title: 'Apply Digitally',
     description:
-      "Submit your rental application online with the required documents. Track its status in real time from your dashboard.",
+      'Submit your rental application online with the required documents. Track its status in real time from your dashboard.',
   },
   {
     icon: KeyRound,
-    title: "Move In",
+    title: 'Move In',
     description:
-      "Sign your lease agreement digitally, settle in, and manage rent, disputes, and communication all in one place.",
+      'Sign your lease agreement digitally, settle in, and manage rent, disputes, and communication all in one place.',
   },
 ];
 
 const FEATURES = [
   {
     icon: ShieldCheck,
-    title: "Verified Listings",
+    title: 'Verified Listings',
     description:
-      "Every landlord and property is vetted, so you rent with confidence and zero surprises.",
+      'Every landlord and property is vetted, so you rent with confidence and zero surprises.',
   },
   {
     icon: FileCheck2,
-    title: "Digital Agreements",
-    description:
-      "Sign and store legally binding lease agreements securely, without the paperwork.",
+    title: 'Digital Agreements',
+    description: 'Sign and store legally binding lease agreements securely, without the paperwork.',
   },
   {
     icon: Wallet,
-    title: "Transparent Pricing",
-    description:
-      "No hidden fees. See the full cost of every property upfront before you apply.",
+    title: 'Transparent Pricing',
+    description: 'No hidden fees. See the full cost of every property upfront before you apply.',
   },
   {
     icon: MessagesSquare,
-    title: "Dispute Mediation",
-    description:
-      "Raise and resolve issues through a structured, transparent complaint board.",
+    title: 'Dispute Mediation',
+    description: 'Raise and resolve issues through a structured, transparent complaint board.',
   },
   {
     icon: TrendingUp,
-    title: "Live Dashboards",
-    description:
-      "Track applications, leases, payments, and notifications in real time.",
+    title: 'Live Dashboards',
+    description: 'Track applications, leases, payments, and notifications in real time.',
   },
   {
     icon: Headphones,
-    title: "24/7 Support",
-    description:
-      "Our team is always available to help both tenants and landlords across Ghana.",
+    title: '24/7 Support',
+    description: 'Our team is always available to help both tenants and landlords across Ghana.',
   },
 ];
 
 const REGION_IMAGES: Record<string, string> = {
-  "Greater Accra":
-    "https://images.unsplash.com/photo-1547970810-dc1eac37d174?q=80&w=800&auto=format&fit=crop",
+  'Greater Accra':
+    'https://images.unsplash.com/photo-1547970810-dc1eac37d174?q=80&w=800&auto=format&fit=crop',
   Ashanti:
-    "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&auto=format&fit=crop",
+    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&auto=format&fit=crop',
   Western:
-    "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?q=80&w=800&auto=format&fit=crop",
+    'https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?q=80&w=800&auto=format&fit=crop',
   Eastern:
-    "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=800&auto=format&fit=crop",
+    'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=800&auto=format&fit=crop',
 };
 
 const TESTIMONIALS = [
   {
-    name: "Ama Serwaa",
-    role: "Tenant · Accra",
+    name: 'Ama Serwaa',
+    role: 'Tenant · Accra',
     quote:
-      "FieConnect made finding my apartment effortless. I applied, signed the lease, and moved in — all without a single office visit.",
+      'FieConnect made finding my apartment effortless. I applied, signed the lease, and moved in — all without a single office visit.',
     rating: 5,
   },
   {
-    name: "Kwabena Osei",
-    role: "Landlord · Kumasi",
+    name: 'Kwabena Osei',
+    role: 'Landlord · Kumasi',
     quote:
-      "Managing my four rental units used to be a nightmare. Now I review applications and track tenancies from one clean dashboard.",
+      'Managing my four rental units used to be a nightmare. Now I review applications and track tenancies from one clean dashboard.',
     rating: 5,
   },
   {
-    name: "Efua Mensah",
-    role: "Tenant · Takoradi",
+    name: 'Efua Mensah',
+    role: 'Tenant · Takoradi',
     quote:
-      "The verified badges gave me real peace of mind. Everything was exactly as advertised — no scams, no stress.",
+      'The verified badges gave me real peace of mind. Everything was exactly as advertised — no scams, no stress.',
     rating: 5,
   },
 ];
 
 const FAQS = [
   {
-    question: "Is FieConnect free for tenants?",
+    question: 'Is FieConnect free for tenants?',
     answer:
-      "Yes. Browsing listings, submitting applications, and managing your tenancy on FieConnect is completely free for tenants.",
+      'Yes. Browsing listings, submitting applications, and managing your tenancy on FieConnect is completely free for tenants.',
   },
   {
-    question: "How are landlords and properties verified?",
+    question: 'How are landlords and properties verified?',
     answer:
-      "We review ownership documentation and landlord identity before a listing goes live. Verified listings display a badge so you always know what to expect.",
+      'We review ownership documentation and landlord identity before a listing goes live. Verified listings display a badge so you always know what to expect.',
   },
   {
-    question: "Can I sign my lease agreement online?",
+    question: 'Can I sign my lease agreement online?',
     answer:
-      "Absolutely. Once your application is approved, you can review and sign your lease digitally, and access it any time from your dashboard.",
+      'Absolutely. Once your application is approved, you can review and sign your lease digitally, and access it any time from your dashboard.',
   },
   {
-    question: "What happens if I have a dispute with my landlord?",
+    question: 'What happens if I have a dispute with my landlord?',
     answer:
-      "FieConnect provides a structured dispute mediation board where you can raise issues, share evidence, and track resolution transparently.",
+      'FieConnect provides a structured dispute mediation board where you can raise issues, share evidence, and track resolution transparently.',
   },
   {
-    question: "Which regions does FieConnect cover?",
+    question: 'Which regions does FieConnect cover?',
     answer:
-      "FieConnect operates across all 16 regions of Ghana, with the largest inventory currently in Greater Accra, Ashanti, Western, and Eastern regions.",
+      'FieConnect operates across all 16 regions of Ghana, with the largest inventory currently in Greater Accra, Ashanti, Western, and Eastern regions.',
   },
 ];
 
@@ -185,13 +173,13 @@ export default function Home() {
   const [user, setUser] = useState<User | null>(null);
   const [initLoading, setInitLoading] = useState(true);
 
-  const [region, setRegion] = useState("Greater Accra");
-  const [propertyType, setPropertyType] = useState("Apartment");
+  const [region, setRegion] = useState('Greater Accra');
+  const [propertyType, setPropertyType] = useState('Apartment');
   const [properties, setProperties] = useState(featuredProperties);
   const [isSearched, setIsSearched] = useState(false);
 
   const regionHighlights = useMemo(() => {
-    return ["Greater Accra", "Ashanti", "Western", "Eastern"].map((name) => ({
+    return ['Greater Accra', 'Ashanti', 'Western', 'Eastern'].map((name) => ({
       name,
       count: propertiesDb.filter((p) => p.region === name).length,
       image: REGION_IMAGES[name],
@@ -200,9 +188,7 @@ export default function Home() {
 
   const handleSearch = () => {
     const results = propertiesDb.filter((prop) => {
-      const matchRegion = prop.location
-        .toLowerCase()
-        .includes(region.toLowerCase());
+      const matchRegion = prop.location.toLowerCase().includes(region.toLowerCase());
       const matchType = prop.type === propertyType;
       return matchRegion && matchType;
     });
@@ -213,8 +199,8 @@ export default function Home() {
   const handleReset = () => {
     setProperties(featuredProperties);
     setIsSearched(false);
-    setRegion("Greater Accra");
-    setPropertyType("Apartment");
+    setRegion('Greater Accra');
+    setPropertyType('Apartment');
   };
 
   useEffect(() => {
@@ -227,7 +213,7 @@ export default function Home() {
           setUser(null);
         }
       } catch (err) {
-        console.error("Failed to load user info:", err);
+        console.error('Failed to load user info:', err);
         setUser(null);
       } finally {
         setInitLoading(false);
@@ -240,10 +226,10 @@ export default function Home() {
     try {
       await requestGQL(LOGOUT_MUTATION);
     } catch (e) {
-      console.error("Logout error:", e);
+      console.error('Logout error:', e);
     }
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setUser(null);
   };
 
@@ -263,10 +249,7 @@ export default function Home() {
             <div className="h-6 w-36 bg-muted animate-pulse rounded-lg" />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="border border-border/50 rounded-2xl p-4 space-y-4"
-                >
+                <div key={i} className="border border-border/50 rounded-2xl p-4 space-y-4">
                   <div className="aspect-video w-full bg-muted animate-pulse rounded-xl" />
                   <div className="space-y-2">
                     <div className="h-5 w-2/3 bg-muted animate-pulse rounded-lg" />
@@ -305,13 +288,11 @@ export default function Home() {
               Ghana&apos;s trusted rental marketplace
             </span>
             <h1 className="text-display animate-in fade-in slide-in-from-bottom-4 duration-700">
-              Find Your Next{" "}
-              <span className="text-primary drop-shadow-sm">Home in Ghana</span>
+              Find Your Next <span className="text-primary drop-shadow-sm">Home in Ghana</span>
             </h1>
             <p className="text-base sm:text-lg text-white/85 leading-relaxed font-light max-w-xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000">
-              Browse verified rental properties and manage your tenancy
-              digitally. We bridge the gap between reliable landlords and
-              professional tenants.
+              Browse verified rental properties and manage your tenancy digitally. We bridge the gap
+              between reliable landlords and professional tenants.
             </p>
           </div>
 
@@ -320,10 +301,7 @@ export default function Home() {
               <label className="text-overline text-zinc-300 flex items-center gap-1">
                 <MapPin size={10} className="text-primary" aria-hidden /> Region
               </label>
-              <Select
-                value={region}
-                onValueChange={(val) => setRegion(val || "")}
-              >
+              <Select value={region} onValueChange={(val) => setRegion(val || '')}>
                 <SelectTrigger className="!w-full !h-11 rounded-xl bg-white/10 border border-white/10 text-white text-sm px-3 focus:outline-hidden focus:ring-2 focus:ring-primary/50 cursor-pointer flex items-center justify-between">
                   <SelectValue placeholder="Select region" />
                 </SelectTrigger>
@@ -339,13 +317,9 @@ export default function Home() {
 
             <div className="space-y-1.5 text-left">
               <label className="text-overline text-zinc-300 flex items-center gap-1">
-                <Building2 size={10} className="text-primary" aria-hidden />{" "}
-                Property Type
+                <Building2 size={10} className="text-primary" aria-hidden /> Property Type
               </label>
-              <Select
-                value={propertyType}
-                onValueChange={(val) => setPropertyType(val || "")}
-              >
+              <Select value={propertyType} onValueChange={(val) => setPropertyType(val || '')}>
                 <SelectTrigger className="!w-full !h-11 rounded-xl bg-white/10 border border-white/10 text-white text-sm px-3 focus:outline-hidden focus:ring-2 focus:ring-primary/50 cursor-pointer flex items-center justify-between">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
@@ -370,16 +344,13 @@ export default function Home() {
 
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-white/70 font-medium">
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 size={14} className="text-primary" aria-hidden />{" "}
-              Verified landlords
+              <CheckCircle2 size={14} className="text-primary" aria-hidden /> Verified landlords
             </span>
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 size={14} className="text-primary" aria-hidden />{" "}
-              Digital agreements
+              <CheckCircle2 size={14} className="text-primary" aria-hidden /> Digital agreements
             </span>
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 size={14} className="text-primary" aria-hidden /> No
-              hidden fees
+              <CheckCircle2 size={14} className="text-primary" aria-hidden /> No hidden fees
             </span>
           </div>
         </div>
@@ -389,34 +360,28 @@ export default function Home() {
       <section className="w-full bg-secondary text-secondary-foreground border-b border-border py-10 px-4">
         <div className="page-container grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {[
-            { value: "500+", label: "Verified Listings" },
-            { value: "12k", label: "Active Tenants" },
-            { value: "98%", label: "Success Rate" },
-            { value: "24/7", label: "Digital Support" },
+            { value: '500+', label: 'Verified Listings' },
+            { value: '12k', label: 'Active Tenants' },
+            { value: '98%', label: 'Success Rate' },
+            { value: '24/7', label: 'Digital Support' },
           ].map((stat) => (
             <div key={stat.label} className="space-y-1.5">
               <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-primary">
                 {stat.value}
               </div>
-              <div className="text-overline text-secondary-foreground/60">
-                {stat.label}
-              </div>
+              <div className="text-overline text-secondary-foreground/60">{stat.label}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* ── How it works ─────────────────────────────────────────────── */}
-      <section
-        id="how-it-works"
-        className="page-container py-16 sm:py-20 scroll-mt-20"
-      >
+      <section id="how-it-works" className="page-container py-16 sm:py-20 scroll-mt-20">
         <div className="max-w-2xl mx-auto text-center space-y-3 mb-12">
           <span className="text-overline text-primary">Simple Process</span>
           <h2 className="text-h1 text-foreground">How FieConnect Works</h2>
           <p className="text-body text-muted-foreground">
-            From search to move-in, we&apos;ve digitized every step of renting
-            in Ghana.
+            From search to move-in, we&apos;ve digitized every step of renting in Ghana.
           </p>
         </div>
 
@@ -435,9 +400,7 @@ export default function Home() {
                   <Icon size={26} aria-hidden />
                 </div>
                 <h3 className="text-h3 text-foreground">{step.title}</h3>
-                <p className="text-body text-muted-foreground">
-                  {step.description}
-                </p>
+                <p className="text-body text-muted-foreground">{step.description}</p>
               </div>
             );
           })}
@@ -445,20 +408,17 @@ export default function Home() {
       </section>
 
       {/* ── Featured properties ──────────────────────────────────────── */}
-      <section
-        id="featured"
-        className="w-full bg-muted/40 border-y border-border scroll-mt-20"
-      >
+      <section id="featured" className="w-full bg-muted/40 border-y border-border scroll-mt-20">
         <div className="page-container py-16 sm:py-20 space-y-10">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div className="space-y-2">
               <span className="text-overline text-primary">Handpicked</span>
               <h2 className="text-h1 text-foreground">
-                {isSearched ? "Search Results" : "Featured Properties"}
+                {isSearched ? 'Search Results' : 'Featured Properties'}
               </h2>
               <p className="text-body text-muted-foreground">
                 {isSearched
-                  ? `${properties.length} ${properties.length === 1 ? "property" : "properties"} found matching your filters`
+                  ? `${properties.length} ${properties.length === 1 ? 'property' : 'properties'} found matching your filters`
                   : "Handpicked listings in Ghana's most sought-after locations."}
               </p>
             </div>
@@ -554,7 +514,7 @@ export default function Home() {
               <div className="absolute inset-x-0 bottom-0 p-4 text-white">
                 <h3 className="text-h4 font-bold">{r.name}</h3>
                 <p className="text-xs text-white/80 font-medium">
-                  {r.count} {r.count === 1 ? "property" : "properties"}
+                  {r.count} {r.count === 1 ? 'property' : 'properties'}
                 </p>
               </div>
               <span className="absolute top-3 right-3 h-8 w-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-ui">
@@ -570,12 +530,9 @@ export default function Home() {
         <div className="page-container py-16 sm:py-20">
           <div className="max-w-2xl mx-auto text-center space-y-3 mb-12">
             <span className="text-overline text-primary">Why FieConnect</span>
-            <h2 className="text-h1 text-foreground">
-              Built for Trust &amp; Transparency
-            </h2>
+            <h2 className="text-h1 text-foreground">Built for Trust &amp; Transparency</h2>
             <p className="text-body text-muted-foreground">
-              Everything you need to rent or lease with confidence, in one
-              modern platform.
+              Everything you need to rent or lease with confidence, in one modern platform.
             </p>
           </div>
 
@@ -591,9 +548,7 @@ export default function Home() {
                     <Icon size={22} aria-hidden />
                   </div>
                   <h3 className="text-h4 text-foreground">{feature.title}</h3>
-                  <p className="text-body text-muted-foreground">
-                    {feature.description}
-                  </p>
+                  <p className="text-body text-muted-foreground">{feature.description}</p>
                 </div>
               );
             })}
@@ -609,37 +564,28 @@ export default function Home() {
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
             <div className="space-y-5">
               <span className="text-overline text-primary">For Landlords</span>
-              <h2 className="text-h1 text-white">
-                List Your Property. Reach Verified Tenants.
-              </h2>
+              <h2 className="text-h1 text-white">List Your Property. Reach Verified Tenants.</h2>
               <p className="text-body text-white/70 max-w-md">
-                Publish your listing in minutes, review applications digitally,
-                and manage every lease from a single dashboard. FieConnect
-                handles the paperwork so you can focus on your portfolio.
+                Publish your listing in minutes, review applications digitally, and manage every
+                lease from a single dashboard. FieConnect handles the paperwork so you can focus on
+                your portfolio.
               </p>
               <ul className="space-y-2.5">
                 {[
-                  "Free, unlimited property listings",
-                  "Screen and approve applications online",
-                  "Track tenancies, rent, and disputes in real time",
+                  'Free, unlimited property listings',
+                  'Screen and approve applications online',
+                  'Track tenancies, rent, and disputes in real time',
                 ].map((item) => (
-                  <li
-                    key={item}
-                    className="flex items-center gap-2.5 text-sm text-white/85"
-                  >
-                    <CheckCircle2
-                      size={16}
-                      className="text-primary shrink-0"
-                      aria-hidden
-                    />
+                  <li key={item} className="flex items-center gap-2.5 text-sm text-white/85">
+                    <CheckCircle2 size={16} className="text-primary shrink-0" aria-hidden />
                     {item}
                   </li>
                 ))}
               </ul>
               <div className="flex flex-wrap gap-3 pt-2">
-                <Link href={user ? "/app/properties/new" : "/signup"}>
+                <Link href={user ? '/app/properties/new' : '/signup'}>
                   <Button className="h-11 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-md transition-ui cursor-pointer">
-                    {user ? "Add a Listing" : "Become a Landlord"}
+                    {user ? 'Add a Listing' : 'Become a Landlord'}
                   </Button>
                 </Link>
                 <Link href="/app/properties">
@@ -655,14 +601,14 @@ export default function Home() {
 
             <div className="grid grid-cols-2 gap-4">
               {[
-                { icon: Building2, value: "500+", label: "Listings Managed" },
-                { icon: Users, value: "12k+", label: "Verified Tenants" },
+                { icon: Building2, value: '500+', label: 'Listings Managed' },
+                { icon: Users, value: '12k+', label: 'Verified Tenants' },
                 {
                   icon: FileCheck2,
-                  value: "3 min",
-                  label: "Avg. Time to List",
+                  value: '3 min',
+                  label: 'Avg. Time to List',
                 },
-                { icon: TrendingUp, value: "98%", label: "Occupancy Rate" },
+                { icon: TrendingUp, value: '98%', label: 'Occupancy Rate' },
               ].map((stat) => {
                 const Icon = stat.icon;
                 return (
@@ -671,9 +617,7 @@ export default function Home() {
                     className="rounded-2xl bg-white/10 border border-white/10 p-5 space-y-2 backdrop-blur-sm"
                   >
                     <Icon size={20} className="text-primary" aria-hidden />
-                    <div className="text-2xl font-extrabold text-white">
-                      {stat.value}
-                    </div>
+                    <div className="text-2xl font-extrabold text-white">{stat.value}</div>
                     <div className="text-[11px] font-semibold uppercase tracking-wide text-white/60">
                       {stat.label}
                     </div>
@@ -690,52 +634,35 @@ export default function Home() {
         <div className="page-container py-16 sm:py-20">
           <div className="max-w-2xl mx-auto text-center space-y-3 mb-12">
             <span className="text-overline text-primary">Testimonials</span>
-            <h2 className="text-h1 text-foreground">
-              Loved by Tenants &amp; Landlords
-            </h2>
+            <h2 className="text-h1 text-foreground">Loved by Tenants &amp; Landlords</h2>
             <p className="text-body text-muted-foreground">
-              Real stories from people who found their home or filled their
-              properties on FieConnect.
+              Real stories from people who found their home or filled their properties on
+              FieConnect.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {TESTIMONIALS.map((t) => (
-              <figure
-                key={t.name}
-                className="card-surface p-6 space-y-4 flex flex-col"
-              >
+              <figure key={t.name} className="card-surface p-6 space-y-4 flex flex-col">
                 <Quote size={28} className="text-primary/40" aria-hidden />
                 <blockquote className="text-body text-foreground/90 leading-relaxed flex-1">
                   &ldquo;{t.quote}&rdquo;
                 </blockquote>
-                <div
-                  className="flex items-center gap-1"
-                  aria-label={`${t.rating} out of 5 stars`}
-                >
+                <div className="flex items-center gap-1" aria-label={`${t.rating} out of 5 stars`}>
                   {Array.from({ length: t.rating }).map((_, i) => (
-                    <Star
-                      key={i}
-                      size={14}
-                      className="fill-primary text-primary"
-                      aria-hidden
-                    />
+                    <Star key={i} size={14} className="fill-primary text-primary" aria-hidden />
                   ))}
                 </div>
                 <figcaption className="flex items-center gap-3 pt-2 border-t border-border">
                   <div className="h-10 w-10 rounded-full bg-primary/15 text-primary flex items-center justify-center font-bold text-sm">
                     {t.name
-                      .split(" ")
+                      .split(' ')
                       .map((n) => n[0])
-                      .join("")}
+                      .join('')}
                   </div>
                   <div>
-                    <div className="text-sm font-bold text-foreground">
-                      {t.name}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {t.role}
-                    </div>
+                    <div className="text-sm font-bold text-foreground">{t.name}</div>
+                    <div className="text-xs text-muted-foreground">{t.role}</div>
                   </div>
                 </figcaption>
               </figure>
@@ -749,16 +676,11 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-10 lg:gap-16">
           <div className="space-y-3">
             <span className="text-overline text-primary">FAQ</span>
-            <h2 className="text-h1 text-foreground">
-              Frequently Asked Questions
-            </h2>
+            <h2 className="text-h1 text-foreground">Frequently Asked Questions</h2>
             <p className="text-body text-muted-foreground">
-              Everything you need to know about renting and listing on
-              FieConnect. Can&apos;t find your answer?{" "}
-              <Link
-                href="#"
-                className="text-primary font-semibold hover:underline"
-              >
+              Everything you need to know about renting and listing on FieConnect. Can&apos;t find
+              your answer?{' '}
+              <Link href="#" className="text-primary font-semibold hover:underline">
                 Contact our team.
               </Link>
             </p>
@@ -766,11 +688,7 @@ export default function Home() {
 
           <Accordion className="card-surface px-5 sm:px-6 divide-y divide-border">
             {FAQS.map((faq, index) => (
-              <AccordionItem
-                key={faq.question}
-                value={`item-${index}`}
-                className="border-b-0"
-              >
+              <AccordionItem key={faq.question} value={`item-${index}`} className="border-b-0">
                 <AccordionTrigger className="text-base font-semibold text-foreground py-5 hover:no-underline">
                   {faq.question}
                 </AccordionTrigger>
@@ -787,12 +705,10 @@ export default function Home() {
       <section className="page-container pb-16 sm:pb-20">
         <div className="relative overflow-hidden rounded-3xl bg-primary text-primary-foreground p-8 sm:p-12 text-center">
           <div className="relative z-10 max-w-2xl mx-auto space-y-5">
-            <h2 className="text-h1 text-primary-foreground">
-              Ready to Find Your Next Home?
-            </h2>
+            <h2 className="text-h1 text-primary-foreground">Ready to Find Your Next Home?</h2>
             <p className="text-base text-primary-foreground/80">
-              Join thousands of Ghanaians renting smarter. Create your free
-              account and start exploring verified listings today.
+              Join thousands of Ghanaians renting smarter. Create your free account and start
+              exploring verified listings today.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
               {user ? (

@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
-import { requestGQL } from "../../../../lib/graphql-client";
+import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
+import { requestGQL } from '../../../../lib/graphql-client';
 import {
   ME_QUERY,
   PROPERTY_QUERY,
   CREATE_APPLICATION_MUTATION,
   MY_APPLICATIONS_QUERY,
-} from "../../../../graphql/operations";
-import { Button } from "../../../../components/ui/button";
-import { toast } from "sonner";
-import { uploadToSupabase } from "../../../../lib/supabase";
-import { PublicFooterCompact, BrandLogoLink } from "@/components/layout";
-import { useForm } from "react-hook-form";
-import { Form } from "../../../../components/ui/form";
+} from '../../../../graphql/operations';
+import { Button } from '../../../../components/ui/button';
+import { toast } from 'sonner';
+import { uploadToSupabase } from '../../../../lib/supabase';
+import { PublicFooterCompact, BrandLogoLink } from '@/components/layout';
+import { useForm } from 'react-hook-form';
+import { Form } from '../../../../components/ui/form';
 import {
   InputWrapper,
   SelectWrapper,
   TextareaWrapper,
-} from "../../../../components/ui/form-wrappers";
+} from '../../../../components/ui/form-wrappers';
 import {
   ArrowLeft,
   Building2,
@@ -33,8 +33,8 @@ import {
   ShieldCheck,
   CheckCircle2,
   Loader2,
-} from "lucide-react";
-import { Skeleton } from "../../../../components/ui/skeleton";
+} from 'lucide-react';
+import { Skeleton } from '../../../../components/ui/skeleton';
 
 interface User {
   id: string;
@@ -64,11 +64,11 @@ export default function TenantApplicationPage() {
   const [initLoading, setInitLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
-  const [applicationStatus, setApplicationStatus] = useState("");
+  const [applicationStatus, setApplicationStatus] = useState('');
 
   // File states
-  const [nationalIdUrl, setNationalIdUrl] = useState("");
-  const [supportingDocsUrl, setSupportingDocsUrl] = useState("");
+  const [nationalIdUrl, setNationalIdUrl] = useState('');
+  const [supportingDocsUrl, setSupportingDocsUrl] = useState('');
 
   // Upload progress indicators
   const [uploadingId, setUploadingId] = useState(false);
@@ -80,11 +80,11 @@ export default function TenantApplicationPage() {
   // Initialize react-hook-form
   const form = useForm({
     defaultValues: {
-      employerName: "",
-      jobTitle: "",
-      monthlyIncome: "",
-      lengthOfEmployment: "",
-      personalStatement: "",
+      employerName: '',
+      jobTitle: '',
+      monthlyIncome: '',
+      lengthOfEmployment: '',
+      personalStatement: '',
     },
   });
 
@@ -106,7 +106,7 @@ export default function TenantApplicationPage() {
         if (meData.me) {
           setUser(meData.me);
         } else {
-          toast.error("Please log in to apply for a tenancy.");
+          toast.error('Please log in to apply for a tenancy.');
           router.push(`/login?redirectTo=/property/${idStr}/apply`);
           return;
         }
@@ -114,22 +114,20 @@ export default function TenantApplicationPage() {
         if (propData.property) {
           setProperty(propData.property as PropertyDetails);
         } else {
-          toast.error("Property not found.");
-          router.push("/app/properties");
+          toast.error('Property not found.');
+          router.push('/app/properties');
           return;
         }
 
         if (appsData.myApplications) {
-          const application = appsData.myApplications.find(
-            (app: any) => app.property.id === idStr,
-          );
+          const application = appsData.myApplications.find((app: any) => app.property.id === idStr);
           if (application) {
             setHasApplied(true);
             setApplicationStatus(application.status);
           }
         }
       } catch (err) {
-        console.error("Failed to load application data:", err);
+        console.error('Failed to load application data:', err);
       } finally {
         setInitLoading(false);
       }
@@ -144,11 +142,11 @@ export default function TenantApplicationPage() {
 
     setUploadingId(true);
     try {
-      const url = await uploadToSupabase(file, "properties");
+      const url = await uploadToSupabase(file, 'properties');
       setNationalIdUrl(url);
-      toast.success("Ghanacard uploaded successfully!");
+      toast.success('Ghanacard uploaded successfully!');
     } catch (err: any) {
-      toast.error(err.message || "Failed to upload Ghanacard.");
+      toast.error(err.message || 'Failed to upload Ghanacard.');
     } finally {
       setUploadingId(false);
     }
@@ -160,11 +158,11 @@ export default function TenantApplicationPage() {
 
     setUploadingDocs(true);
     try {
-      const url = await uploadToSupabase(file, "properties");
+      const url = await uploadToSupabase(file, 'properties');
       setSupportingDocsUrl(url);
-      toast.success("Supporting documents uploaded successfully!");
+      toast.success('Supporting documents uploaded successfully!');
     } catch (err: any) {
-      toast.error(err.message || "Failed to upload supporting documents.");
+      toast.error(err.message || 'Failed to upload supporting documents.');
     } finally {
       setUploadingDocs(false);
     }
@@ -173,7 +171,7 @@ export default function TenantApplicationPage() {
   // Submit Application
   const onSubmit = async (values: any) => {
     if (!nationalIdUrl) {
-      toast.error("Please upload your National ID (Ghanacard).");
+      toast.error('Please upload your National ID (Ghanacard).');
       return;
     }
 
@@ -193,13 +191,11 @@ export default function TenantApplicationPage() {
       });
 
       if (response.createApplication) {
-        toast.success(
-          "Your tenancy application has been submitted successfully!",
-        );
+        toast.success('Your tenancy application has been submitted successfully!');
         router.push(`/property/${idStr}`);
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to submit tenancy application.");
+      toast.error(err.message || 'Failed to submit tenancy application.');
     } finally {
       setSubmitting(false);
     }
@@ -208,10 +204,8 @@ export default function TenantApplicationPage() {
   // Determine active step for side progress tracker based on form progress
   const getActiveStep = () => {
     if (!nationalIdUrl) return 1;
-    const { employerName, jobTitle, monthlyIncome, lengthOfEmployment } =
-      watchedValues;
-    if (!employerName || !jobTitle || !monthlyIncome || !lengthOfEmployment)
-      return 2;
+    const { employerName, jobTitle, monthlyIncome, lengthOfEmployment } = watchedValues;
+    if (!employerName || !jobTitle || !monthlyIncome || !lengthOfEmployment) return 2;
     return 3;
   };
 
@@ -237,11 +231,11 @@ export default function TenantApplicationPage() {
   }
 
   const incomeOptions = [
-    { label: "Under GH₵ 2,000", value: "Under 2,000" },
-    { label: "GH₵ 2,000 - GH₵ 5,000", value: "2,000 - 5,000" },
-    { label: "GH₵ 5,000 - GH₵ 10,000", value: "5,000 - 10,000" },
-    { label: "GH₵ 10,000 - GH₵ 20,000", value: "10,000 - 20,000" },
-    { label: "GH₵ 20,000+", value: "20,000+" },
+    { label: 'Under GH₵ 2,000', value: 'Under 2,000' },
+    { label: 'GH₵ 2,000 - GH₵ 5,000', value: '2,000 - 5,000' },
+    { label: 'GH₵ 5,000 - GH₵ 10,000', value: '5,000 - 10,000' },
+    { label: 'GH₵ 10,000 - GH₵ 20,000', value: '10,000 - 20,000' },
+    { label: 'GH₵ 20,000+', value: '20,000+' },
   ];
 
   return (
@@ -273,12 +267,7 @@ export default function TenantApplicationPage() {
             {/* Property Summary Card */}
             <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-xs relative text-left">
               <div className="relative aspect-video w-full">
-                <Image
-                  src={property.image}
-                  alt={property.title}
-                  fill
-                  className="object-cover"
-                />
+                <Image src={property.image} alt={property.title} fill className="object-cover" />
                 <span className="absolute bottom-3 left-3 bg-primary text-primary-foreground text-[10px] font-bold px-2.5 py-1 rounded-full shadow-xs uppercase tracking-wider">
                   GH₵ {property.price.toLocaleString()} / mo
                 </span>
@@ -309,31 +298,28 @@ export default function TenantApplicationPage() {
               </h4>
               <div className="space-y-4 relative">
                 {[
-                  { id: 1, label: "Identity Verification" },
-                  { id: 2, label: "Employment Details" },
-                  { id: 3, label: "Personal Statement" },
+                  { id: 1, label: 'Identity Verification' },
+                  { id: 2, label: 'Employment Details' },
+                  { id: 3, label: 'Personal Statement' },
                 ].map((step) => {
                   const isCurrent = activeStep === step.id;
                   const isCompleted = activeStep > step.id;
                   return (
-                    <div
-                      key={step.id}
-                      className="flex items-center gap-3 relative z-10"
-                    >
+                    <div key={step.id} className="flex items-center gap-3 relative z-10">
                       <div
                         className={`h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold border transition-all ${
                           isCompleted
-                            ? "bg-primary/20 border-primary text-primary"
+                            ? 'bg-primary/20 border-primary text-primary'
                             : isCurrent
-                              ? "bg-primary border-primary text-primary-foreground shadow-xs"
-                              : "bg-muted border-border text-muted-foreground"
+                              ? 'bg-primary border-primary text-primary-foreground shadow-xs'
+                              : 'bg-muted border-border text-muted-foreground'
                         }`}
                       >
                         {isCompleted ? <CheckCircle2 size={12} /> : step.id}
                       </div>
                       <span
                         className={`text-xs font-bold transition-colors ${
-                          isCurrent ? "text-primary" : "text-muted-foreground"
+                          isCurrent ? 'text-primary' : 'text-muted-foreground'
                         }`}
                       >
                         {step.label}
@@ -357,11 +343,10 @@ export default function TenantApplicationPage() {
                     Application Already Submitted
                   </h2>
                   <p className="text-xs text-muted-foreground max-w-md mx-auto leading-relaxed font-semibold">
-                    You have already applied for this property. Your application
-                    is currently{" "}
+                    You have already applied for this property. Your application is currently{' '}
                     <span className="text-primary font-black uppercase tracking-wider">
                       {applicationStatus.toLowerCase()}
-                    </span>{" "}
+                    </span>{' '}
                     and waiting for approval or feedback.
                   </p>
                 </div>
@@ -375,10 +360,7 @@ export default function TenantApplicationPage() {
               </div>
             ) : (
               <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-6"
-                >
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   {/* Step 1: Supporting Documents */}
                   <div className="bg-card border border-border rounded-2xl p-6 shadow-xs text-left space-y-5">
                     <div className="border-b border-border/60 pb-3">
@@ -386,8 +368,8 @@ export default function TenantApplicationPage() {
                         Supporting Documents
                       </h2>
                       <p className="text-xs text-muted-foreground mt-1 font-semibold leading-relaxed">
-                        Please provide high-quality scans of your identification
-                        and financial records.
+                        Please provide high-quality scans of your identification and financial
+                        records.
                       </p>
                     </div>
 
@@ -395,8 +377,7 @@ export default function TenantApplicationPage() {
                       {/* Ghanacard Zone */}
                       <div className="space-y-2">
                         <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
-                          National ID (Ghanacard){" "}
-                          <span className="text-red-500">*</span>
+                          National ID (Ghanacard) <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="file"
@@ -411,8 +392,8 @@ export default function TenantApplicationPage() {
                           disabled={uploadingId}
                           className={`w-full aspect-[2/1.1] sm:aspect-[2/1] rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-4 transition-all gap-2 cursor-pointer ${
                             nationalIdUrl
-                              ? "border-primary bg-primary/5 text-primary"
-                              : "border-border hover:border-primary bg-zinc-950/10 hover:bg-primary/5 text-muted-foreground"
+                              ? 'border-primary bg-primary/5 text-primary'
+                              : 'border-border hover:border-primary bg-zinc-950/10 hover:bg-primary/5 text-muted-foreground'
                           }`}
                         >
                           {uploadingId ? (
@@ -423,9 +404,7 @@ export default function TenantApplicationPage() {
                             <Upload className="h-6 w-6" />
                           )}
                           <span className="text-xs font-bold text-foreground">
-                            {nationalIdUrl
-                              ? "Ghanacard Uploaded"
-                              : "Click to upload or drag"}
+                            {nationalIdUrl ? 'Ghanacard Uploaded' : 'Click to upload or drag'}
                           </span>
                           <span className="text-[9px] text-muted-foreground font-semibold">
                             PDF, JPG, OR PNG
@@ -451,8 +430,8 @@ export default function TenantApplicationPage() {
                           disabled={uploadingDocs}
                           className={`w-full aspect-[2/1.1] sm:aspect-[2/1] rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-4 transition-all gap-2 cursor-pointer ${
                             supportingDocsUrl
-                              ? "border-primary bg-primary/5 text-primary"
-                              : "border-border hover:border-primary bg-zinc-950/10 hover:bg-primary/5 text-muted-foreground"
+                              ? 'border-primary bg-primary/5 text-primary'
+                              : 'border-border hover:border-primary bg-zinc-950/10 hover:bg-primary/5 text-muted-foreground'
                           }`}
                         >
                           {uploadingDocs ? (
@@ -464,8 +443,8 @@ export default function TenantApplicationPage() {
                           )}
                           <span className="text-xs font-bold text-foreground">
                             {supportingDocsUrl
-                              ? "Documents Uploaded"
-                              : "Bank statements, Reference letters"}
+                              ? 'Documents Uploaded'
+                              : 'Bank statements, Reference letters'}
                           </span>
                           <span className="text-[9px] text-muted-foreground font-semibold">
                             MAX 10MB PER FILE
@@ -544,8 +523,8 @@ export default function TenantApplicationPage() {
                   {/* Footer Consent & Submit Block */}
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
                     <p className="text-[10px] text-muted-foreground leading-relaxed text-left font-semibold max-w-md">
-                      By clicking submit, you authorize FieConnect to process
-                      your data for the purpose of this tenancy application.
+                      By clicking submit, you authorize FieConnect to process your data for the
+                      purpose of this tenancy application.
                     </p>
                     <Button
                       type="submit"
@@ -558,7 +537,7 @@ export default function TenantApplicationPage() {
                           Submitting...
                         </>
                       ) : (
-                        "Submit Application"
+                        'Submit Application'
                       )}
                     </Button>
                   </div>

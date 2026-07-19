@@ -1,14 +1,8 @@
-"use client";
+'use client';
 
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
-import type { Control } from "react-hook-form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Switch } from '@/components/ui/switch';
+import type { Control } from 'react-hook-form';
 
 interface SwitchWrapperProps {
   control: Control<any>;
@@ -50,11 +44,7 @@ export default function SwitchWrapper({
             />
           </FormControl>
           <FormMessage />
-          {warning && (
-            <span className="text-xs font-light text-muted-foreground">
-              {warning}
-            </span>
-          )}
+          {warning && <span className="text-xs font-light text-muted-foreground">{warning}</span>}
         </FormItem>
       )}
     />

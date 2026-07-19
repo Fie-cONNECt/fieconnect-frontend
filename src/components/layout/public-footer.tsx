@@ -1,34 +1,27 @@
-import React from "react";
-import Link from "next/link";
-import {
-  Building2,
-  Mail,
-  MapPin,
-  Phone,
-  ArrowUpRight,
-  ShieldCheck,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { BrandLogoLink } from "@/components/layout/brand-logo";
+import React from 'react';
+import Link from 'next/link';
+import { Building2, Mail, MapPin, Phone, ArrowUpRight, ShieldCheck } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { BrandLogoLink } from '@/components/layout/brand-logo';
 
 const EXPLORE_LINKS = [
-  { label: "Browse Rentals", href: "/app/properties" },
-  { label: "How it Works", href: "/#how-it-works" },
-  { label: "Featured Listings", href: "/#featured" },
-  { label: "List a Property", href: "/signup" },
+  { label: 'Browse Rentals', href: '/app/properties' },
+  { label: 'How it Works', href: '/#how-it-works' },
+  { label: 'Featured Listings', href: '/#featured' },
+  { label: 'List a Property', href: '/signup' },
 ];
 
 const COMPANY_LINKS = [
-  { label: "About Us", href: "#" },
-  { label: "Careers", href: "#" },
-  { label: "Contact Support", href: "#" },
-  { label: "Blog", href: "#" },
+  { label: 'About Us', href: '#' },
+  { label: 'Careers', href: '#' },
+  { label: 'Contact Support', href: '#' },
+  { label: 'Blog', href: '#' },
 ];
 
 const LEGAL_LINKS = [
-  { label: "Privacy Policy", href: "#" },
-  { label: "Terms of Service", href: "#" },
-  { label: "Cookie Policy", href: "#" },
+  { label: 'Privacy Policy', href: '#' },
+  { label: 'Terms of Service', href: '#' },
+  { label: 'Cookie Policy', href: '#' },
 ];
 
 function FooterLinkGroup({
@@ -40,9 +33,7 @@ function FooterLinkGroup({
 }) {
   return (
     <div className="space-y-4">
-      <h4 className="text-xs font-bold uppercase tracking-widest text-white/90">
-        {title}
-      </h4>
+      <h4 className="text-xs font-bold uppercase tracking-widest text-white/90">{title}</h4>
       <ul className="space-y-3">
         {links.map((link) => (
           <li key={link.label}>
@@ -69,12 +60,12 @@ interface PublicFooterProps {
   id?: string;
 }
 
-export function PublicFooter({ className, id = "about" }: PublicFooterProps) {
+export function PublicFooter({ className, id = 'about' }: PublicFooterProps) {
   return (
     <footer
       id={id}
       className={cn(
-        "relative w-full bg-brand-green-dark text-white/70 border-t border-brand-green/50 scroll-mt-20 overflow-hidden",
+        'relative w-full bg-brand-green-dark text-white/70 border-t border-brand-green/50 scroll-mt-20 overflow-hidden',
         className,
       )}
     >
@@ -101,8 +92,7 @@ export function PublicFooter({ className, id = "about" }: PublicFooterProps) {
                 Start renting smarter in Ghana
               </h3>
               <p className="text-sm text-white/55 leading-relaxed">
-                Join thousands of tenants and landlords managing properties
-                digitally on FieConnect.
+                Join thousands of tenants and landlords managing properties digitally on FieConnect.
               </p>
             </div>
             <div className="flex flex-wrap gap-3 shrink-0">
@@ -126,17 +116,10 @@ export function PublicFooter({ className, id = "about" }: PublicFooterProps) {
         <div className="py-12 sm:py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
           {/* Brand column */}
           <div className="lg:col-span-4 space-y-5">
-            <BrandLogoLink
-              href="/"
-              size="lg"
-              tone="light"
-              showTagline
-              linkClassName="group"
-            />
+            <BrandLogoLink href="/" size="lg" tone="light" showTagline linkClassName="group" />
             <p className="text-sm leading-relaxed text-white/50 max-w-sm">
-              Modernizing the digital tenancy experience in Ghana with trust,
-              transparency, and efficiency. Connecting reliable landlords with
-              professional tenants nationwide.
+              Modernizing the digital tenancy experience in Ghana with trust, transparency, and
+              efficiency. Connecting reliable landlords with professional tenants nationwide.
             </p>
 
             <div className="space-y-2.5 pt-1">
@@ -179,16 +162,12 @@ export function PublicFooter({ className, id = "about" }: PublicFooterProps) {
         {/* Bottom bar */}
         <div className="py-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-white/40 text-center sm:text-left">
-            &copy; {new Date().getFullYear()} FieConnect Ghana. All rights
-            reserved.
+            &copy; {new Date().getFullYear()} FieConnect Ghana. All rights reserved.
           </p>
 
           <div className="flex items-center gap-3">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/8 border border-white/10 px-3 py-1.5 text-[11px] font-semibold text-white/60">
-              <span
-                className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse"
-                aria-hidden
-              />
+              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" aria-hidden />
               Made in Ghana
             </span>
           </div>
@@ -203,7 +182,7 @@ export function PublicFooterCompact({ className }: { className?: string }) {
   return (
     <footer
       className={cn(
-        "w-full bg-brand-green-dark text-white/60 border-t border-brand-green/50 mt-auto",
+        'w-full bg-brand-green-dark text-white/60 border-t border-brand-green/50 mt-auto',
         className,
       )}
     >
@@ -224,10 +203,7 @@ export function PublicFooterCompact({ className }: { className?: string }) {
           <Link href="#" className="hover:text-white/80 transition-ui">
             Support
           </Link>
-          <Link
-            href="/app/properties"
-            className="hover:text-white/80 transition-ui"
-          >
+          <Link href="/app/properties" className="hover:text-white/80 transition-ui">
             Browse
           </Link>
         </div>
