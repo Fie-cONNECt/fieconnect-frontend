@@ -62,6 +62,16 @@ export const ME_QUERY = graphql(`
       savedProperties {
         id
       }
+      preferences {
+        regions
+        districts
+        types
+        minPrice
+        maxPrice
+        bedrooms
+        amenities
+        onboardingStatus
+      }
       createdAt
     }
   }
@@ -122,6 +132,35 @@ export const PROPERTIES_QUERY = graphql(`
       image
       about
       createdAt
+    }
+  }
+`);
+
+export const SAVE_PREFERENCES_MUTATION = graphql(`
+  mutation SavePreferences($input: PreferencesInput!) {
+    savePreferences(input: $input) {
+      id
+      preferences {
+        regions
+        districts
+        types
+        minPrice
+        maxPrice
+        bedrooms
+        amenities
+        onboardingStatus
+      }
+    }
+  }
+`);
+
+export const SKIP_PREFERENCES_MUTATION = graphql(`
+  mutation SkipPreferences {
+    skipPreferences {
+      id
+      preferences {
+        onboardingStatus
+      }
     }
   }
 `);
