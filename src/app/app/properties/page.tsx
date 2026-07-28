@@ -8,6 +8,7 @@ import { useUser } from '../layout';
 import { requestGQL } from '../../../lib/graphql-client';
 import {
   PROPERTIES_QUERY,
+  RECOMMENDED_PROPERTIES_QUERY,
   MY_PROPERTIES_QUERY,
   MY_APPLICATIONS_QUERY,
   MY_TENANCIES_QUERY,
@@ -82,6 +83,7 @@ export default function TenantPropertiesPage() {
   const router = useRouter();
 
   const [properties, setProperties] = useState<PropertyItem[]>([]);
+  const [recommended, setRecommended] = useState<PropertyItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [appCount, setAppCount] = useState(0);
   const [tenancyCount, setTenancyCount] = useState(0);
@@ -129,6 +131,13 @@ export default function TenantPropertiesPage() {
   useEffect(() => {
     if (!userLoading) {
       fetchProperties();
+      requestGQL(RECOMMENDED_PROPERTIES_QUERY as any, { limit: 12 })
+        .then((data: any) => {
+          if (data?.recommendedProperties) {
+            setRecommended(data.recommendedProperties as PropertyItem[]);
+          }
+        })
+        .catch((err) => console.error('Failed to load recommendations:', err));
       // Load stats
       Promise.all([
         requestGQL(MY_APPLICATIONS_QUERY).catch(() => null),
@@ -153,7 +162,6 @@ export default function TenantPropertiesPage() {
 
   // Derive sections from the flat list
   const displayedProperties = showAll ? properties : properties.slice(0, 3);
-  const recommended = properties.slice(3, 9);
   const recent = properties.slice(0, 5);
 
   const scrollRec = (dir: 'left' | 'right') => {
@@ -336,10 +344,7 @@ export default function TenantPropertiesPage() {
       {!showAll && recommended.length > 0 && (
         <section className="space-y-4">
           <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8">
-            <h2 className="text-h3 text-foreground">
-              Recommended in{' '}
-              {form.watch('region') === 'All' ? 'Greater Accra' : form.watch('region')}
-            </h2>
+            <h2 className="text-h3 text-foreground">Recommended for you</h2>
             <div className="flex gap-1">
               <button
                 onClick={() => scrollRec('left')}

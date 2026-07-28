@@ -136,6 +136,27 @@ export const PROPERTIES_QUERY = graphql(`
   }
 `);
 
+export const RECOMMENDED_PROPERTIES_QUERY = graphql(`
+  query RecommendedProperties($limit: Int) {
+    recommendedProperties(limit: $limit) {
+      id
+      title
+      type
+      location
+      region
+      district
+      price
+      verified
+      bedrooms
+      bathrooms
+      size
+      image
+      about
+      createdAt
+    }
+  }
+`);
+
 export const SAVE_PREFERENCES_MUTATION = graphql(`
   mutation SavePreferences($input: PreferencesInput!) {
     savePreferences(input: $input) {
