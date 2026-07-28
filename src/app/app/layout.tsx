@@ -31,6 +31,7 @@ import { Skeleton } from '../../components/ui/skeleton';
 import { isLandlord } from '../../lib/utils';
 import { clearAuthSession } from '@/lib/auth-session';
 import { BrandLogoLink } from '@/components/layout/brand-logo';
+import { OnboardingNudgeBanner } from '@/components/onboarding-nudge-banner';
 
 export interface AuthenticatedUser {
   id: string;
@@ -41,6 +42,16 @@ export interface AuthenticatedUser {
   phone?: string;
   avatarUrl?: string | null;
   bio?: string | null;
+  preferences?: {
+    regions: string[];
+    districts: string[];
+    types: string[];
+    minPrice?: number | null;
+    maxPrice?: number | null;
+    bedrooms: string[];
+    amenities: string[];
+    onboardingStatus: string;
+  } | null;
   createdAt: string;
 }
 
@@ -48,6 +59,7 @@ interface UserContextProps {
   user: AuthenticatedUser | null;
   loading: boolean;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextProps | undefined>(undefined);
@@ -98,14 +110,29 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
+  const loadUser = async () => {
+    const data = await requestGQL(ME_QUERY);
+    if (data.me) {
+      setUser(data.me);
+      return data.me;
+    }
+    return null;
+  };
+
+  const refreshUser = async () => {
+    try {
+      await loadUser();
+    } catch (e) {
+      console.error('Failed to refresh user:', e);
+    }
+  };
+
   // Authenticate user on mount
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const data = await requestGQL(ME_QUERY);
-        if (data.me) {
-          setUser(data.me);
-          // Load notifications upon auth success
+        const me = await loadUser();
+        if (me) {
           loadNotifications();
         } else {
           // If no active session, redirect to login
@@ -293,7 +320,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <UserContext.Provider value={{ user, loading, logout: handleLogout }}>
+    <UserContext.Provider value={{ user, loading, logout: handleLogout, refreshUser }}>
       <div className="min-h-screen bg-background flex flex-col font-sans">
         <aside
           className="hidden lg:block fixed top-0 bottom-0 left-0 w-64 z-20"
@@ -483,7 +510,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
           </header>
 
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-background">{children}</main>
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-background">
+            {pathname !== '/app/onboarding' && <OnboardingNudgeBanner />}
+            {children}
+          </main>
         </div>
       </div>
     </UserContext.Provider>

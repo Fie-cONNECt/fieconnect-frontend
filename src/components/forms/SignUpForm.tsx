@@ -102,7 +102,11 @@ export default function SignUpForm() {
       }
 
       toast.success('Registration successful! Welcome to FieConnect.');
-      router.push('/app');
+      if (data.userType === 'TENANT') {
+        router.push('/app/onboarding');
+      } else {
+        router.push('/app');
+      }
     } catch (error: any) {
       console.error('Signup error:', error);
       toast.error(error.message || 'Signup failed. Please try again.');
