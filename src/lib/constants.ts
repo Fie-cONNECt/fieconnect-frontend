@@ -44,3 +44,44 @@ export const PARKING_OPTIONS = [
   { label: 'Yes', value: 'Yes' },
   { label: 'No', value: 'No' },
 ];
+
+export const BEDROOM_OPTIONS = ['1', '2', '3', '4', '5+'];
+
+export const ONBOARDING_AMENITIES = [
+  'High-speed WiFi',
+  'Air Conditioning',
+  'Private Parking Garage',
+  'Gated Community with 24/7 Security',
+  '24/7 Standby Generator',
+  'Water Reservoir (Polytank)',
+  'Fully Fitted Kitchen',
+  'Swimming Pool',
+  'Spacious Balcony',
+];
+
+export const DISTRICTS_BY_REGION: Record<string, string[]> = {
+  'Greater Accra': [
+    'Airport Residential',
+    'Cantonments',
+    'East Legon',
+    'Osu',
+    'Labone',
+    'Roman Ridge',
+    'Tema',
+  ],
+  Ashanti: ['Kumasi Nhyiaeso', 'Adum', 'Patasi', 'Ahodwo'],
+  Western: ['Takoradi Anaji', 'Effiakuma', 'Kwesimintin'],
+  Eastern: ['Koforidua', 'Aburi', 'Nkawkaw'],
+  Northern: ['Tamale', 'Sagnarigu'],
+  Central: ['Cape Coast', 'Elmina', 'Winneba'],
+  Ahafo: ['Goaso', 'Duayaw Nkwanta'],
+  Bono: ['Sunyani', 'Berekum'],
+  'Bono East': ['Techiman', 'Kintampo'],
+  'North East': ['Nalerigu', 'Walewale'],
+  Oti: ['Dambai', 'Kete Krachi'],
+  Savannah: ['Damongo', 'Buipe'],
+  'Upper East': ['Bolgatanga', 'Navrongo'],
+  'Upper West': ['Wa', 'Jirapa'],
+  Volta: ['Ho', 'Keta', 'Aflao'],
+  'Western North': ['Sefwi Wiawso', 'Bibiani'],
+};
