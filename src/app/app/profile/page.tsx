@@ -4,14 +4,26 @@ import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useUser } from '../layout';
 import { requestGQL } from '../../../lib/graphql-client';
-import { UPDATE_PROFILE_MUTATION, CHANGE_PASSWORD_MUTATION } from '../../../graphql/operations';
+import {
+  UPDATE_PROFILE_MUTATION,
+  CHANGE_PASSWORD_MUTATION,
+  SAVE_PREFERENCES_MUTATION,
+} from '../../../graphql/operations';
 import { uploadToSupabase } from '../../../lib/supabase';
 import { Button } from '../../../components/ui/button';
 import { useForm } from 'react-hook-form';
 import { Form } from '../../../components/ui/form';
 import { InputWrapper, TextareaWrapper } from '../../../components/ui/form-wrappers';
 import { toast } from 'sonner';
-import { isLandlord } from '../../../lib/utils';
+import { isLandlord, isTenant } from '../../../lib/utils';
+import {
+  REGIONS,
+  PROPERTY_TYPES,
+  RENT_RANGES,
+  BEDROOM_OPTIONS,
+  ONBOARDING_AMENITIES,
+  DISTRICTS_BY_REGION,
+} from '../../../lib/constants';
 import {
   Camera,
   User as UserIcon,
@@ -31,8 +43,10 @@ import {
   Lock,
   EyeOff,
   Eye,
+  MapPin,
 } from 'lucide-react';
 import { PageHeader } from '@/components/layout';
+import Link from 'next/link';
 
 interface ProfileFormValues {
   firstName: string;
@@ -48,13 +62,21 @@ interface PasswordFormValues {
 }
 
 export default function ProfilePage() {
-  const { user } = useUser();
+  const { user, refreshUser } = useUser();
   const landlordMode = isLandlord(user);
 
   const [editMode, setEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string>('');
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [editingPrefs, setEditingPrefs] = useState(false);
+  const [savingPrefs, setSavingPrefs] = useState(false);
+  const [prefRegions, setPrefRegions] = useState<string[]>([]);
+  const [prefDistricts, setPrefDistricts] = useState<string[]>([]);
+  const [prefTypes, setPrefTypes] = useState<string[]>([]);
+  const [prefBedrooms, setPrefBedrooms] = useState<string[]>([]);
+  const [prefAmenities, setPrefAmenities] = useState<string[]>([]);
+  const [prefRentIndex, setPrefRentIndex] = useState(0);
 
   // Password section
   const [showPasswordSection, setShowPasswordSection] = useState(false);
@@ -86,8 +108,49 @@ export default function ProfilePage() {
         bio: user.bio || '',
       });
       setAvatarUrl(user.avatarUrl || '');
+      const prefs = user.preferences;
+      if (prefs) {
+        setPrefRegions(prefs.regions || []);
+        setPrefDistricts(prefs.districts || []);
+        setPrefTypes(prefs.types || []);
+        setPrefBedrooms(prefs.bedrooms || []);
+        setPrefAmenities(prefs.amenities || []);
+        const idx = RENT_RANGES.findIndex(
+          (r) => r.min === (prefs.minPrice ?? undefined) && r.max === (prefs.maxPrice ?? undefined),
+        );
+        setPrefRentIndex(idx >= 0 ? idx : 0);
+      }
     }
   }, [user, form]);
+
+  const togglePref = (list: string[], value: string, setter: (v: string[]) => void) => {
+    setter(list.includes(value) ? list.filter((x) => x !== value) : [...list, value]);
+  };
+
+  const handleSavePrefs = async () => {
+    setSavingPrefs(true);
+    try {
+      const range = RENT_RANGES[prefRentIndex];
+      await requestGQL(SAVE_PREFERENCES_MUTATION as any, {
+        input: {
+          regions: prefRegions,
+          districts: prefDistricts,
+          types: prefTypes,
+          bedrooms: prefBedrooms,
+          amenities: prefAmenities,
+          minPrice: range?.min ?? null,
+          maxPrice: range?.max ?? null,
+        },
+      });
+      await refreshUser();
+      toast.success('Housing preferences updated.');
+      setEditingPrefs(false);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to save preferences.');
+    } finally {
+      setSavingPrefs(false);
+    }
+  };
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -423,6 +486,215 @@ export default function ProfilePage() {
                 <FileText size={12} /> Bio
               </h3>
               <p className="text-xs text-foreground leading-relaxed font-medium">{user.bio}</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Tenant housing preferences ── */}
+      {isTenant(user) && (
+        <div className="card-surface p-5 space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                <MapPin size={12} /> Housing Preferences
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1">
+                Helps us rank listings that fit you. Edit anytime.
+              </p>
+            </div>
+            {!editingPrefs ? (
+              <div className="flex gap-2">
+                {user.preferences?.onboardingStatus === 'PENDING' && (
+                  <Link
+                    href="/app/onboarding"
+                    className="text-xs font-bold text-brand-green hover:underline"
+                  >
+                    Take quiz
+                  </Link>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setEditingPrefs(true)}
+                  className="text-xs font-bold text-primary hover:underline cursor-pointer"
+                >
+                  Edit
+                </button>
+              </div>
+            ) : null}
+          </div>
+
+          {!editingPrefs ? (
+            <div className="flex flex-wrap gap-2 text-xs">
+              {(user.preferences?.regions || []).length === 0 &&
+              (user.preferences?.types || []).length === 0 ? (
+                <p className="text-muted-foreground">No preferences set yet.</p>
+              ) : (
+                <>
+                  {(user.preferences?.regions || []).map((r) => (
+                    <span
+                      key={r}
+                      className="rounded-full bg-brand-green-light text-brand-green px-3 py-1 font-medium"
+                    >
+                      {r}
+                    </span>
+                  ))}
+                  {(user.preferences?.types || []).map((t) => (
+                    <span
+                      key={t}
+                      className="rounded-full bg-muted px-3 py-1 font-medium text-foreground"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                  {(user.preferences?.bedrooms || []).map((b) => (
+                    <span
+                      key={b}
+                      className="rounded-full bg-muted px-3 py-1 font-medium text-foreground"
+                    >
+                      {b} bed
+                    </span>
+                  ))}
+                </>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <p className="text-xs font-semibold">Regions</p>
+                <div className="flex flex-wrap gap-2">
+                  {REGIONS.map((r) => (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => togglePref(prefRegions, r, setPrefRegions)}
+                      className={`rounded-full px-3 py-1.5 text-xs border ${
+                        prefRegions.includes(r)
+                          ? 'bg-brand-green text-white border-brand-green'
+                          : 'border-border'
+                      }`}
+                    >
+                      {r}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {prefRegions.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold">Districts</p>
+                  <div className="flex flex-wrap gap-2">
+                    {[...new Set(prefRegions.flatMap((r) => DISTRICTS_BY_REGION[r] || []))].map(
+                      (d) => (
+                        <button
+                          key={d}
+                          type="button"
+                          onClick={() => togglePref(prefDistricts, d, setPrefDistricts)}
+                          className={`rounded-full px-3 py-1.5 text-xs border ${
+                            prefDistricts.includes(d)
+                              ? 'bg-brand-green text-white border-brand-green'
+                              : 'border-border'
+                          }`}
+                        >
+                          {d}
+                        </button>
+                      ),
+                    )}
+                  </div>
+                </div>
+              )}
+              <div className="space-y-2">
+                <p className="text-xs font-semibold">Types</p>
+                <div className="flex flex-wrap gap-2">
+                  {PROPERTY_TYPES.map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => togglePref(prefTypes, t, setPrefTypes)}
+                      className={`rounded-full px-3 py-1.5 text-xs border ${
+                        prefTypes.includes(t)
+                          ? 'bg-brand-green text-white border-brand-green'
+                          : 'border-border'
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs font-semibold">Bedrooms</p>
+                <div className="flex flex-wrap gap-2">
+                  {BEDROOM_OPTIONS.map((b) => (
+                    <button
+                      key={b}
+                      type="button"
+                      onClick={() => togglePref(prefBedrooms, b, setPrefBedrooms)}
+                      className={`rounded-full px-3 py-1.5 text-xs border ${
+                        prefBedrooms.includes(b)
+                          ? 'bg-brand-green text-white border-brand-green'
+                          : 'border-border'
+                      }`}
+                    >
+                      {b}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs font-semibold">Budget</p>
+                <div className="flex flex-wrap gap-2">
+                  {RENT_RANGES.map((range, i) => (
+                    <button
+                      key={range.label}
+                      type="button"
+                      onClick={() => setPrefRentIndex(i)}
+                      className={`rounded-full px-3 py-1.5 text-xs border ${
+                        prefRentIndex === i
+                          ? 'bg-brand-green text-white border-brand-green'
+                          : 'border-border'
+                      }`}
+                    >
+                      {range.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs font-semibold">Nice to have</p>
+                <div className="flex flex-wrap gap-2">
+                  {ONBOARDING_AMENITIES.map((a) => (
+                    <button
+                      key={a}
+                      type="button"
+                      onClick={() => togglePref(prefAmenities, a, setPrefAmenities)}
+                      className={`rounded-full px-3 py-1.5 text-xs border ${
+                        prefAmenities.includes(a)
+                          ? 'bg-brand-green text-white border-brand-green'
+                          : 'border-border'
+                      }`}
+                    >
+                      {a}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingPrefs(false)}
+                  className="text-xs font-bold text-muted-foreground"
+                >
+                  Cancel
+                </button>
+                <Button
+                  type="button"
+                  disabled={savingPrefs}
+                  onClick={handleSavePrefs}
+                  className="rounded-xl bg-brand-green hover:bg-brand-green/90 text-white text-xs"
+                >
+                  {savingPrefs ? 'Saving…' : 'Save preferences'}
+                </Button>
+              </div>
             </div>
           )}
         </div>
