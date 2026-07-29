@@ -30,6 +30,7 @@ interface PropertyCardProps {
   onFavoriteToggle?: () => void;
   ctaLabel?: string;
   compact?: boolean;
+  reasons?: string[];
 }
 
 function formatPrice(price?: string | number) {
@@ -47,6 +48,7 @@ export function PropertyCard({
   onFavoriteToggle,
   ctaLabel = 'View Details',
   compact = false,
+  reasons,
 }: PropertyCardProps) {
   const detailHref = href ?? `/property/${property.id}`;
   const priceLabel = formatPrice(property.price);
@@ -129,6 +131,18 @@ export function PropertyCard({
             <div className="flex items-center gap-1.5 text-caption">
               <MapPin size={12} className="shrink-0 text-muted-foreground/80" aria-hidden />
               <span className="line-clamp-1">{property.location || property.region}</span>
+            </div>
+          )}
+          {reasons && reasons.length > 0 && (
+            <div className="flex flex-wrap gap-1 pt-0.5">
+              {reasons.slice(0, compact ? 2 : 3).map((reason) => (
+                <span
+                  key={reason}
+                  className="inline-flex max-w-full truncate rounded-full bg-brand-green-light text-brand-green text-[10px] font-semibold px-2 py-0.5 border border-brand-green/15"
+                >
+                  {reason}
+                </span>
+              ))}
             </div>
           )}
           {(property.bedrooms != null || property.bathrooms != null) && (

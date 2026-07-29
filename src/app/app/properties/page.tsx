@@ -78,13 +78,19 @@ interface FilterFormValues {
   rentRange: string;
 }
 
+interface RecommendedItem {
+  property: PropertyItem;
+  score: number;
+  reasons: string[];
+}
+
 // ── Tenant Discovery Page ──────────────────────────────────────────
 export default function TenantPropertiesPage() {
   const { user, loading: userLoading } = useUser();
   const router = useRouter();
 
   const [properties, setProperties] = useState<PropertyItem[]>([]);
-  const [recommended, setRecommended] = useState<PropertyItem[]>([]);
+  const [recommended, setRecommended] = useState<RecommendedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [appCount, setAppCount] = useState(0);
   const [tenancyCount, setTenancyCount] = useState(0);
@@ -128,17 +134,33 @@ export default function TenantPropertiesPage() {
     }
   };
 
+  const fetchRecommended = async (
+    r = form.getValues('region'),
+    t = form.getValues('propType'),
+    ri = parseInt(form.getValues('rentRange')) || 0,
+  ) => {
+    try {
+      const range = RENT_RANGES[ri];
+      const data = (await requestGQL(RECOMMENDED_PROPERTIES_QUERY as any, {
+        limit: 12,
+        region: r === 'All' ? undefined : r,
+        type: t === 'All' ? undefined : t,
+        minPrice: range.min,
+        maxPrice: range.max,
+      })) as any;
+      if (data?.recommendedProperties) {
+        setRecommended(data.recommendedProperties as RecommendedItem[]);
+      }
+    } catch (err) {
+      console.error('Failed to load recommendations:', err);
+    }
+  };
+
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     if (!userLoading) {
       fetchProperties();
-      requestGQL(RECOMMENDED_PROPERTIES_QUERY as any, { limit: 12 })
-        .then((data: any) => {
-          if (data?.recommendedProperties) {
-            setRecommended(data.recommendedProperties as PropertyItem[]);
-          }
-        })
-        .catch((err) => console.error('Failed to load recommendations:', err));
+      fetchRecommended();
       // Load stats
       Promise.all([
         requestGQL(MY_APPLICATIONS_QUERY).catch(() => null),
@@ -154,11 +176,11 @@ export default function TenantPropertiesPage() {
 
   const handleSearch = () => {
     setShowAll(true);
-    fetchProperties(
-      form.getValues('region'),
-      form.getValues('propType'),
-      parseInt(form.getValues('rentRange')) || 0,
-    );
+    const r = form.getValues('region');
+    const t = form.getValues('propType');
+    const ri = parseInt(form.getValues('rentRange')) || 0;
+    fetchProperties(r, t, ri);
+    fetchRecommended(r, t, ri);
   };
 
   // Derive sections from the flat list
@@ -389,22 +411,26 @@ export default function TenantPropertiesPage() {
               ref={recommendedRef}
               className="flex gap-4 overflow-x-auto scroll-smooth pb-1 px-4 sm:px-6 no-scrollbar"
             >
-              {recommended.map((p) => (
-                <div key={p.id} className="shrink-0 w-64">
-                  <PropertyCard
-                    compact
-                    property={{
-                      id: p.id,
-                      title: p.title,
-                      type: p.type,
-                      location: p.district || p.region,
-                      price: p.price,
-                      image: p.image,
-                      verified: p.verified,
-                    }}
-                  />
-                </div>
-              ))}
+              {recommended.map((item) => {
+                const p = item.property;
+                return (
+                  <div key={p.id} className="shrink-0 w-64">
+                    <PropertyCard
+                      compact
+                      reasons={item.reasons}
+                      property={{
+                        id: p.id,
+                        title: p.title,
+                        type: p.type,
+                        location: p.district || p.region,
+                        price: p.price,
+                        image: p.image,
+                        verified: p.verified,
+                      }}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
