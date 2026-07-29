@@ -70,6 +70,7 @@ export const ME_QUERY = graphql(`
         maxPrice
         bedrooms
         amenities
+        parking
         onboardingStatus
       }
       createdAt
@@ -137,23 +138,45 @@ export const PROPERTIES_QUERY = graphql(`
 `);
 
 export const RECOMMENDED_PROPERTIES_QUERY = graphql(`
-  query RecommendedProperties($limit: Int) {
-    recommendedProperties(limit: $limit) {
-      id
-      title
-      type
-      location
-      region
-      district
-      price
-      verified
-      bedrooms
-      bathrooms
-      size
-      image
-      about
-      createdAt
+  query RecommendedProperties(
+    $limit: Int
+    $region: String
+    $type: String
+    $minPrice: Float
+    $maxPrice: Float
+  ) {
+    recommendedProperties(
+      limit: $limit
+      region: $region
+      type: $type
+      minPrice: $minPrice
+      maxPrice: $maxPrice
+    ) {
+      score
+      reasons
+      property {
+        id
+        title
+        type
+        location
+        region
+        district
+        price
+        verified
+        bedrooms
+        bathrooms
+        size
+        image
+        about
+        createdAt
+      }
     }
+  }
+`);
+
+export const TRACK_PROPERTY_VIEW_MUTATION = graphql(`
+  mutation TrackPropertyView($propertyId: ID!, $durationSec: Float) {
+    trackPropertyView(propertyId: $propertyId, durationSec: $durationSec)
   }
 `);
 
@@ -169,6 +192,7 @@ export const SAVE_PREFERENCES_MUTATION = graphql(`
         maxPrice
         bedrooms
         amenities
+        parking
         onboardingStatus
       }
     }
@@ -176,10 +200,18 @@ export const SAVE_PREFERENCES_MUTATION = graphql(`
 `);
 
 export const SKIP_PREFERENCES_MUTATION = graphql(`
-  mutation SkipPreferences {
-    skipPreferences {
+  mutation SkipPreferences($input: PreferencesInput) {
+    skipPreferences(input: $input) {
       id
       preferences {
+        regions
+        districts
+        types
+        minPrice
+        maxPrice
+        bedrooms
+        amenities
+        parking
         onboardingStatus
       }
     }
