@@ -39,6 +39,7 @@ import {
   AlertTriangle,
   Key,
   TrendingUp,
+  Sparkles,
 } from 'lucide-react';
 
 interface PropertyItem {
@@ -342,44 +343,69 @@ export default function TenantPropertiesPage() {
 
       {/* ── Recommended ── */}
       {!showAll && recommended.length > 0 && (
-        <section className="space-y-4">
-          <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8">
-            <h2 className="text-h3 text-foreground">Recommended for you</h2>
-            <div className="flex gap-1">
-              <button
-                onClick={() => scrollRec('left')}
-                className="h-8 w-8 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:bg-muted transition-ui cursor-pointer"
-              >
-                <ChevronLeft size={14} />
-              </button>
-              <button
-                onClick={() => scrollRec('right')}
-                className="h-8 w-8 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:bg-muted transition-ui cursor-pointer"
-              >
-                <ChevronRight size={14} />
-              </button>
-            </div>
-          </div>
+        <section className="relative mx-4 sm:mx-6 lg:mx-8 overflow-hidden rounded-2xl border border-brand-green/20 bg-gradient-to-br from-brand-green-light/80 via-background to-brand-green-light/30 py-5 sm:py-6 shadow-[0_0_48px_-14px_rgba(5,67,43,0.45)]">
           <div
-            ref={recommendedRef}
-            className="flex gap-4 overflow-x-auto scroll-smooth pb-2 px-4 sm:px-6 lg:px-8 no-scrollbar"
-          >
-            {recommended.map((p) => (
-              <div key={p.id} className="shrink-0 w-64">
-                <PropertyCard
-                  compact
-                  property={{
-                    id: p.id,
-                    title: p.title,
-                    type: p.type,
-                    location: p.district || p.region,
-                    price: p.price,
-                    image: p.image,
-                    verified: p.verified,
-                  }}
-                />
+            aria-hidden
+            className="pointer-events-none absolute -top-16 -left-10 h-44 w-44 rounded-full bg-brand-green/25 blur-3xl"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -bottom-12 -right-6 h-40 w-40 rounded-full bg-primary/30 blur-3xl"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(5,67,43,0.12),transparent_55%)]"
+          />
+
+          <div className="relative space-y-4">
+            <div className="flex items-center justify-between px-4 sm:px-6">
+              <div className="flex items-center gap-2.5">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-brand-green/10 text-brand-green ring-1 ring-brand-green/20 shadow-[0_0_16px_-2px_rgba(5,67,43,0.4)]">
+                  <Sparkles size={15} />
+                </span>
+                <div>
+                  <h2 className="text-h3 text-foreground">Recommended for you</h2>
+                  <p className="text-xs text-muted-foreground mt-0.5 hidden sm:block">
+                    Picked based on your preferences and what tenants like you save
+                  </p>
+                </div>
               </div>
-            ))}
+              <div className="flex gap-1">
+                <button
+                  onClick={() => scrollRec('left')}
+                  className="h-8 w-8 rounded-lg border border-brand-green/15 bg-background/80 flex items-center justify-center text-muted-foreground hover:bg-background hover:text-brand-green transition-ui cursor-pointer"
+                >
+                  <ChevronLeft size={14} />
+                </button>
+                <button
+                  onClick={() => scrollRec('right')}
+                  className="h-8 w-8 rounded-lg border border-brand-green/15 bg-background/80 flex items-center justify-center text-muted-foreground hover:bg-background hover:text-brand-green transition-ui cursor-pointer"
+                >
+                  <ChevronRight size={14} />
+                </button>
+              </div>
+            </div>
+            <div
+              ref={recommendedRef}
+              className="flex gap-4 overflow-x-auto scroll-smooth pb-1 px-4 sm:px-6 no-scrollbar"
+            >
+              {recommended.map((p) => (
+                <div key={p.id} className="shrink-0 w-64">
+                  <PropertyCard
+                    compact
+                    property={{
+                      id: p.id,
+                      title: p.title,
+                      type: p.type,
+                      location: p.district || p.region,
+                      price: p.price,
+                      image: p.image,
+                      verified: p.verified,
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       )}

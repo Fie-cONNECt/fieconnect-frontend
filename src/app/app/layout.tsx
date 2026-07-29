@@ -319,8 +319,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     </div>
   );
 
+  const isOnboarding = pathname === '/app/onboarding';
+
   return (
     <UserContext.Provider value={{ user, loading, logout: handleLogout, refreshUser }}>
+      {isOnboarding ? (
+        <div className="min-h-dvh bg-background font-sans">{children}</div>
+      ) : (
       <div className="min-h-screen bg-background flex flex-col font-sans">
         <aside
           className="hidden lg:block fixed top-0 bottom-0 left-0 w-64 z-20"
@@ -516,6 +521,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </main>
         </div>
       </div>
+      )}
     </UserContext.Provider>
   );
 }
