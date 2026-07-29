@@ -50,6 +50,7 @@ export interface AuthenticatedUser {
     maxPrice?: number | null;
     bedrooms: string[];
     amenities: string[];
+    parking?: string | null;
     onboardingStatus: string;
   } | null;
   createdAt: string;

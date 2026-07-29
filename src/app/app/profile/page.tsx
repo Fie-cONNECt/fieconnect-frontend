@@ -23,6 +23,7 @@ import {
   BEDROOM_OPTIONS,
   ONBOARDING_AMENITIES,
   DISTRICTS_BY_REGION,
+  PARKING_OPTIONS,
 } from '../../../lib/constants';
 import {
   Camera,
@@ -76,6 +77,7 @@ export default function ProfilePage() {
   const [prefTypes, setPrefTypes] = useState<string[]>([]);
   const [prefBedrooms, setPrefBedrooms] = useState<string[]>([]);
   const [prefAmenities, setPrefAmenities] = useState<string[]>([]);
+  const [prefParking, setPrefParking] = useState<string | null>(null);
   const [prefRentIndex, setPrefRentIndex] = useState(0);
 
   // Password section
@@ -115,6 +117,7 @@ export default function ProfilePage() {
         setPrefTypes(prefs.types || []);
         setPrefBedrooms(prefs.bedrooms || []);
         setPrefAmenities(prefs.amenities || []);
+        setPrefParking(prefs.parking || null);
         const idx = RENT_RANGES.findIndex(
           (r) => r.min === (prefs.minPrice ?? undefined) && r.max === (prefs.maxPrice ?? undefined),
         );
@@ -138,6 +141,7 @@ export default function ProfilePage() {
           types: prefTypes,
           bedrooms: prefBedrooms,
           amenities: prefAmenities,
+          parking: prefParking,
           minPrice: range?.min ?? null,
           maxPrice: range?.max ?? null,
         },
@@ -655,6 +659,27 @@ export default function ProfilePage() {
                       }`}
                     >
                       {range.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs font-semibold">Parking</p>
+                <div className="flex flex-wrap gap-2">
+                  {PARKING_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() =>
+                        setPrefParking((prev) => (prev === opt.value ? null : opt.value))
+                      }
+                      className={`rounded-full px-3 py-1.5 text-xs border ${
+                        prefParking === opt.value
+                          ? 'bg-brand-green text-white border-brand-green'
+                          : 'border-border'
+                      }`}
+                    >
+                      {opt.label === 'Yes' ? 'Need parking' : 'No parking needed'}
                     </button>
                   ))}
                 </div>
