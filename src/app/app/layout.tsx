@@ -327,201 +327,203 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {isOnboarding ? (
         <div className="min-h-dvh bg-background font-sans">{children}</div>
       ) : (
-      <div className="min-h-screen bg-background flex flex-col font-sans">
-        <aside
-          className="hidden lg:block fixed top-0 bottom-0 left-0 w-64 z-20"
-          aria-label="Sidebar"
-        >
-          <SidebarContent />
-        </aside>
-
-        {mobileMenuOpen && (
-          <div className="lg:hidden">
-            <div
-              className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 transition-opacity"
-              onClick={() => setMobileMenuOpen(false)}
-              aria-hidden
-            />
-            <div
-              className="fixed top-0 bottom-0 left-0 w-64 bg-sidebar z-50 shadow-2xl animate-in slide-in-from-left duration-300"
-              role="dialog"
-              aria-modal="true"
-              aria-label="Navigation menu"
-            >
-              <button
-                type="button"
-                onClick={() => setMobileMenuOpen(false)}
-                className="absolute top-4 right-4 p-2.5 min-h-11 min-w-11 rounded-lg bg-muted hover:bg-muted/80 text-muted-foreground transition-ui z-50 cursor-pointer flex items-center justify-center"
-                aria-label="Close menu"
-              >
-                <X size={16} />
-              </button>
-              <SidebarContent />
-            </div>
-          </div>
-        )}
-
-        <div className="lg:pl-64 flex flex-col flex-1">
-          <header
-            className={`sticky top-0 z-30 bg-card/90 backdrop-blur-md border-b border-border px-4 sm:px-6 flex items-center justify-between transition-ui ${isLandlord(user) ? 'h-20' : 'h-16'}`}
+        <div className="min-h-screen bg-background flex flex-col font-sans">
+          <aside
+            className="hidden lg:block fixed top-0 bottom-0 left-0 w-64 z-20"
+            aria-label="Sidebar"
           >
-            {isLandlord(user) ? (
-              <div className="flex items-center gap-3 min-w-0">
-                <button
-                  type="button"
-                  onClick={() => setMobileMenuOpen(true)}
-                  className="lg:hidden p-2.5 min-h-11 min-w-11 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-ui cursor-pointer flex items-center justify-center"
-                  aria-label="Open menu"
-                >
-                  <Menu size={20} />
-                </button>
-                <div className="flex flex-col text-left min-w-0">
-                  <h1 className="text-h3 text-foreground truncate">Hello, Mr. {user?.lastName}!</h1>
-                  <span className="text-caption mt-0.5 hidden sm:block">
-                    Welcome back to your property portfolio overview.
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setMobileMenuOpen(true)}
-                  className="lg:hidden p-2.5 min-h-11 min-w-11 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-ui cursor-pointer flex items-center justify-center"
-                  aria-label="Open menu"
-                >
-                  <Menu size={20} />
-                </button>
-                <h1 className="text-h3 text-foreground">Dashboard</h1>
-              </div>
-            )}
+            <SidebarContent />
+          </aside>
 
-            <div className="flex items-center gap-3 sm:gap-4">
-              {!isLandlord(user) && (
-                <div className="relative hidden sm:block w-48 md:w-64">
-                  <Search
-                    size={14}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                    aria-hidden
-                  />
-                  <input
-                    type="search"
-                    placeholder="Search properties..."
-                    aria-label="Search properties"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full h-10 pl-9 pr-4 rounded-full bg-muted/80 border border-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:bg-card focus:border-border focus:ring-2 focus:ring-ring/40 transition-ui font-medium"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        const query = searchQuery.trim();
-                        router.push(
-                          query
-                            ? `/app/properties?q=${encodeURIComponent(query)}`
-                            : '/app/properties',
-                        );
-                      }
-                    }}
-                  />
+          {mobileMenuOpen && (
+            <div className="lg:hidden">
+              <div
+                className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 transition-opacity"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-hidden
+              />
+              <div
+                className="fixed top-0 bottom-0 left-0 w-64 bg-sidebar z-50 shadow-2xl animate-in slide-in-from-left duration-300"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Navigation menu"
+              >
+                <button
+                  type="button"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="absolute top-4 right-4 p-2.5 min-h-11 min-w-11 rounded-lg bg-muted hover:bg-muted/80 text-muted-foreground transition-ui z-50 cursor-pointer flex items-center justify-center"
+                  aria-label="Close menu"
+                >
+                  <X size={16} />
+                </button>
+                <SidebarContent />
+              </div>
+            </div>
+          )}
+
+          <div className="lg:pl-64 flex flex-col flex-1">
+            <header
+              className={`sticky top-0 z-30 bg-card/90 backdrop-blur-md border-b border-border px-4 sm:px-6 flex items-center justify-between transition-ui ${isLandlord(user) ? 'h-20' : 'h-16'}`}
+            >
+              {isLandlord(user) ? (
+                <div className="flex items-center gap-3 min-w-0">
+                  <button
+                    type="button"
+                    onClick={() => setMobileMenuOpen(true)}
+                    className="lg:hidden p-2.5 min-h-11 min-w-11 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-ui cursor-pointer flex items-center justify-center"
+                    aria-label="Open menu"
+                  >
+                    <Menu size={20} />
+                  </button>
+                  <div className="flex flex-col text-left min-w-0">
+                    <h1 className="text-h3 text-foreground truncate">
+                      Hello, Mr. {user?.lastName}!
+                    </h1>
+                    <span className="text-caption mt-0.5 hidden sm:block">
+                      Welcome back to your property portfolio overview.
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setMobileMenuOpen(true)}
+                    className="lg:hidden p-2.5 min-h-11 min-w-11 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-ui cursor-pointer flex items-center justify-center"
+                    aria-label="Open menu"
+                  >
+                    <Menu size={20} />
+                  </button>
+                  <h1 className="text-h3 text-foreground">Dashboard</h1>
                 </div>
               )}
 
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setNotificationsOpen(!notificationsOpen)}
-                  className="relative p-2.5 min-h-11 min-w-11 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-ui cursor-pointer flex items-center justify-center"
-                  aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
-                  aria-expanded={notificationsOpen}
-                >
-                  <Bell size={18} />
-                  {unreadCount > 0 && (
-                    <span className="absolute top-1.5 right-1.5 h-4 w-4 rounded-full bg-destructive border-2 border-card text-[8px] font-bold text-white flex items-center justify-center shadow-sm">
-                      {unreadCount}
-                    </span>
-                  )}
-                </button>
-
-                {notificationsOpen && (
-                  <div
-                    className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-card border border-border rounded-2xl shadow-xl z-50 overflow-hidden text-left animate-in fade-in duration-200"
-                    role="menu"
-                    aria-label="Notifications"
-                  >
-                    <div className="p-3 border-b border-border flex justify-between items-center bg-muted/40">
-                      <span className="text-sm font-bold text-foreground">Notifications</span>
-                      {unreadCount > 0 && (
-                        <span className="text-[10px] bg-primary/20 text-primary-foreground font-bold px-2 py-0.5 rounded-full bg-primary/30">
-                          {unreadCount} new
-                        </span>
-                      )}
-                    </div>
-                    <div className="max-h-72 overflow-y-auto divide-y divide-border font-medium text-sm">
-                      {notifications.length === 0 ? (
-                        <div className="p-6 text-center text-muted-foreground text-sm">
-                          No notifications yet
-                        </div>
-                      ) : (
-                        notifications.map((n) => (
-                          <button
-                            type="button"
-                            key={n.id}
-                            onClick={() => handleMarkAsRead(n.id, n.link)}
-                            className={`w-full p-3.5 hover:bg-muted/60 transition-ui cursor-pointer flex flex-col gap-1 text-left ${
-                              !n.read
-                                ? 'bg-primary/5 border-l-2 border-primary'
-                                : 'border-l-2 border-transparent'
-                            }`}
-                          >
-                            <span className="text-foreground font-bold text-xs">{n.title}</span>
-                            <span className="text-caption leading-relaxed">{n.message}</span>
-                            <span className="text-[10px] text-muted-foreground mt-0.5">
-                              {new Date(n.createdAt).toLocaleTimeString([], {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })}
-                            </span>
-                          </button>
-                        ))
-                      )}
-                    </div>
+              <div className="flex items-center gap-3 sm:gap-4">
+                {!isLandlord(user) && (
+                  <div className="relative hidden sm:block w-48 md:w-64">
+                    <Search
+                      size={14}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                      aria-hidden
+                    />
+                    <input
+                      type="search"
+                      placeholder="Search properties..."
+                      aria-label="Search properties"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full h-10 pl-9 pr-4 rounded-full bg-muted/80 border border-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:bg-card focus:border-border focus:ring-2 focus:ring-ring/40 transition-ui font-medium"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          const query = searchQuery.trim();
+                          router.push(
+                            query
+                              ? `/app/properties?q=${encodeURIComponent(query)}`
+                              : '/app/properties',
+                          );
+                        }
+                      }}
+                    />
                   </div>
                 )}
-              </div>
 
-              <Link
-                href="/app/profile"
-                className="flex items-center gap-2 pl-3 border-l border-border hover:opacity-90 transition-ui focus-visible:rounded-lg"
-              >
-                <div className="relative h-9 w-9 rounded-full overflow-hidden bg-muted border border-border shrink-0">
-                  {user?.avatarUrl ? (
-                    <Image
-                      src={user.avatarUrl}
-                      alt={`${user.firstName} ${user.lastName}`}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="h-full w-full flex items-center justify-center text-[10px] font-bold text-muted-foreground bg-muted">
-                      {`${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase()}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setNotificationsOpen(!notificationsOpen)}
+                    className="relative p-2.5 min-h-11 min-w-11 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-ui cursor-pointer flex items-center justify-center"
+                    aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
+                    aria-expanded={notificationsOpen}
+                  >
+                    <Bell size={18} />
+                    {unreadCount > 0 && (
+                      <span className="absolute top-1.5 right-1.5 h-4 w-4 rounded-full bg-destructive border-2 border-card text-[8px] font-bold text-white flex items-center justify-center shadow-sm">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </button>
+
+                  {notificationsOpen && (
+                    <div
+                      className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-card border border-border rounded-2xl shadow-xl z-50 overflow-hidden text-left animate-in fade-in duration-200"
+                      role="menu"
+                      aria-label="Notifications"
+                    >
+                      <div className="p-3 border-b border-border flex justify-between items-center bg-muted/40">
+                        <span className="text-sm font-bold text-foreground">Notifications</span>
+                        {unreadCount > 0 && (
+                          <span className="text-[10px] bg-primary/20 text-primary-foreground font-bold px-2 py-0.5 rounded-full bg-primary/30">
+                            {unreadCount} new
+                          </span>
+                        )}
+                      </div>
+                      <div className="max-h-72 overflow-y-auto divide-y divide-border font-medium text-sm">
+                        {notifications.length === 0 ? (
+                          <div className="p-6 text-center text-muted-foreground text-sm">
+                            No notifications yet
+                          </div>
+                        ) : (
+                          notifications.map((n) => (
+                            <button
+                              type="button"
+                              key={n.id}
+                              onClick={() => handleMarkAsRead(n.id, n.link)}
+                              className={`w-full p-3.5 hover:bg-muted/60 transition-ui cursor-pointer flex flex-col gap-1 text-left ${
+                                !n.read
+                                  ? 'bg-primary/5 border-l-2 border-primary'
+                                  : 'border-l-2 border-transparent'
+                              }`}
+                            >
+                              <span className="text-foreground font-bold text-xs">{n.title}</span>
+                              <span className="text-caption leading-relaxed">{n.message}</span>
+                              <span className="text-[10px] text-muted-foreground mt-0.5">
+                                {new Date(n.createdAt).toLocaleTimeString([], {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })}
+                              </span>
+                            </button>
+                          ))
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
-                <div className="hidden md:flex flex-col text-left">
-                  <span className="text-sm font-semibold text-foreground leading-tight">
-                    {user?.firstName} {user?.lastName}
-                  </span>
-                  <span className="text-overline">{user?.userType || 'Tenant'}</span>
-                </div>
-              </Link>
-            </div>
-          </header>
 
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-background">
-            {pathname !== '/app/onboarding' && <OnboardingNudgeBanner />}
-            {children}
-          </main>
+                <Link
+                  href="/app/profile"
+                  className="flex items-center gap-2 pl-3 border-l border-border hover:opacity-90 transition-ui focus-visible:rounded-lg"
+                >
+                  <div className="relative h-9 w-9 rounded-full overflow-hidden bg-muted border border-border shrink-0">
+                    {user?.avatarUrl ? (
+                      <Image
+                        src={user.avatarUrl}
+                        alt={`${user.firstName} ${user.lastName}`}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center text-[10px] font-bold text-muted-foreground bg-muted">
+                        {`${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  <div className="hidden md:flex flex-col text-left">
+                    <span className="text-sm font-semibold text-foreground leading-tight">
+                      {user?.firstName} {user?.lastName}
+                    </span>
+                    <span className="text-overline">{user?.userType || 'Tenant'}</span>
+                  </div>
+                </Link>
+              </div>
+            </header>
+
+            <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-background">
+              {pathname !== '/app/onboarding' && <OnboardingNudgeBanner />}
+              {children}
+            </main>
+          </div>
         </div>
-      </div>
       )}
     </UserContext.Provider>
   );
