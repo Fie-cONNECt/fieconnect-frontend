@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Empty,
   EmptyHeader,
@@ -6,8 +6,8 @@ import {
   EmptyTitle,
   EmptyDescription,
   EmptyContent,
-} from "@/components/ui/empty";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/empty';
+import { cn } from '@/lib/utils';
 
 interface EmptyStateProps {
   icon?: React.ReactNode;
@@ -17,17 +17,11 @@ interface EmptyStateProps {
   className?: string;
 }
 
-export function EmptyState({
-  icon,
-  title,
-  description,
-  action,
-  className,
-}: EmptyStateProps) {
+export function EmptyState({ icon, title, description, action, className }: EmptyStateProps) {
   return (
     <Empty
       className={cn(
-        "border border-dashed border-border bg-card/50 py-12 px-6 animate-in fade-in duration-300",
+        'border border-dashed border-border bg-card/50 py-12 px-6 animate-in fade-in duration-300',
         className,
       )}
     >

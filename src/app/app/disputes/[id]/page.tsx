@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
-import { useUser } from "../../layout";
-import { requestGQL } from "../../../../lib/graphql-client";
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
+import { useUser } from '../../layout';
+import { requestGQL } from '../../../../lib/graphql-client';
 import {
   DISPUTE_QUERY,
   ADD_DISPUTE_COMMENT_MUTATION,
   RESOLVE_DISPUTE_MUTATION,
-} from "../../../../graphql/operations";
-import { Button } from "../../../../components/ui/button";
-import { toast } from "sonner";
-import { isLandlord } from "../../../../lib/utils";
+} from '../../../../graphql/operations';
+import { Button } from '../../../../components/ui/button';
+import { toast } from 'sonner';
+import { isLandlord } from '../../../../lib/utils';
 import {
   AlertTriangle,
   Clock,
@@ -25,10 +25,10 @@ import {
   Send,
   Eye,
   Loader2,
-} from "lucide-react";
-import { Skeleton } from "../../../../components/ui/skeleton";
-import { PageHeader } from "@/components/layout";
-import { StatusBadge } from "@/components/ui/status-badge";
+} from 'lucide-react';
+import { Skeleton } from '../../../../components/ui/skeleton';
+import { PageHeader } from '@/components/layout';
+import { StatusBadge } from '@/components/ui/status-badge';
 
 interface UserType {
   id: string;
@@ -76,7 +76,7 @@ export default function DisputeDetailsPage() {
 
   const [dispute, setDispute] = useState<Dispute | null>(null);
   const [loading, setLoading] = useState(true);
-  const [commentText, setCommentText] = useState("");
+  const [commentText, setCommentText] = useState('');
   const [submittingComment, setSubmittingComment] = useState(false);
   const [closingDispute, setClosingDispute] = useState(false);
 
@@ -87,9 +87,9 @@ export default function DisputeDetailsPage() {
         setDispute(data.dispute as Dispute);
       }
     } catch (err: any) {
-      console.error("Failed to load dispute workspace:", err);
-      toast.error(err.message || "Failed to load dispute.");
-      router.push("/app/disputes");
+      console.error('Failed to load dispute workspace:', err);
+      toast.error(err.message || 'Failed to load dispute.');
+      router.push('/app/disputes');
     } finally {
       setLoading(false);
     }
@@ -123,31 +123,27 @@ export default function DisputeDetailsPage() {
             : null,
         );
       }
-      setCommentText("");
-      toast.success("Comment added successfully.");
+      setCommentText('');
+      toast.success('Comment added successfully.');
       loadDispute();
     } catch (err: any) {
-      toast.error(err.message || "Failed to post comment.");
+      toast.error(err.message || 'Failed to post comment.');
     } finally {
       setSubmittingComment(false);
     }
   };
 
   const handleResolveDispute = async () => {
-    if (
-      !window.confirm(
-        "Are you sure you want to mark this dispute as resolved and close it?",
-      )
-    ) {
+    if (!window.confirm('Are you sure you want to mark this dispute as resolved and close it?')) {
       return;
     }
     setClosingDispute(true);
     try {
       await requestGQL(RESOLVE_DISPUTE_MUTATION, { id });
-      toast.success("Dispute resolved and closed successfully!");
+      toast.success('Dispute resolved and closed successfully!');
       loadDispute();
     } catch (err: any) {
-      toast.error(err.message || "Failed to resolve dispute.");
+      toast.error(err.message || 'Failed to resolve dispute.');
     } finally {
       setClosingDispute(false);
     }
@@ -174,15 +170,11 @@ export default function DisputeDetailsPage() {
   const isCreatorOfDispute = dispute.creator.id === user?.id;
 
   // Determine read state metadata
-  const oppositeReadTime = landlordMode
-    ? dispute.viewedByTenantAt
-    : dispute.viewedByLandlordAt;
-  const oppositeRoleName = landlordMode ? "Tenant" : "Landlord";
+  const oppositeReadTime = landlordMode ? dispute.viewedByTenantAt : dispute.viewedByLandlordAt;
+  const oppositeRoleName = landlordMode ? 'Tenant' : 'Landlord';
 
   // Determine Timeline stages
-  const firstOpposingComment = dispute.comments.find(
-    (c) => c.sender.id !== dispute.creator.id,
-  );
+  const firstOpposingComment = dispute.comments.find((c) => c.sender.id !== dispute.creator.id);
 
   return (
     <div className="space-y-6 text-left">
@@ -201,12 +193,12 @@ export default function DisputeDetailsPage() {
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <StatusBadge
-              status={dispute.status === "OPEN" ? "OPEN" : "CLOSED"}
-              label={dispute.status === "OPEN" ? "Open" : "Closed"}
+              status={dispute.status === 'OPEN' ? 'OPEN' : 'CLOSED'}
+              label={dispute.status === 'OPEN' ? 'Open' : 'Closed'}
             />
             {oppositeReadTime ? (
               <span className="inline-flex items-center gap-1 text-caption text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-lg border border-border">
-                <Eye size={12} aria-hidden /> Viewed by {oppositeRoleName} on{" "}
+                <Eye size={12} aria-hidden /> Viewed by {oppositeRoleName} on{' '}
                 {new Date(oppositeReadTime).toLocaleDateString()}
               </span>
             ) : (
@@ -232,11 +224,8 @@ export default function DisputeDetailsPage() {
                 {dispute.title}
               </h2>
               <p className="text-[10px] text-muted-foreground font-bold mt-1.5">
-                Filed by {dispute.creator.firstName} {dispute.creator.lastName}{" "}
-                on{" "}
-                {new Date(
-                  parseInt(dispute.createdAt) || dispute.createdAt,
-                ).toLocaleDateString()}
+                Filed by {dispute.creator.firstName} {dispute.creator.lastName} on{' '}
+                {new Date(parseInt(dispute.createdAt) || dispute.createdAt).toLocaleDateString()}
               </p>
             </div>
 
@@ -258,7 +247,7 @@ export default function DisputeDetailsPage() {
             )}
 
             {/* Resolve button for Dispute creator */}
-            {dispute.status === "OPEN" && isCreatorOfDispute && (
+            {dispute.status === 'OPEN' && isCreatorOfDispute && (
               <div className="pt-2 border-t border-border flex justify-end">
                 <Button
                   onClick={handleResolveDispute}
@@ -286,8 +275,7 @@ export default function DisputeDetailsPage() {
             <div className="space-y-4 max-h-96 overflow-y-auto pr-1">
               {dispute.comments.length === 0 ? (
                 <div className="p-10 text-center text-muted-foreground text-xs font-semibold bg-muted/50/40 rounded-xl border border-dashed border-border/60">
-                  No discussion messages yet. Write a message below to start
-                  mediation.
+                  No discussion messages yet. Write a message below to start mediation.
                 </div>
               ) : (
                 dispute.comments.map((comment) => {
@@ -297,24 +285,22 @@ export default function DisputeDetailsPage() {
                       key={comment.id}
                       className={`flex flex-col max-w-[85%] rounded-2xl p-4.5 space-y-1 font-semibold text-xs text-left ${
                         isSenderSelf
-                          ? "bg-primary/5 border border-primary/15 ml-auto rounded-tr-none"
-                          : "bg-muted/50 border border-zinc-150 mr-auto rounded-tl-none"
+                          ? 'bg-primary/5 border border-primary/15 ml-auto rounded-tr-none'
+                          : 'bg-muted/50 border border-zinc-150 mr-auto rounded-tl-none'
                       }`}
                     >
                       <p className="text-[10px] text-muted-foreground font-extrabold uppercase">
                         {isSenderSelf
-                          ? "You"
+                          ? 'You'
                           : `${comment.sender.firstName} ${comment.sender.lastName}`}
                       </p>
-                      <p className="text-foreground leading-relaxed font-medium">
-                        {comment.text}
-                      </p>
+                      <p className="text-foreground leading-relaxed font-medium">{comment.text}</p>
                       <p className="text-[9px] text-muted-foreground font-semibold self-end mt-1">
                         {new Date(
                           parseInt(comment.createdAt) || comment.createdAt,
                         ).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
+                          hour: '2-digit',
+                          minute: '2-digit',
                         })}
                       </p>
                     </div>
@@ -324,11 +310,8 @@ export default function DisputeDetailsPage() {
             </div>
 
             {/* Comment submission form */}
-            {dispute.status === "OPEN" ? (
-              <form
-                onSubmit={handleAddComment}
-                className="pt-4 border-t border-border space-y-3"
-              >
+            {dispute.status === 'OPEN' ? (
+              <form onSubmit={handleAddComment} className="pt-4 border-t border-border space-y-3">
                 <textarea
                   rows={3}
                   placeholder="Type your mediation response or update details here..."
@@ -354,8 +337,8 @@ export default function DisputeDetailsPage() {
               </form>
             ) : (
               <div className="p-4 bg-muted/50 text-center rounded-xl text-xs font-semibold text-muted-foreground border border-border">
-                This dispute has been marked as resolved and closed. No further
-                comments can be posted.
+                This dispute has been marked as resolved and closed. No further comments can be
+                posted.
               </div>
             )}
           </div>
@@ -382,13 +365,11 @@ export default function DisputeDetailsPage() {
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <h4 className="font-extrabold text-foreground">
-                      Complaint Filed
-                    </h4>
+                    <h4 className="font-extrabold text-foreground">Complaint Filed</h4>
                     <span className="text-[9px] text-muted-foreground">
                       {new Date(dispute.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
+                        hour: '2-digit',
+                        minute: '2-digit',
                       })}
                     </span>
                   </div>
@@ -403,8 +384,8 @@ export default function DisputeDetailsPage() {
                 <div
                   className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 border ${
                     firstOpposingComment
-                      ? "bg-amber-500 border-amber-500/20 text-white"
-                      : "bg-zinc-100 border-border text-muted-foreground"
+                      ? 'bg-amber-500 border-amber-500/20 text-white'
+                      : 'bg-zinc-100 border-border text-muted-foreground'
                   }`}
                 >
                   <MessageSquare size={14} />
@@ -412,7 +393,7 @@ export default function DisputeDetailsPage() {
                 <div>
                   <div className="flex items-center gap-1.5">
                     <h4
-                      className={`font-extrabold ${firstOpposingComment ? "text-foreground" : "text-muted-foreground"}`}
+                      className={`font-extrabold ${firstOpposingComment ? 'text-foreground' : 'text-muted-foreground'}`}
                     >
                       Response Filed
                     </h4>
@@ -422,16 +403,16 @@ export default function DisputeDetailsPage() {
                           parseInt(firstOpposingComment.createdAt) ||
                             firstOpposingComment.createdAt,
                         ).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
+                          hour: '2-digit',
+                          minute: '2-digit',
                         })}
                       </span>
                     )}
                   </div>
                   <p className="text-[10px] text-muted-foreground font-semibold leading-relaxed mt-0.5">
                     {firstOpposingComment
-                      ? "Acknowledgement response posted by the other party."
-                      : "Awaiting formal response or comment from the other party."}
+                      ? 'Acknowledgement response posted by the other party.'
+                      : 'Awaiting formal response or comment from the other party.'}
                   </p>
                 </div>
               </div>
@@ -440,23 +421,23 @@ export default function DisputeDetailsPage() {
               <div className="flex gap-3 items-start relative z-10 text-xs">
                 <div
                   className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 border ${
-                    dispute.status === "RESOLVED"
-                      ? "bg-emerald-500 border-emerald-500/20 text-white"
-                      : "bg-zinc-100 border-border text-muted-foreground"
+                    dispute.status === 'RESOLVED'
+                      ? 'bg-emerald-500 border-emerald-500/20 text-white'
+                      : 'bg-zinc-100 border-border text-muted-foreground'
                   }`}
                 >
                   <CheckCircle size={14} />
                 </div>
                 <div>
                   <h4
-                    className={`font-extrabold ${dispute.status === "RESOLVED" ? "text-foreground" : "text-muted-foreground"}`}
+                    className={`font-extrabold ${dispute.status === 'RESOLVED' ? 'text-foreground' : 'text-muted-foreground'}`}
                   >
                     Resolution / Closing
                   </h4>
                   <p className="text-[10px] text-muted-foreground font-semibold leading-relaxed mt-0.5">
-                    {dispute.status === "RESOLVED"
-                      ? "Mediation completed and case closed."
-                      : "Step to follow response mediation."}
+                    {dispute.status === 'RESOLVED'
+                      ? 'Mediation completed and case closed.'
+                      : 'Step to follow response mediation.'}
                   </p>
                 </div>
               </div>
@@ -477,9 +458,7 @@ export default function DisputeDetailsPage() {
               />
             </div>
             <div>
-              <p className="font-black text-foreground">
-                {dispute.tenancy.property.title}
-              </p>
+              <p className="font-black text-foreground">{dispute.tenancy.property.title}</p>
               <p className="text-[10px] text-muted-foreground mt-0.5">
                 {dispute.tenancy.property.location}
               </p>

@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { InputWrapper } from "@/components/ui/form-wrappers";
-import { Button } from "@/components/ui/button";
-import { requestGQL } from "@/lib/graphql-client";
-import { LOGIN_MUTATION } from "@/graphql/operations";
-import { toast } from "sonner";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { InputWrapper } from '@/components/ui/form-wrappers';
+import { Button } from '@/components/ui/button';
+import { requestGQL } from '@/lib/graphql-client';
+import { LOGIN_MUTATION } from '@/graphql/operations';
+import { toast } from 'sonner';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-import { Form } from "@/components/ui/form";
-import { persistAuthSession } from "@/lib/auth-session";
+import { Form } from '@/components/ui/form';
+import { persistAuthSession } from '@/lib/auth-session';
 
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(1, "Password is required"),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(1, 'Password is required'),
 });
 
 export type LoginFormValues = z.infer<typeof loginSchema>;
@@ -23,13 +23,13 @@ export type LoginFormValues = z.infer<typeof loginSchema>;
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/app";
+  const redirectTo = searchParams.get('redirect') || '/app';
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
   });
 
@@ -41,22 +41,20 @@ export default function LoginForm() {
       });
 
       if (!response.login) {
-        throw new Error("Login failed");
+        throw new Error('Login failed');
       }
 
       const { token, user } = response.login;
 
-      if (typeof window !== "undefined") {
+      if (typeof window !== 'undefined') {
         persistAuthSession(token, user);
       }
 
-      toast.success("Login successful!");
-      router.push(redirectTo.startsWith("/app") ? redirectTo : "/app");
+      toast.success('Login successful!');
+      router.push(redirectTo.startsWith('/app') ? redirectTo : '/app');
     } catch (error: any) {
-      console.error("Login error:", error);
-      toast.error(
-        error.message || "Login failed. Please check your credentials.",
-      );
+      console.error('Login error:', error);
+      toast.error(error.message || 'Login failed. Please check your credentials.');
     }
   };
 
@@ -88,7 +86,7 @@ export default function LoginForm() {
           disabled={form.formState.isSubmitting}
           className="w-full rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-11 mt-2 shadow-md transition-ui"
         >
-          {form.formState.isSubmitting ? "Logging in..." : "Login"}
+          {form.formState.isSubmitting ? 'Logging in...' : 'Login'}
         </Button>
       </form>
     </Form>

@@ -1,4 +1,4 @@
-import { graphql } from "../gql";
+import { graphql } from '../gql';
 
 export const REGISTER_MUTATION = graphql(`
   mutation Register(
@@ -62,6 +62,17 @@ export const ME_QUERY = graphql(`
       savedProperties {
         id
       }
+      preferences {
+        regions
+        districts
+        types
+        minPrice
+        maxPrice
+        bedrooms
+        amenities
+        parking
+        onboardingStatus
+      }
       createdAt
     }
   }
@@ -122,6 +133,87 @@ export const PROPERTIES_QUERY = graphql(`
       image
       about
       createdAt
+    }
+  }
+`);
+
+export const RECOMMENDED_PROPERTIES_QUERY = graphql(`
+  query RecommendedProperties(
+    $limit: Int
+    $region: String
+    $type: String
+    $minPrice: Float
+    $maxPrice: Float
+  ) {
+    recommendedProperties(
+      limit: $limit
+      region: $region
+      type: $type
+      minPrice: $minPrice
+      maxPrice: $maxPrice
+    ) {
+      score
+      reasons
+      property {
+        id
+        title
+        type
+        location
+        region
+        district
+        price
+        verified
+        bedrooms
+        bathrooms
+        size
+        image
+        about
+        createdAt
+      }
+    }
+  }
+`);
+
+export const TRACK_PROPERTY_VIEW_MUTATION = graphql(`
+  mutation TrackPropertyView($propertyId: ID!, $durationSec: Float) {
+    trackPropertyView(propertyId: $propertyId, durationSec: $durationSec)
+  }
+`);
+
+export const SAVE_PREFERENCES_MUTATION = graphql(`
+  mutation SavePreferences($input: PreferencesInput!) {
+    savePreferences(input: $input) {
+      id
+      preferences {
+        regions
+        districts
+        types
+        minPrice
+        maxPrice
+        bedrooms
+        amenities
+        parking
+        onboardingStatus
+      }
+    }
+  }
+`);
+
+export const SKIP_PREFERENCES_MUTATION = graphql(`
+  mutation SkipPreferences($input: PreferencesInput) {
+    skipPreferences(input: $input) {
+      id
+      preferences {
+        regions
+        districts
+        types
+        minPrice
+        maxPrice
+        bedrooms
+        amenities
+        parking
+        onboardingStatus
+      }
     }
   }
 `);

@@ -1,23 +1,30 @@
-"use client";
+'use client';
 
-import React, { useState, useRef, useEffect } from "react";
-import Image from "next/image";
-import { useUser } from "../layout";
-import { requestGQL } from "../../../lib/graphql-client";
+import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
+import { useUser } from '../layout';
+import { requestGQL } from '../../../lib/graphql-client';
 import {
   UPDATE_PROFILE_MUTATION,
   CHANGE_PASSWORD_MUTATION,
-} from "../../../graphql/operations";
-import { uploadToSupabase } from "../../../lib/supabase";
-import { Button } from "../../../components/ui/button";
-import { useForm } from "react-hook-form";
-import { Form } from "../../../components/ui/form";
+  SAVE_PREFERENCES_MUTATION,
+} from '../../../graphql/operations';
+import { uploadToSupabase } from '../../../lib/supabase';
+import { Button } from '../../../components/ui/button';
+import { useForm } from 'react-hook-form';
+import { Form } from '../../../components/ui/form';
+import { InputWrapper, TextareaWrapper } from '../../../components/ui/form-wrappers';
+import { toast } from 'sonner';
+import { isLandlord, isTenant } from '../../../lib/utils';
 import {
-  InputWrapper,
-  TextareaWrapper,
-} from "../../../components/ui/form-wrappers";
-import { toast } from "sonner";
-import { isLandlord } from "../../../lib/utils";
+  REGIONS,
+  PROPERTY_TYPES,
+  RENT_RANGES,
+  BEDROOM_OPTIONS,
+  ONBOARDING_AMENITIES,
+  DISTRICTS_BY_REGION,
+  PARKING_OPTIONS,
+} from '../../../lib/constants';
 import {
   Camera,
   User as UserIcon,
@@ -37,8 +44,10 @@ import {
   Lock,
   EyeOff,
   Eye,
-} from "lucide-react";
-import { PageHeader } from "@/components/layout";
+  MapPin,
+} from 'lucide-react';
+import { PageHeader } from '@/components/layout';
+import Link from 'next/link';
 
 interface ProfileFormValues {
   firstName: string;
@@ -54,13 +63,22 @@ interface PasswordFormValues {
 }
 
 export default function ProfilePage() {
-  const { user } = useUser();
+  const { user, refreshUser } = useUser();
   const landlordMode = isLandlord(user);
 
   const [editMode, setEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string>("");
+  const [avatarUrl, setAvatarUrl] = useState<string>('');
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [editingPrefs, setEditingPrefs] = useState(false);
+  const [savingPrefs, setSavingPrefs] = useState(false);
+  const [prefRegions, setPrefRegions] = useState<string[]>([]);
+  const [prefDistricts, setPrefDistricts] = useState<string[]>([]);
+  const [prefTypes, setPrefTypes] = useState<string[]>([]);
+  const [prefBedrooms, setPrefBedrooms] = useState<string[]>([]);
+  const [prefAmenities, setPrefAmenities] = useState<string[]>([]);
+  const [prefParking, setPrefParking] = useState<string | null>(null);
+  const [prefRentIndex, setPrefRentIndex] = useState(0);
 
   // Password section
   const [showPasswordSection, setShowPasswordSection] = useState(false);
@@ -72,14 +90,14 @@ export default function ProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<ProfileFormValues>({
-    defaultValues: { firstName: "", lastName: "", phone: "", bio: "" },
+    defaultValues: { firstName: '', lastName: '', phone: '', bio: '' },
   });
 
   const passwordForm = useForm<PasswordFormValues>({
     defaultValues: {
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
     },
   });
 
@@ -88,23 +106,66 @@ export default function ProfilePage() {
       form.reset({
         firstName: user.firstName,
         lastName: user.lastName,
-        phone: user.phone || "",
-        bio: user.bio || "",
+        phone: user.phone || '',
+        bio: user.bio || '',
       });
-      setAvatarUrl(user.avatarUrl || "");
+      setAvatarUrl(user.avatarUrl || '');
+      const prefs = user.preferences;
+      if (prefs) {
+        setPrefRegions(prefs.regions || []);
+        setPrefDistricts(prefs.districts || []);
+        setPrefTypes(prefs.types || []);
+        setPrefBedrooms(prefs.bedrooms || []);
+        setPrefAmenities(prefs.amenities || []);
+        setPrefParking(prefs.parking || null);
+        const idx = RENT_RANGES.findIndex(
+          (r) => r.min === (prefs.minPrice ?? undefined) && r.max === (prefs.maxPrice ?? undefined),
+        );
+        setPrefRentIndex(idx >= 0 ? idx : 0);
+      }
     }
   }, [user, form]);
+
+  const togglePref = (list: string[], value: string, setter: (v: string[]) => void) => {
+    setter(list.includes(value) ? list.filter((x) => x !== value) : [...list, value]);
+  };
+
+  const handleSavePrefs = async () => {
+    setSavingPrefs(true);
+    try {
+      const range = RENT_RANGES[prefRentIndex];
+      await requestGQL(SAVE_PREFERENCES_MUTATION as any, {
+        input: {
+          regions: prefRegions,
+          districts: prefDistricts,
+          types: prefTypes,
+          bedrooms: prefBedrooms,
+          amenities: prefAmenities,
+          parking: prefParking,
+          minPrice: range?.min ?? null,
+          maxPrice: range?.max ?? null,
+        },
+      });
+      await refreshUser();
+      toast.success('Housing preferences updated.');
+      setEditingPrefs(false);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to save preferences.');
+    } finally {
+      setSavingPrefs(false);
+    }
+  };
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingAvatar(true);
     try {
-      const url = await uploadToSupabase(file, "agreements");
+      const url = await uploadToSupabase(file, 'agreements');
       setAvatarUrl(url);
-      toast.success("Photo ready — save your profile to apply it.");
+      toast.success('Photo ready — save your profile to apply it.');
     } catch (err: any) {
-      toast.error(err.message || "Failed to upload photo.");
+      toast.error(err.message || 'Failed to upload photo.');
     } finally {
       setUploadingAvatar(false);
     }
@@ -120,11 +181,11 @@ export default function ProfilePage() {
         bio: values.bio || null,
         avatarUrl: avatarUrl || null,
       });
-      toast.success("Profile updated successfully!");
+      toast.success('Profile updated successfully!');
       setEditMode(false);
       window.location.reload();
     } catch (err: any) {
-      toast.error(err.message || "Failed to update profile.");
+      toast.error(err.message || 'Failed to update profile.');
     } finally {
       setSaving(false);
     }
@@ -132,11 +193,11 @@ export default function ProfilePage() {
 
   const handleChangePassword = async (values: PasswordFormValues) => {
     if (values.newPassword !== values.confirmPassword) {
-      toast.error("New passwords do not match.");
+      toast.error('New passwords do not match.');
       return;
     }
     if (values.newPassword.length < 8) {
-      toast.error("New password must be at least 8 characters.");
+      toast.error('New password must be at least 8 characters.');
       return;
     }
     setChangingPassword(true);
@@ -145,11 +206,11 @@ export default function ProfilePage() {
         currentPassword: values.currentPassword,
         newPassword: values.newPassword,
       });
-      toast.success("Password changed successfully!");
+      toast.success('Password changed successfully!');
       passwordForm.reset();
       setShowPasswordSection(false);
     } catch (err: any) {
-      toast.error(err.message || "Failed to change password.");
+      toast.error(err.message || 'Failed to change password.');
     } finally {
       setChangingPassword(false);
     }
@@ -157,11 +218,10 @@ export default function ProfilePage() {
 
   if (!user) return null;
 
-  const initials =
-    `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase();
-  const memberSince = new Date(user.createdAt).toLocaleDateString("en-GB", {
-    month: "long",
-    year: "numeric",
+  const initials = `${user.firstName?.[0] ?? ''}${user.lastName?.[0] ?? ''}`.toUpperCase();
+  const memberSince = new Date(user.createdAt).toLocaleDateString('en-GB', {
+    month: 'long',
+    year: 'numeric',
   });
 
   return (
@@ -181,12 +241,7 @@ export default function ProfilePage() {
           <div className="relative shrink-0">
             <div className="h-24 w-24 rounded-2xl overflow-hidden border-2 border-white/20 shadow-lg bg-white/10">
               {avatarUrl ? (
-                <Image
-                  src={avatarUrl}
-                  alt="Profile photo"
-                  fill
-                  className="object-cover"
-                />
+                <Image src={avatarUrl} alt="Profile photo" fill className="object-cover" />
               ) : (
                 <div className="h-full w-full flex items-center justify-center text-2xl font-black text-white/90">
                   {initials}
@@ -227,17 +282,15 @@ export default function ProfilePage() {
               <span
                 className={`inline-flex items-center gap-1 text-[10px] font-extrabold px-2.5 py-1 rounded-full border ${
                   landlordMode
-                    ? "bg-amber-400/20 border-amber-300/30 text-amber-200"
-                    : "bg-emerald-400/20 border-emerald-300/30 text-emerald-200"
+                    ? 'bg-amber-400/20 border-amber-300/30 text-amber-200'
+                    : 'bg-emerald-400/20 border-emerald-300/30 text-emerald-200'
                 }`}
               >
                 {landlordMode ? <Building2 size={10} /> : <Home size={10} />}
-                {landlordMode ? "Landlord" : "Tenant"}
+                {landlordMode ? 'Landlord' : 'Tenant'}
               </span>
             </div>
-            <p className="text-white/60 text-xs font-semibold mt-1">
-              {user.email}
-            </p>
+            <p className="text-white/60 text-xs font-semibold mt-1">{user.email}</p>
             {user.bio && (
               <p className="text-white/80 text-xs font-medium mt-2 max-w-xs leading-relaxed italic">
                 "{user.bio}"
@@ -266,14 +319,13 @@ export default function ProfilePage() {
         <div className="card-surface p-6">
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-xs font-black text-foreground uppercase tracking-wider flex items-center gap-2">
-              <Sparkles size={14} className="text-primary" /> Edit Your
-              Information
+              <Sparkles size={14} className="text-primary" /> Edit Your Information
             </h3>
             <div className="flex items-center gap-3">
               {avatarUrl && (
                 <button
                   type="button"
-                  onClick={() => setAvatarUrl("")}
+                  onClick={() => setAvatarUrl('')}
                   className="flex items-center gap-1 text-[10px] font-bold text-red-400 hover:text-red-600 cursor-pointer transition-colors"
                 >
                   <Trash2 size={11} /> Remove photo
@@ -290,16 +342,13 @@ export default function ProfilePage() {
                 ) : (
                   <Camera size={11} />
                 )}
-                {avatarUrl ? "Change photo" : "Upload photo"}
+                {avatarUrl ? 'Change photo' : 'Upload photo'}
               </button>
             </div>
           </div>
 
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(handleSave)}
-              className="space-y-5"
-            >
+            <form onSubmit={form.handleSubmit(handleSave)} className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <InputWrapper
                   control={form.control as any}
@@ -329,9 +378,7 @@ export default function ProfilePage() {
 
               {/* Email — read-only */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-foreground block">
-                  Email Address
-                </label>
+                <label className="text-xs font-bold text-foreground block">Email Address</label>
                 <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-border bg-muted/50 text-xs font-semibold text-muted-foreground">
                   <Mail size={13} className="text-muted-foreground shrink-0" />
                   <span>{user.email}</span>
@@ -357,10 +404,10 @@ export default function ProfilePage() {
                     form.reset({
                       firstName: user.firstName,
                       lastName: user.lastName,
-                      phone: user.phone || "",
-                      bio: user.bio || "",
+                      phone: user.phone || '',
+                      bio: user.bio || '',
                     });
-                    setAvatarUrl(user.avatarUrl || "");
+                    setAvatarUrl(user.avatarUrl || '');
                   }}
                   className="text-xs font-bold text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
                 >
@@ -398,7 +445,7 @@ export default function ProfilePage() {
               <InfoRow
                 icon={<Phone size={13} className="text-primary/70" />}
                 label="Phone"
-                value={user.phone || "—"}
+                value={user.phone || '—'}
               />
               <InfoRow
                 icon={<Calendar size={13} className="text-primary/70" />}
@@ -422,7 +469,7 @@ export default function ProfilePage() {
                   )
                 }
                 label="Account Type"
-                value={landlordMode ? "Landlord" : "Tenant"}
+                value={landlordMode ? 'Landlord' : 'Tenant'}
               />
               <InfoRow
                 icon={<Key size={13} className="text-primary/70" />}
@@ -442,9 +489,237 @@ export default function ProfilePage() {
               <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                 <FileText size={12} /> Bio
               </h3>
-              <p className="text-xs text-foreground leading-relaxed font-medium">
-                {user.bio}
+              <p className="text-xs text-foreground leading-relaxed font-medium">{user.bio}</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Tenant housing preferences ── */}
+      {isTenant(user) && (
+        <div className="card-surface p-5 space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                <MapPin size={12} /> Housing Preferences
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1">
+                Helps us rank listings that fit you. Edit anytime.
               </p>
+            </div>
+            {!editingPrefs ? (
+              <div className="flex gap-2">
+                {user.preferences?.onboardingStatus === 'PENDING' && (
+                  <Link
+                    href="/app/onboarding"
+                    className="text-xs font-bold text-brand-green hover:underline"
+                  >
+                    Take quiz
+                  </Link>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setEditingPrefs(true)}
+                  className="text-xs font-bold text-primary hover:underline cursor-pointer"
+                >
+                  Edit
+                </button>
+              </div>
+            ) : null}
+          </div>
+
+          {!editingPrefs ? (
+            <div className="flex flex-wrap gap-2 text-xs">
+              {(user.preferences?.regions || []).length === 0 &&
+              (user.preferences?.types || []).length === 0 ? (
+                <p className="text-muted-foreground">No preferences set yet.</p>
+              ) : (
+                <>
+                  {(user.preferences?.regions || []).map((r) => (
+                    <span
+                      key={r}
+                      className="rounded-full bg-brand-green-light text-brand-green px-3 py-1 font-medium"
+                    >
+                      {r}
+                    </span>
+                  ))}
+                  {(user.preferences?.types || []).map((t) => (
+                    <span
+                      key={t}
+                      className="rounded-full bg-muted px-3 py-1 font-medium text-foreground"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                  {(user.preferences?.bedrooms || []).map((b) => (
+                    <span
+                      key={b}
+                      className="rounded-full bg-muted px-3 py-1 font-medium text-foreground"
+                    >
+                      {b} bed
+                    </span>
+                  ))}
+                </>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <p className="text-xs font-semibold">Regions</p>
+                <div className="flex flex-wrap gap-2">
+                  {REGIONS.map((r) => (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => togglePref(prefRegions, r, setPrefRegions)}
+                      className={`rounded-full px-3 py-1.5 text-xs border ${
+                        prefRegions.includes(r)
+                          ? 'bg-brand-green text-white border-brand-green'
+                          : 'border-border'
+                      }`}
+                    >
+                      {r}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {prefRegions.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold">Districts</p>
+                  <div className="flex flex-wrap gap-2">
+                    {[...new Set(prefRegions.flatMap((r) => DISTRICTS_BY_REGION[r] || []))].map(
+                      (d) => (
+                        <button
+                          key={d}
+                          type="button"
+                          onClick={() => togglePref(prefDistricts, d, setPrefDistricts)}
+                          className={`rounded-full px-3 py-1.5 text-xs border ${
+                            prefDistricts.includes(d)
+                              ? 'bg-brand-green text-white border-brand-green'
+                              : 'border-border'
+                          }`}
+                        >
+                          {d}
+                        </button>
+                      ),
+                    )}
+                  </div>
+                </div>
+              )}
+              <div className="space-y-2">
+                <p className="text-xs font-semibold">Types</p>
+                <div className="flex flex-wrap gap-2">
+                  {PROPERTY_TYPES.map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => togglePref(prefTypes, t, setPrefTypes)}
+                      className={`rounded-full px-3 py-1.5 text-xs border ${
+                        prefTypes.includes(t)
+                          ? 'bg-brand-green text-white border-brand-green'
+                          : 'border-border'
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs font-semibold">Bedrooms</p>
+                <div className="flex flex-wrap gap-2">
+                  {BEDROOM_OPTIONS.map((b) => (
+                    <button
+                      key={b}
+                      type="button"
+                      onClick={() => togglePref(prefBedrooms, b, setPrefBedrooms)}
+                      className={`rounded-full px-3 py-1.5 text-xs border ${
+                        prefBedrooms.includes(b)
+                          ? 'bg-brand-green text-white border-brand-green'
+                          : 'border-border'
+                      }`}
+                    >
+                      {b}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs font-semibold">Budget</p>
+                <div className="flex flex-wrap gap-2">
+                  {RENT_RANGES.map((range, i) => (
+                    <button
+                      key={range.label}
+                      type="button"
+                      onClick={() => setPrefRentIndex(i)}
+                      className={`rounded-full px-3 py-1.5 text-xs border ${
+                        prefRentIndex === i
+                          ? 'bg-brand-green text-white border-brand-green'
+                          : 'border-border'
+                      }`}
+                    >
+                      {range.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs font-semibold">Parking</p>
+                <div className="flex flex-wrap gap-2">
+                  {PARKING_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() =>
+                        setPrefParking((prev) => (prev === opt.value ? null : opt.value))
+                      }
+                      className={`rounded-full px-3 py-1.5 text-xs border ${
+                        prefParking === opt.value
+                          ? 'bg-brand-green text-white border-brand-green'
+                          : 'border-border'
+                      }`}
+                    >
+                      {opt.label === 'Yes' ? 'Need parking' : 'No parking needed'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs font-semibold">Nice to have</p>
+                <div className="flex flex-wrap gap-2">
+                  {ONBOARDING_AMENITIES.map((a) => (
+                    <button
+                      key={a}
+                      type="button"
+                      onClick={() => togglePref(prefAmenities, a, setPrefAmenities)}
+                      className={`rounded-full px-3 py-1.5 text-xs border ${
+                        prefAmenities.includes(a)
+                          ? 'bg-brand-green text-white border-brand-green'
+                          : 'border-border'
+                      }`}
+                    >
+                      {a}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingPrefs(false)}
+                  className="text-xs font-bold text-muted-foreground"
+                >
+                  Cancel
+                </button>
+                <Button
+                  type="button"
+                  disabled={savingPrefs}
+                  onClick={handleSavePrefs}
+                  className="rounded-xl bg-brand-green hover:bg-brand-green/90 text-white text-xs"
+                >
+                  {savingPrefs ? 'Saving…' : 'Save preferences'}
+                </Button>
+              </div>
             </div>
           )}
         </div>
@@ -461,18 +736,16 @@ export default function ProfilePage() {
               <Lock size={14} />
             </div>
             <div>
-              <p className="text-xs font-black text-foreground">
-                Change Password
-              </p>
+              <p className="text-xs font-black text-foreground">Change Password</p>
               <p className="text-[10px] text-muted-foreground font-semibold mt-0.5">
                 Update your account password. Must be at least 8 characters.
               </p>
             </div>
           </div>
           <span
-            className={`text-[10px] font-black uppercase tracking-wider transition-colors ${showPasswordSection ? "text-primary" : "text-muted-foreground"}`}
+            className={`text-[10px] font-black uppercase tracking-wider transition-colors ${showPasswordSection ? 'text-primary' : 'text-muted-foreground'}`}
           >
-            {showPasswordSection ? "Cancel" : "Update →"}
+            {showPasswordSection ? 'Cancel' : 'Update →'}
           </span>
         </button>
 
@@ -490,9 +763,9 @@ export default function ProfilePage() {
                   </label>
                   <div className="relative">
                     <input
-                      type={showCurrent ? "text" : "password"}
+                      type={showCurrent ? 'text' : 'password'}
                       placeholder="Enter your current password"
-                      {...passwordForm.register("currentPassword", {
+                      {...passwordForm.register('currentPassword', {
                         required: true,
                       })}
                       className="w-full pr-10 p-3 rounded-xl border border-border text-xs focus:outline-hidden focus:border-primary transition-colors bg-white font-medium"
@@ -509,14 +782,12 @@ export default function ProfilePage() {
 
                 {/* New password */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-foreground block">
-                    New Password
-                  </label>
+                  <label className="text-xs font-bold text-foreground block">New Password</label>
                   <div className="relative">
                     <input
-                      type={showNew ? "text" : "password"}
+                      type={showNew ? 'text' : 'password'}
                       placeholder="At least 8 characters"
-                      {...passwordForm.register("newPassword", {
+                      {...passwordForm.register('newPassword', {
                         required: true,
                         minLength: 8,
                       })}
@@ -539,9 +810,9 @@ export default function ProfilePage() {
                   </label>
                   <div className="relative">
                     <input
-                      type={showConfirm ? "text" : "password"}
+                      type={showConfirm ? 'text' : 'password'}
                       placeholder="Repeat your new password"
-                      {...passwordForm.register("confirmPassword", {
+                      {...passwordForm.register('confirmPassword', {
                         required: true,
                       })}
                       className="w-full pr-10 p-3 rounded-xl border border-border text-xs focus:outline-hidden focus:border-primary transition-colors bg-white font-medium"
@@ -579,15 +850,7 @@ export default function ProfilePage() {
   );
 }
 
-function InfoRow({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
+function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div className="flex items-center gap-3">
       <div className="h-7 w-7 rounded-lg bg-muted/50 border border-border flex items-center justify-center shrink-0">

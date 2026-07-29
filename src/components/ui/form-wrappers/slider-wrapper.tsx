@@ -1,14 +1,8 @@
-"use client";
+'use client';
 
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Slider } from "@/components/ui/slider";
-import type { Control } from "react-hook-form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Slider } from '@/components/ui/slider';
+import type { Control } from 'react-hook-form';
 
 interface SliderWrapperProps {
   control: Control<any>;
@@ -40,7 +34,7 @@ export default function SliderWrapper({
       control={control}
       name={name}
       render={({ field }) => {
-        const val = typeof field.value === "number" ? field.value : min;
+        const val = typeof field.value === 'number' ? field.value : min;
         return (
           <FormItem className="w-full">
             <div className="flex justify-between items-center mb-2">
@@ -57,9 +51,7 @@ export default function SliderWrapper({
                 step={step}
                 value={[val]}
                 onValueChange={(valArray) => {
-                  const nextVal = Array.isArray(valArray)
-                    ? valArray[0]
-                    : valArray;
+                  const nextVal = Array.isArray(valArray) ? valArray[0] : valArray;
                   field.onChange(nextVal);
                 }}
                 disabled={disabled}
@@ -67,11 +59,7 @@ export default function SliderWrapper({
               />
             </FormControl>
             <FormMessage />
-            {warning && (
-              <span className="text-xs font-light text-muted-foreground">
-                {warning}
-              </span>
-            )}
+            {warning && <span className="text-xs font-light text-muted-foreground">{warning}</span>}
           </FormItem>
         );
       }}

@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import Link from "next/link";
-import { BrandLogoLink } from "@/components/layout/brand-logo";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { RefreshCw, Home } from "lucide-react";
+import { useEffect } from 'react';
+import Link from 'next/link';
+import { BrandLogoLink } from '@/components/layout/brand-logo';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { RefreshCw, Home } from 'lucide-react';
 
 export default function GlobalError({
   error,
@@ -26,12 +26,9 @@ export default function GlobalError({
 
       <main className="flex-1 page-container flex flex-col items-center justify-center text-center py-16">
         <p className="text-overline text-destructive mb-3">Something went wrong</p>
-        <h1 className="text-h1 text-foreground max-w-lg">
-          We hit an unexpected error
-        </h1>
+        <h1 className="text-h1 text-foreground max-w-lg">We hit an unexpected error</h1>
         <p className="text-body text-muted-foreground mt-4 max-w-md">
-          Please try again. If the problem continues, return home and contact
-          support.
+          Please try again. If the problem continues, return home and contact support.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
           <Button
@@ -45,8 +42,8 @@ export default function GlobalError({
           <Link
             href="/"
             className={cn(
-              buttonVariants({ variant: "outline", size: "lg" }),
-              "rounded-xl font-semibold gap-2",
+              buttonVariants({ variant: 'outline', size: 'lg' }),
+              'rounded-xl font-semibold gap-2',
             )}
           >
             <Home size={16} aria-hidden />

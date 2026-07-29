@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
-import { useUser } from "../../layout";
-import { requestGQL } from "../../../../lib/graphql-client";
-import { TENANCY_QUERY } from "../../../../graphql/operations";
-import { Button } from "../../../../components/ui/button";
-import { toast } from "sonner";
-import { isLandlord } from "../../../../lib/utils";
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
+import { useUser } from '../../layout';
+import { requestGQL } from '../../../../lib/graphql-client';
+import { TENANCY_QUERY } from '../../../../graphql/operations';
+import { Button } from '../../../../components/ui/button';
+import { toast } from 'sonner';
+import { isLandlord } from '../../../../lib/utils';
 import {
   FileText,
   Download,
@@ -20,10 +20,10 @@ import {
   ZoomOut,
   Printer,
   ChevronLeft,
-} from "lucide-react";
-import { Skeleton } from "../../../../components/ui/skeleton";
-import { PageHeader, StatCard } from "@/components/layout";
-import { StatusBadge } from "@/components/ui/status-badge";
+} from 'lucide-react';
+import { Skeleton } from '../../../../components/ui/skeleton';
+import { PageHeader, StatCard } from '@/components/layout';
+import { StatusBadge } from '@/components/ui/status-badge';
 
 interface UserType {
   id: string;
@@ -73,11 +73,10 @@ export default function TenancyDetailsPage() {
           setTenancy(data.tenancy as Tenancy);
         }
       } catch (err: unknown) {
-        const message =
-          err instanceof Error ? err.message : "Failed to load tenancy details.";
-        console.error("Failed to load tenancy details:", err);
+        const message = err instanceof Error ? err.message : 'Failed to load tenancy details.';
+        console.error('Failed to load tenancy details:', err);
         toast.error(message);
-        router.push("/app/tenancies");
+        router.push('/app/tenancies');
       } finally {
         setLoading(false);
       }
@@ -105,34 +104,29 @@ export default function TenancyDetailsPage() {
   if (!tenancy) return null;
 
   const startDate = new Date(
-    isNaN(Number(tenancy.updatedAt))
-      ? tenancy.updatedAt
-      : parseInt(tenancy.updatedAt),
+    isNaN(Number(tenancy.updatedAt)) ? tenancy.updatedAt : parseInt(tenancy.updatedAt),
   );
   const endDate = new Date(startDate);
   endDate.setFullYear(startDate.getFullYear() + 1);
 
   const currentDate = new Date();
   const diffMonths = Math.floor(
-    Math.max(0, currentDate.getTime() - startDate.getTime()) /
-      (1000 * 60 * 60 * 24 * 30.4),
+    Math.max(0, currentDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 30.4),
   );
   const diffDays = Math.max(
     0,
-    Math.ceil(
-      (endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24),
-    ),
+    Math.ceil((endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)),
   );
 
   const refCode = `TEN-${startDate.getFullYear()}-${tenancy.id.substring(18, 22).toUpperCase()}`;
   const oppositeParty = landlordMode ? tenancy.tenant : tenancy.property.landlord;
-  const oppositeRole = landlordMode ? "Tenant" : "Landlord";
+  const oppositeRole = landlordMode ? 'Tenant' : 'Landlord';
 
   const handleExportPDF = () => {
     if (tenancy.signedAgreementUrl) {
-      window.open(tenancy.signedAgreementUrl, "_blank");
+      window.open(tenancy.signedAgreementUrl, '_blank');
     } else {
-      toast.error("Signed agreement PDF is not available.");
+      toast.error('Signed agreement PDF is not available.');
     }
   };
 
@@ -177,20 +171,20 @@ export default function TenancyDetailsPage() {
         />
         <StatCard
           label="Start Date"
-          value={startDate.toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
+          value={startDate.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
           })}
           icon={<FileText size={18} />}
           tone="primary"
         />
         <StatCard
           label="End Date"
-          value={endDate.toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
+          value={endDate.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
           })}
           icon={<FileText size={18} />}
           tone="warning"
@@ -199,10 +193,10 @@ export default function TenancyDetailsPage() {
 
       <p className="text-caption text-muted-foreground -mt-2">
         {diffMonths === 0
-          ? "Less than a month elapsed"
-          : `${diffMonths} month${diffMonths > 1 ? "s" : ""} elapsed`}
-        {" · "}
-        Renewable in {diffDays} day{diffDays !== 1 ? "s" : ""}
+          ? 'Less than a month elapsed'
+          : `${diffMonths} month${diffMonths > 1 ? 's' : ''} elapsed`}
+        {' · '}
+        Renewable in {diffDays} day{diffDays !== 1 ? 's' : ''}
       </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -258,9 +252,7 @@ export default function TenancyDetailsPage() {
 
         <div className="space-y-6">
           <div className="card-surface p-4 space-y-4">
-            <h3 className="text-overline text-muted-foreground">
-              Property Information
-            </h3>
+            <h3 className="text-overline text-muted-foreground">Property Information</h3>
             <div className="relative h-32 w-full rounded-xl overflow-hidden border border-border">
               <Image
                 src={tenancy.property.image}
@@ -277,29 +269,20 @@ export default function TenancyDetailsPage() {
             </div>
             <div className="grid grid-cols-3 gap-2 pt-2 border-t border-border">
               {[
-                { label: "Beds", value: tenancy.property.bedrooms || "3" },
-                { label: "Baths", value: tenancy.property.bathrooms || "2.5" },
-                { label: "sqft", value: tenancy.property.size || "1,200" },
+                { label: 'Beds', value: tenancy.property.bedrooms || '3' },
+                { label: 'Baths', value: tenancy.property.bathrooms || '2.5' },
+                { label: 'sqft', value: tenancy.property.size || '1,200' },
               ].map((item) => (
-                <div
-                  key={item.label}
-                  className="text-center bg-muted/50 p-2 rounded-lg"
-                >
-                  <span className="block text-sm font-bold text-foreground">
-                    {item.value}
-                  </span>
-                  <span className="block text-overline text-muted-foreground">
-                    {item.label}
-                  </span>
+                <div key={item.label} className="text-center bg-muted/50 p-2 rounded-lg">
+                  <span className="block text-sm font-bold text-foreground">{item.value}</span>
+                  <span className="block text-overline text-muted-foreground">{item.label}</span>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="card-surface p-4 space-y-4">
-            <h3 className="text-overline text-muted-foreground">
-              {oppositeRole} Information
-            </h3>
+            <h3 className="text-overline text-muted-foreground">{oppositeRole} Information</h3>
             <div className="flex items-center gap-3">
               <div className="h-9 w-9 bg-muted rounded-full flex items-center justify-center text-muted-foreground font-bold text-sm">
                 {oppositeParty.firstName[0]}
@@ -309,9 +292,7 @@ export default function TenancyDetailsPage() {
                 <p className="font-semibold text-foreground">
                   {oppositeParty.firstName} {oppositeParty.lastName}
                 </p>
-                <p className="text-overline text-muted-foreground">
-                  {oppositeRole}
-                </p>
+                <p className="text-overline text-muted-foreground">{oppositeRole}</p>
               </div>
             </div>
 

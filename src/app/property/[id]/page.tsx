@@ -1,19 +1,20 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { useParams } from "next/navigation";
-import { requestGQL } from "../../../lib/graphql-client";
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useParams } from 'next/navigation';
+import { requestGQL } from '../../../lib/graphql-client';
 import {
   ME_QUERY,
   LOGOUT_MUTATION,
   PROPERTY_QUERY,
   TOGGLE_SAVE_PROPERTY_MUTATION,
   MY_APPLICATIONS_QUERY,
-} from "../../../graphql/operations";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+  TRACK_PROPERTY_VIEW_MUTATION,
+} from '../../../graphql/operations';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 import {
   MapPin,
   Building2,
@@ -32,15 +33,15 @@ import {
   Clock,
   ArrowLeft,
   X,
-} from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+} from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   PublicNavbar,
   PublicNavbarSkeleton,
   PublicFooterCompact,
   EmptyState,
-} from "@/components/layout";
-import { StatusBadge } from "@/components/ui/status-badge";
+} from '@/components/layout';
+import { StatusBadge } from '@/components/ui/status-badge';
 
 interface User {
   id: string;
@@ -97,22 +98,22 @@ export default function PropertyPage() {
   const [notFound, setNotFound] = useState(false);
 
   // Gallery Interactive State
-  const [activeImageKey, setActiveImageKey] = useState<
-    "main" | "kitchen" | "bedroom" | "bathroom"
-  >("main");
-  const [activeImageUrl, setActiveImageUrl] = useState("");
+  const [activeImageKey, setActiveImageKey] = useState<'main' | 'kitchen' | 'bedroom' | 'bathroom'>(
+    'main',
+  );
+  const [activeImageUrl, setActiveImageUrl] = useState('');
 
   // Application Modal state
   const [isApplyOpen, setIsApplyOpen] = useState(false);
-  const [applyMessage, setApplyMessage] = useState("");
-  const [leaseTerm, setLeaseTerm] = useState("12");
-  const [moveInDate, setMoveInDate] = useState("2026-08-01");
+  const [applyMessage, setApplyMessage] = useState('');
+  const [leaseTerm, setLeaseTerm] = useState('12');
+  const [moveInDate, setMoveInDate] = useState('2026-08-01');
   const [isSubmittingApplication, setIsSubmittingApplication] = useState(false);
 
   // Saved bookmark state
   const [isSaved, setIsSaved] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
-  const [applicationStatus, setApplicationStatus] = useState("");
+  const [applicationStatus, setApplicationStatus] = useState('');
 
   // Fetch current user & applications
   useEffect(() => {
@@ -128,16 +129,14 @@ export default function PropertyPage() {
           setUser(meData.me as any);
         }
         if (appsData.myApplications && idStr) {
-          const application = appsData.myApplications.find(
-            (app: any) => app.property.id === idStr,
-          );
+          const application = appsData.myApplications.find((app: any) => app.property.id === idStr);
           if (application) {
             setHasApplied(true);
             setApplicationStatus(application.status);
           }
         }
       } catch (err) {
-        console.error("Failed to load user info:", err);
+        console.error('Failed to load user info:', err);
       } finally {
         setInitLoading(false);
       }
@@ -162,9 +161,7 @@ export default function PropertyPage() {
         const data = await requestGQL(PROPERTY_QUERY, { id: idStr });
         if (data.property) {
           setProperty(data.property as PropertyDetails);
-          setActiveImageUrl(
-            data.property.images?.main || data.property.image || "",
-          );
+          setActiveImageUrl(data.property.images?.main || data.property.image || '');
           setApplyMessage(
             `Dear ${data.property.landlord?.firstName}, I am highly interested in renting your ${data.property.title} located at ${data.property.location}. Please get in touch to arrange a viewing.`,
           );
@@ -172,7 +169,7 @@ export default function PropertyPage() {
           setNotFound(true);
         }
       } catch (err) {
-        console.error("Failed to load property:", err);
+        console.error('Failed to load property:', err);
         setNotFound(true);
       } finally {
         setPropertyLoading(false);
@@ -180,6 +177,23 @@ export default function PropertyPage() {
     };
     fetchProperty();
   }, [idStr]);
+
+  // Track property views for recommendations (authenticated tenants)
+  useEffect(() => {
+    if (!idStr || !user || !property) return;
+    const startedAt = Date.now();
+    requestGQL(TRACK_PROPERTY_VIEW_MUTATION as any, { propertyId: idStr }).catch(() => {});
+
+    return () => {
+      const durationSec = Math.round((Date.now() - startedAt) / 1000);
+      if (durationSec >= 30) {
+        requestGQL(TRACK_PROPERTY_VIEW_MUTATION as any, {
+          propertyId: idStr,
+          durationSec,
+        }).catch(() => {});
+      }
+    };
+  }, [idStr, user?.id, property?.id]);
 
   // Update active image when user switches gallery tab
   useEffect(() => {
@@ -191,16 +205,16 @@ export default function PropertyPage() {
   useEffect(() => {
     if (!property || !property.lat || !property.lng) return;
 
-    const cssId = "leaflet-css";
+    const cssId = 'leaflet-css';
     if (!document.getElementById(cssId)) {
-      const link = document.createElement("link");
+      const link = document.createElement('link');
       link.id = cssId;
-      link.rel = "stylesheet";
-      link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+      link.rel = 'stylesheet';
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       document.head.appendChild(link);
     }
 
-    const scriptId = "leaflet-js";
+    const scriptId = 'leaflet-js';
     let script = document.getElementById(scriptId) as HTMLScriptElement;
 
     const initMap = () => {
@@ -210,21 +224,21 @@ export default function PropertyPage() {
       const lat = property.lat;
       const lng = property.lng;
 
-      const container = document.getElementById("property-map");
+      const container = document.getElementById('property-map');
       if (!container) return;
 
       if ((container as any)._leaflet_id) {
-        container.innerHTML = "";
+        container.innerHTML = '';
         (container as any)._leaflet_id = null;
       }
 
-      const map = L.map("property-map", {
+      const map = L.map('property-map', {
         zoomControl: true,
         scrollWheelZoom: false,
       }).setView([lat!, lng!], 15);
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap contributors",
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
       }).addTo(map);
 
       // Create a themed gold/amber circular point marker using Leaflet DIV icon
@@ -238,7 +252,7 @@ export default function PropertyPage() {
                    </svg>
                  </div>
                </div>`,
-        className: "custom-leaflet-icon",
+        className: 'custom-leaflet-icon',
         iconSize: [40, 40],
         iconAnchor: [20, 20],
       });
@@ -257,22 +271,22 @@ export default function PropertyPage() {
     };
 
     if (!script) {
-      script = document.createElement("script");
+      script = document.createElement('script');
       script.id = scriptId;
-      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
       script.onload = () => initMap();
       document.body.appendChild(script);
     } else {
       if ((window as any).L) {
         initMap();
       } else {
-        script.addEventListener("load", initMap);
+        script.addEventListener('load', initMap);
       }
     }
 
     return () => {
       if (script) {
-        script.removeEventListener("load", initMap);
+        script.removeEventListener('load', initMap);
       }
     };
   }, [idStr, property]);
@@ -281,16 +295,16 @@ export default function PropertyPage() {
     try {
       await requestGQL(LOGOUT_MUTATION);
     } catch (e) {
-      console.error("Logout error:", e);
+      console.error('Logout error:', e);
     }
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setUser(null);
   };
 
   const handleSaveToggle = async () => {
     if (!user) {
-      toast.error("Please log in to save properties.");
+      toast.error('Please log in to save properties.');
       return;
     }
     if (!property) return;
@@ -305,9 +319,9 @@ export default function PropertyPage() {
         );
         setIsSaved(saved);
         if (saved) {
-          toast.success("Property saved to your collection!");
+          toast.success('Property saved to your collection!');
         } else {
-          toast.info("Property removed from your collection.");
+          toast.info('Property removed from your collection.');
         }
         setUser((prev) =>
           prev
@@ -319,8 +333,8 @@ export default function PropertyPage() {
         );
       }
     } catch (e: any) {
-      console.error("Failed to toggle save property:", e);
-      toast.error(e.message || "An error occurred while saving the property.");
+      console.error('Failed to toggle save property:', e);
+      toast.error(e.message || 'An error occurred while saving the property.');
     }
   };
 
@@ -330,9 +344,7 @@ export default function PropertyPage() {
     setTimeout(() => {
       setIsSubmittingApplication(false);
       setIsApplyOpen(false);
-      toast.success(
-        "Application sent successfully! The landlord will review and contact you.",
-      );
+      toast.success('Application sent successfully! The landlord will review and contact you.');
     }, 1500);
   };
 
@@ -428,25 +440,12 @@ export default function PropertyPage() {
             <Link href="/" className="hover:text-foreground transition-ui">
               Browse
             </Link>
-            <ChevronRight
-              size={12}
-              className="text-muted-foreground/60"
-              aria-hidden
-            />
-            <Link
-              href="/app/properties"
-              className="hover:text-foreground transition-ui"
-            >
-              {property.region || "Properties"}
+            <ChevronRight size={12} className="text-muted-foreground/60" aria-hidden />
+            <Link href="/app/properties" className="hover:text-foreground transition-ui">
+              {property.region || 'Properties'}
             </Link>
-            <ChevronRight
-              size={12}
-              className="text-muted-foreground/60"
-              aria-hidden
-            />
-            <span className="text-foreground line-clamp-1">
-              {property.title}
-            </span>
+            <ChevronRight size={12} className="text-muted-foreground/60" aria-hidden />
+            <span className="text-foreground line-clamp-1">{property.title}</span>
           </nav>
 
           <div className="flex items-center gap-2">
@@ -455,19 +454,19 @@ export default function PropertyPage() {
               onClick={handleSaveToggle}
               className={`p-2.5 min-h-11 min-w-11 rounded-xl border border-border flex items-center justify-center transition-ui cursor-pointer ${
                 isSaved
-                  ? "bg-warning/15 text-warning-foreground border-warning/30"
-                  : "bg-card text-muted-foreground hover:text-foreground"
+                  ? 'bg-warning/15 text-warning-foreground border-warning/30'
+                  : 'bg-card text-muted-foreground hover:text-foreground'
               }`}
-              aria-label={isSaved ? "Unsave property" : "Save property"}
+              aria-label={isSaved ? 'Unsave property' : 'Save property'}
               aria-pressed={isSaved}
             >
-              <Bookmark size={16} fill={isSaved ? "currentColor" : "none"} />
+              <Bookmark size={16} fill={isSaved ? 'currentColor' : 'none'} />
             </button>
             <button
               type="button"
               onClick={() => {
                 navigator.clipboard.writeText(window.location.href);
-                toast.success("Link copied to clipboard!");
+                toast.success('Link copied to clipboard!');
               }}
               className="p-2.5 min-h-11 min-w-11 rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground transition-ui cursor-pointer"
               aria-label="Copy listing URL"
@@ -486,8 +485,7 @@ export default function PropertyPage() {
               </span>
               {property.verified && (
                 <span className="bg-primary/20 text-primary text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 border border-primary/30">
-                  <ShieldCheck size={12} className="text-primary" /> Verified
-                  Listing
+                  <ShieldCheck size={12} className="text-primary" /> Verified Listing
                 </span>
               )}
             </div>
@@ -524,13 +522,13 @@ export default function PropertyPage() {
             />
             {/* Text description overlay */}
             <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-[10px] font-bold text-white uppercase tracking-wider">
-              {activeImageKey === "main" ? "Exterior View" : activeImageKey}
+              {activeImageKey === 'main' ? 'Exterior View' : activeImageKey}
             </div>
           </div>
 
           {/* Thumbnail Selector Stack */}
           <div className="grid grid-cols-3 lg:grid-cols-1 gap-3">
-            {(["kitchen", "bedroom", "bathroom"] as const).map((key) => {
+            {(['kitchen', 'bedroom', 'bathroom'] as const).map((key) => {
               const url = property.images[key] || property.images.main;
               const isActive = activeImageKey === key;
               return (
@@ -542,8 +540,8 @@ export default function PropertyPage() {
                   }}
                   className={`relative h-[95px] sm:h-[138px] rounded-2xl overflow-hidden border transition-all cursor-pointer group flex flex-col justify-end text-left ${
                     isActive
-                      ? "border-primary ring-2 ring-primary/40 shadow-md"
-                      : "border-border/80 hover:border-primary/50"
+                      ? 'border-primary ring-2 ring-primary/40 shadow-md'
+                      : 'border-border/80 hover:border-primary/50'
                   }`}
                 >
                   <Image
@@ -554,9 +552,7 @@ export default function PropertyPage() {
                   />
                   {/* Subtle caption overlay */}
                   <div className="relative z-10 w-full bg-gradient-to-t from-black/80 via-black/30 to-transparent p-2 text-white">
-                    <p className="text-[10px] font-bold uppercase tracking-wider">
-                      {key}
-                    </p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider">{key}</p>
                   </div>
                 </button>
               );
@@ -675,10 +671,7 @@ export default function PropertyPage() {
 
               {/* Map Description details */}
               <div className="flex items-start gap-2 text-xs font-semibold text-muted-foreground leading-relaxed pt-2">
-                <CheckCircle2
-                  size={16}
-                  className="text-primary mt-0.5 shrink-0"
-                />
+                <CheckCircle2 size={16} className="text-primary mt-0.5 shrink-0" />
                 <p>{property.mapDescription}</p>
               </div>
             </div>
@@ -695,8 +688,8 @@ export default function PropertyPage() {
               {/* Landlord Profile details */}
               <div className="flex items-center gap-3.5 border-b border-border/60 pb-4">
                 <div className="h-12 w-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm border border-primary/20 shrink-0">
-                  {property.landlord.firstName?.[0] || "L"}
-                  {property.landlord.lastName?.[0] || "D"}
+                  {property.landlord.firstName?.[0] || 'L'}
+                  {property.landlord.lastName?.[0] || 'D'}
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-foreground">
@@ -738,19 +731,15 @@ export default function PropertyPage() {
                       <CheckCircle2 size={16} /> Application Submitted
                     </div>
                     <p className="text-[11px] leading-relaxed text-muted-foreground font-semibold">
-                      You have already applied for this property. Your
-                      application is currently{" "}
+                      You have already applied for this property. Your application is currently{' '}
                       <span className="text-primary font-bold">
                         {applicationStatus.toLowerCase()}
-                      </span>{" "}
+                      </span>{' '}
                       and waiting for approval or feedback.
                     </p>
                   </div>
                 ) : (
-                  <Link
-                    href={`/property/${property.id}/apply`}
-                    className="w-full"
-                  >
+                  <Link href={`/property/${property.id}/apply`} className="w-full">
                     <Button className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer text-xs">
                       Apply for this Property
                     </Button>
@@ -761,11 +750,8 @@ export default function PropertyPage() {
                   variant="outline"
                   className="w-full h-11 border-border text-foreground hover:bg-muted font-semibold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer text-xs"
                 >
-                  <Bookmark
-                    size={14}
-                    className={isSaved ? "text-amber-500 fill-current" : ""}
-                  />
-                  {isSaved ? "Property Saved" : "Save Property"}
+                  <Bookmark size={14} className={isSaved ? 'text-amber-500 fill-current' : ''} />
+                  {isSaved ? 'Property Saved' : 'Save Property'}
                 </Button>
               </div>
 
@@ -780,8 +766,8 @@ export default function PropertyPage() {
                 <ShieldCheck size={16} /> FieConnect Protection
               </div>
               <p className="text-[11px] leading-relaxed text-muted-foreground font-semibold">
-                This landlord has undergone full identity and title deed
-                verification. Your deposit is secured through our escrow system.
+                This landlord has undergone full identity and title deed verification. Your deposit
+                is secured through our escrow system.
               </p>
             </div>
           </div>

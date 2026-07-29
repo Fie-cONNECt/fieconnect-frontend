@@ -1,21 +1,12 @@
-import Image from "next/image";
-import Link from "next/link";
-import { BrandLogoLink } from "@/components/layout/brand-logo";
+import Image from 'next/image';
+import Link from 'next/link';
+import { BrandLogoLink } from '@/components/layout/brand-logo';
 
-export default function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
       <div className="flex w-full flex-col justify-center px-8 sm:w-[50%] lg:px-16 xl:px-24 relative z-10">
-        <BrandLogoLink
-          href="/"
-          size="lg"
-          showTagline
-          linkClassName="absolute top-8 left-8 group"
-        />
+        <BrandLogoLink href="/" size="lg" showTagline linkClassName="absolute top-8 left-8 group" />
 
         <div className="mx-auto w-full max-w-sm">{children}</div>
       </div>
@@ -41,12 +32,10 @@ export default function AuthLayout({
           </div>
 
           <div className="absolute bottom-12 left-10 right-10 rounded-2xl bg-card/85 p-6 shadow-xl backdrop-blur-xl border border-border space-y-3">
-            <div className="text-sm font-bold text-card-foreground">
-              Digital Tenancy Management
-            </div>
+            <div className="text-sm font-bold text-card-foreground">Digital Tenancy Management</div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Apply, sign leases, and manage your rental — all in one secure
-              platform built for Ghanaian landlords and tenants.
+              Apply, sign leases, and manage your rental — all in one secure platform built for
+              Ghanaian landlords and tenants.
             </p>
             <div className="flex items-center gap-2 text-xs font-semibold text-primary">
               <span className="h-2 w-2 rounded-full bg-primary animate-pulse" aria-hidden />
