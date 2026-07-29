@@ -11,6 +11,7 @@ import {
   PROPERTY_QUERY,
   TOGGLE_SAVE_PROPERTY_MUTATION,
   MY_APPLICATIONS_QUERY,
+  TRACK_PROPERTY_VIEW_MUTATION,
 } from '../../../graphql/operations';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -176,6 +177,23 @@ export default function PropertyPage() {
     };
     fetchProperty();
   }, [idStr]);
+
+  // Track property views for recommendations (authenticated tenants)
+  useEffect(() => {
+    if (!idStr || !user || !property) return;
+    const startedAt = Date.now();
+    requestGQL(TRACK_PROPERTY_VIEW_MUTATION as any, { propertyId: idStr }).catch(() => {});
+
+    return () => {
+      const durationSec = Math.round((Date.now() - startedAt) / 1000);
+      if (durationSec >= 30) {
+        requestGQL(TRACK_PROPERTY_VIEW_MUTATION as any, {
+          propertyId: idStr,
+          durationSec,
+        }).catch(() => {});
+      }
+    };
+  }, [idStr, user?.id, property?.id]);
 
   // Update active image when user switches gallery tab
   useEffect(() => {
