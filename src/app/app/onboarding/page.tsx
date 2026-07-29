@@ -13,6 +13,7 @@ import {
   BEDROOM_OPTIONS,
   ONBOARDING_AMENITIES,
   DISTRICTS_BY_REGION,
+  PARKING_OPTIONS,
 } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { BrandLogoLink } from '@/components/layout/brand-logo';
@@ -84,6 +85,7 @@ export default function OnboardingPage() {
   const [bedrooms, setBedrooms] = useState<string[]>([]);
   const [rentIndex, setRentIndex] = useState(0);
   const [amenities, setAmenities] = useState<string[]>([]);
+  const [parking, setParking] = useState<string | null>(null);
 
   const districtOptions = useMemo(() => {
     const set = new Set<string>();
@@ -115,7 +117,19 @@ export default function OnboardingPage() {
   const handleSkip = async () => {
     setSaving(true);
     try {
-      await requestGQL(SKIP_PREFERENCES_MUTATION as any);
+      const range = RENT_RANGES[rentIndex];
+      await requestGQL(SKIP_PREFERENCES_MUTATION as any, {
+        input: {
+          regions,
+          districts,
+          types,
+          bedrooms,
+          amenities,
+          parking,
+          minPrice: range?.min ?? null,
+          maxPrice: range?.max ?? null,
+        },
+      });
       await refreshUser();
       toast.message('All good — explore at your own pace.');
       goExplore();
@@ -137,6 +151,7 @@ export default function OnboardingPage() {
           types,
           bedrooms,
           amenities,
+          parking,
           minPrice: range?.min ?? null,
           maxPrice: range?.max ?? null,
         },
@@ -285,6 +300,21 @@ export default function OnboardingPage() {
                         label={range.label}
                         selected={rentIndex === i}
                         onClick={() => setRentIndex(i)}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <p className="text-sm font-medium">Parking</p>
+                  <div className="flex flex-wrap gap-2">
+                    {PARKING_OPTIONS.map((opt) => (
+                      <Chip
+                        key={opt.value}
+                        label={opt.label === 'Yes' ? 'Need parking' : 'No parking needed'}
+                        selected={parking === opt.value}
+                        onClick={() =>
+                          setParking((prev) => (prev === opt.value ? null : opt.value))
+                        }
                       />
                     ))}
                   </div>
