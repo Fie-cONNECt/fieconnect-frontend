@@ -284,7 +284,7 @@ export default function OnboardingPage() {
                     />
                   ))}
                 </div>
-                <div className="grid gap-5 sm:gap-6 lg:grid-cols-3 lg:gap-6">
+                <div className="space-y-3 lg:space-y-2">
                   <div className="space-y-3 lg:space-y-2">
                     <p className="text-sm font-medium">Bedrooms</p>
                     <div className="flex flex-wrap gap-2">
