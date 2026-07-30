@@ -153,6 +153,7 @@ export const RECOMMENDED_PROPERTIES_QUERY = graphql(`
       maxPrice: $maxPrice
     ) {
       score
+      stars
       reasons
       property {
         id
@@ -245,6 +246,7 @@ export const CREATE_PROPERTY_MUTATION = graphql(`
         bathroom
       }
       agreementUrl
+      videoUrl
       createdAt
     }
   }
@@ -268,6 +270,7 @@ export const PROPERTY_QUERY = graphql(`
       about
       amenities
       mapDescription
+      videoUrl
       lat
       lng
       image
