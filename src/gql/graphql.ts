@@ -83,6 +83,7 @@ export type CreatePropertyInput = {
   size: Scalars['String']['input'];
   title: Scalars['String']['input'];
   type: Scalars['String']['input'];
+  videoUrl?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Dispute = {
@@ -270,6 +271,7 @@ export type Property = {
   type: Scalars['String']['output'];
   updatedAt: Scalars['String']['output'];
   verified: Scalars['Boolean']['output'];
+  videoUrl?: Maybe<Scalars['String']['output']>;
 };
 
 export type PropertyImages = {
@@ -328,6 +330,7 @@ export type RecommendedProperty = {
   property: Property;
   reasons: Array<Scalars['String']['output']>;
   score: Scalars['Float']['output'];
+  stars: Scalars['Int']['output'];
 };
 
 export type User = {
@@ -520,6 +523,7 @@ export type RecommendedPropertiesQuery = {
   recommendedProperties: Array<{
     __typename?: 'RecommendedProperty';
     score: number;
+    stars: number;
     reasons: Array<string>;
     property: {
       __typename?: 'Property';
@@ -622,6 +626,7 @@ export type CreatePropertyMutation = {
     lng?: number | null;
     image: string;
     agreementUrl?: string | null;
+    videoUrl?: string | null;
     createdAt: string;
     images: {
       __typename?: 'PropertyImages';
@@ -656,6 +661,7 @@ export type PropertyQuery = {
     about: string;
     amenities: Array<string>;
     mapDescription?: string | null;
+    videoUrl?: string | null;
     lat?: number | null;
     lng?: number | null;
     image: string;
@@ -1570,6 +1576,7 @@ export const RecommendedPropertiesDocument = {
               kind: 'SelectionSet',
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'score' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'stars' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'reasons' } },
                 {
                   kind: 'Field',
@@ -1829,6 +1836,7 @@ export const CreatePropertyDocument = {
                   },
                 },
                 { kind: 'Field', name: { kind: 'Name', value: 'agreementUrl' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'videoUrl' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
               ],
             },
@@ -1886,6 +1894,7 @@ export const PropertyDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'about' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'amenities' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'mapDescription' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'videoUrl' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'lat' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'lng' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'image' } },

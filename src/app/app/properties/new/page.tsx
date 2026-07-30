@@ -28,10 +28,23 @@ import {
   Loader2,
 } from 'lucide-react';
 import Link from 'next/link';
+import { isLandlord } from '../../../../lib/utils';
 
 export default function NewPropertyPage() {
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
   const router = useRouter();
+
+  React.useEffect(() => {
+    if (userLoading) return;
+    if (!user) {
+      router.replace('/login');
+      return;
+    }
+    if (!isLandlord(user)) {
+      toast.error('Only landlords can list properties.');
+      router.replace('/app/properties');
+    }
+  }, [user, userLoading, router]);
 
   // React Hook Form initialization
   const form = useForm({
@@ -46,6 +59,7 @@ export default function NewPropertyPage() {
       size: '120',
       parking: 'Yes',
       description: '',
+      videoUrl: '',
     },
   });
 
@@ -143,6 +157,7 @@ export default function NewPropertyPage() {
         bedroomImage: roomUrl || coverUrl,
         bathroomImage: bathroomUrl || coverUrl,
         agreementUrl: pdfUrl || null,
+        videoUrl: values.videoUrl?.trim() || null,
       };
 
       await requestGQL(CREATE_PROPERTY_MUTATION, { input });
@@ -160,6 +175,14 @@ export default function NewPropertyPage() {
     toast.success('Property details saved as draft!');
     router.push('/app/properties');
   };
+
+  if (userLoading || !user || !isLandlord(user)) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center text-muted-foreground text-sm">
+        Checking access…
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto animate-in fade-in duration-500 text-left">
@@ -322,6 +345,19 @@ export default function NewPropertyPage() {
                   placeholder="Describe the amenities, nearby landmarks, and specific details..."
                   className="w-full p-4 rounded-xl border border-border text-xs font-semibold text-foreground placeholder-muted-foreground focus:outline-hidden focus:border-primary transition-colors resize-none bg-card"
                 />
+
+                <InputWrapper
+                  control={form.control as any}
+                  name="videoUrl"
+                  label="Property video / tour link (optional)"
+                  type="url"
+                  placeholder="https://youtube.com/…, https://tiktok.com/@…/video/…, or https://vimeo.com/…"
+                  className="w-full h-11 px-4 rounded-xl border border-border text-xs font-semibold text-foreground focus:outline-hidden focus:border-emerald-600 bg-card"
+                />
+                <p className="-mt-3 text-[10px] text-muted-foreground font-medium">
+                  Add a YouTube, TikTok, Vimeo, or other link so tenants can view the property
+                  online.
+                </p>
               </div>
             </div>
 
