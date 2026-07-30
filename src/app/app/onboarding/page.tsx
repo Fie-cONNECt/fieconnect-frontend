@@ -37,7 +37,7 @@ function Chip({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex min-h-11 items-center justify-center rounded-full px-3.5 py-2 text-xs sm:text-sm font-medium transition-colors duration-200 border touch-manipulation active:scale-[0.98] ${
+      className={`inline-flex min-h-11 items-center justify-center rounded-full px-3.5 py-2 text-xs sm:text-sm font-medium transition-colors duration-200 border touch-manipulation active:scale-[0.98] lg:min-h-9 lg:px-3 lg:py-1.5 ${
         selected
           ? 'bg-brand-green text-white border-brand-green shadow-sm'
           : 'bg-background/80 border-border text-foreground active:bg-brand-green-light'
@@ -61,14 +61,18 @@ function TypeCard({
     <button
       type="button"
       onClick={onClick}
-      className={`flex min-h-[4.5rem] flex-col justify-center rounded-2xl border-2 p-3.5 sm:p-4 text-left transition-colors duration-200 touch-manipulation active:scale-[0.98] ${
+      className={`flex min-h-[4.5rem] flex-col justify-center rounded-2xl border-2 p-3.5 sm:p-4 text-left transition-colors duration-200 touch-manipulation active:scale-[0.98] lg:min-h-0 lg:rounded-xl lg:p-3 ${
         selected
           ? 'border-brand-green bg-brand-green-light shadow-sm'
           : 'border-border bg-background/80 active:bg-muted/40'
       }`}
     >
-      <Home className={`h-5 w-5 mb-2 ${selected ? 'text-brand-green' : 'text-muted-foreground'}`} />
-      <span className="font-semibold text-xs sm:text-sm leading-tight">{label}</span>
+      <Home
+        className={`h-5 w-5 mb-2 lg:mb-1.5 lg:h-4 lg:w-4 ${
+          selected ? 'text-brand-green' : 'text-muted-foreground'
+        }`}
+      />
+      <span className="font-semibold text-xs sm:text-sm leading-tight lg:text-xs">{label}</span>
     </button>
   );
 }
@@ -196,20 +200,20 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-gradient-to-br from-brand-green-light/60 via-background to-background pt-[env(safe-area-inset-top)]">
-      <header className="shrink-0 px-4 pt-5 pb-3 sm:px-10 sm:pt-8 sm:pb-4">
+    <div className="flex min-h-dvh flex-col bg-gradient-to-br from-brand-green-light/60 via-background to-background pt-[env(safe-area-inset-top)] lg:h-dvh lg:max-h-dvh lg:overflow-hidden">
+      <header className="shrink-0 px-4 pt-5 pb-3 sm:px-10 sm:pt-8 sm:pb-4 lg:px-10 lg:pt-5 lg:pb-2">
         <BrandLogoLink href="/app/properties" size="sm" linkClassName="sm:hidden" />
         <BrandLogoLink href="/app/properties" size="md" linkClassName="hidden sm:inline-flex" />
       </header>
 
-      <div className="flex-1 overflow-y-auto overscroll-y-contain px-4 pb-[calc(9.5rem+env(safe-area-inset-bottom))] sm:px-10 sm:pb-32">
-        <div className="mx-auto w-full max-w-2xl">
-          <div className="mb-6 flex items-center justify-between sm:mb-8">
+      <div className="flex-1 overflow-y-auto overscroll-y-contain px-4 pb-[calc(9.5rem+env(safe-area-inset-bottom))] sm:px-10 sm:pb-32 lg:min-h-0 lg:overflow-y-auto lg:pb-0">
+        <div className="mx-auto flex h-full w-full max-w-2xl flex-col md:max-w-3xl lg:max-w-5xl xl:max-w-6xl">
+          <div className="mb-6 flex shrink-0 items-center justify-between sm:mb-8 lg:mb-4">
             <div className="flex gap-2">
               {steps.map((_, i) => (
                 <span
                   key={i}
-                  className={`h-2.5 w-2.5 rounded-full transition-colors ${
+                  className={`h-2.5 w-2.5 rounded-full transition-colors lg:h-2 lg:w-2 ${
                     i === step ? 'bg-brand-green' : i < step ? 'bg-brand-green/50' : 'bg-border'
                   }`}
                 />
@@ -222,23 +226,25 @@ export default function OnboardingPage() {
 
           <div
             key={step}
-            className="animate-in fade-in slide-in-from-right-2 duration-300 space-y-5 sm:space-y-6"
+            className="animate-in fade-in slide-in-from-right-2 duration-300 space-y-5 sm:space-y-6 lg:flex lg:min-h-0 lg:flex-1 lg:flex-col lg:space-y-4"
           >
-            <div className="space-y-2">
-              <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand-green-light text-brand-green">
-                <Icon className="h-5 w-5" />
+            <div className="flex shrink-0 items-start gap-3 lg:items-center lg:gap-4">
+              <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-green-light text-brand-green lg:h-9 lg:w-9">
+                <Icon className="h-5 w-5 lg:h-4 lg:w-4" />
               </div>
-              <h1 className="text-[1.625rem] leading-tight sm:text-4xl font-bold tracking-tight text-foreground">
-                {current.title}
-              </h1>
-              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-                {current.subtitle}
-              </p>
+              <div className="min-w-0 space-y-1 lg:space-y-0.5">
+                <h1 className="text-[1.625rem] leading-tight sm:text-4xl font-bold tracking-tight text-foreground lg:text-2xl xl:text-3xl">
+                  {current.title}
+                </h1>
+                <p className="text-sm leading-relaxed text-muted-foreground sm:text-base lg:text-sm">
+                  {current.subtitle}
+                </p>
+              </div>
             </div>
 
             {step === 0 && (
-              <div className="space-y-6">
-                <div className="flex flex-wrap gap-2">
+              <div className="space-y-6 lg:min-h-0 lg:flex-1 lg:space-y-4">
+                <div className="flex flex-wrap gap-2 lg:gap-2.5">
                   {REGIONS.map((region) => (
                     <Chip
                       key={region}
@@ -249,9 +255,9 @@ export default function OnboardingPage() {
                   ))}
                 </div>
                 {districtOptions.length > 0 && (
-                  <div className="space-y-3">
+                  <div className="space-y-3 lg:space-y-2">
                     <p className="text-sm font-medium text-foreground">Any favorite areas?</p>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 lg:gap-2.5">
                       {districtOptions.map((d) => (
                         <Chip
                           key={d}
@@ -267,8 +273,8 @@ export default function OnboardingPage() {
             )}
 
             {step === 1 && (
-              <div className="space-y-5 sm:space-y-6">
-                <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
+              <div className="space-y-5 sm:space-y-6 lg:min-h-0 lg:flex-1 lg:space-y-4">
+                <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-7 lg:gap-2">
                   {PROPERTY_TYPES.map((type) => (
                     <TypeCard
                       key={type}
@@ -278,52 +284,54 @@ export default function OnboardingPage() {
                     />
                   ))}
                 </div>
-                <div className="space-y-3">
-                  <p className="text-sm font-medium">Bedrooms</p>
-                  <div className="flex flex-wrap gap-2">
-                    {BEDROOM_OPTIONS.map((b) => (
-                      <Chip
-                        key={b}
-                        label={b === '5+' ? '5+' : `${b} bed`}
-                        selected={bedrooms.includes(b)}
-                        onClick={() => setBedrooms((prev) => toggleInList(prev, b))}
-                      />
-                    ))}
+                <div className="grid gap-5 sm:gap-6 lg:grid-cols-3 lg:gap-6">
+                  <div className="space-y-3 lg:space-y-2">
+                    <p className="text-sm font-medium">Bedrooms</p>
+                    <div className="flex flex-wrap gap-2">
+                      {BEDROOM_OPTIONS.map((b) => (
+                        <Chip
+                          key={b}
+                          label={b === '5+' ? '5+' : `${b} bed`}
+                          selected={bedrooms.includes(b)}
+                          onClick={() => setBedrooms((prev) => toggleInList(prev, b))}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-3">
-                  <p className="text-sm font-medium">Monthly budget (GHS)</p>
-                  <div className="flex flex-wrap gap-2">
-                    {RENT_RANGES.map((range, i) => (
-                      <Chip
-                        key={range.label}
-                        label={range.label}
-                        selected={rentIndex === i}
-                        onClick={() => setRentIndex(i)}
-                      />
-                    ))}
+                  <div className="space-y-3 lg:space-y-2 lg:col-span-1">
+                    <p className="text-sm font-medium">Monthly budget (GHS)</p>
+                    <div className="flex flex-wrap gap-2">
+                      {RENT_RANGES.map((range, i) => (
+                        <Chip
+                          key={range.label}
+                          label={range.label}
+                          selected={rentIndex === i}
+                          onClick={() => setRentIndex(i)}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-3">
-                  <p className="text-sm font-medium">Parking</p>
-                  <div className="flex flex-wrap gap-2">
-                    {PARKING_OPTIONS.map((opt) => (
-                      <Chip
-                        key={opt.value}
-                        label={opt.label === 'Yes' ? 'Need parking' : 'No parking needed'}
-                        selected={parking === opt.value}
-                        onClick={() =>
-                          setParking((prev) => (prev === opt.value ? null : opt.value))
-                        }
-                      />
-                    ))}
+                  <div className="space-y-3 lg:space-y-2">
+                    <p className="text-sm font-medium">Parking</p>
+                    <div className="flex flex-wrap gap-2">
+                      {PARKING_OPTIONS.map((opt) => (
+                        <Chip
+                          key={opt.value}
+                          label={opt.label === 'Yes' ? 'Need parking' : 'No parking needed'}
+                          selected={parking === opt.value}
+                          onClick={() =>
+                            setParking((prev) => (prev === opt.value ? null : opt.value))
+                          }
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
             )}
 
             {step === 2 && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 lg:gap-2.5">
                 {ONBOARDING_AMENITIES.map((a) => (
                   <Chip
                     key={a}
@@ -347,14 +355,14 @@ export default function OnboardingPage() {
         </div>
       </div>
 
-      <footer className="fixed inset-x-0 bottom-0 z-10 border-t border-border/60 bg-background/95 backdrop-blur-md px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:px-10 sm:py-4">
-        <div className="mx-auto flex w-full max-w-2xl flex-col gap-3">
-          <div className="flex gap-2">
+      <footer className="fixed inset-x-0 bottom-0 z-10 border-t border-border/60 bg-background/95 backdrop-blur-md px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:px-10 sm:py-4 lg:static lg:shrink-0 lg:border-t lg:bg-transparent lg:backdrop-blur-none lg:px-10 lg:py-4">
+        <div className="mx-auto flex w-full max-w-2xl flex-col gap-3 md:max-w-3xl lg:max-w-5xl lg:flex-row lg:items-center lg:gap-4 xl:max-w-6xl">
+          <div className="flex flex-1 gap-2">
             {step > 0 && (
               <Button
                 type="button"
                 variant="outline"
-                className="h-11 min-w-11 shrink-0 rounded-xl px-3 sm:px-4 touch-manipulation"
+                className="h-11 min-w-11 shrink-0 rounded-xl px-3 sm:px-4 touch-manipulation lg:h-10"
                 onClick={() => setStep((s) => s - 1)}
                 disabled={saving}
                 aria-label="Go back"
@@ -366,7 +374,7 @@ export default function OnboardingPage() {
             {step < steps.length - 1 ? (
               <Button
                 type="button"
-                className="h-11 flex-1 rounded-xl bg-brand-green hover:bg-brand-green/90 text-white touch-manipulation"
+                className="h-11 flex-1 rounded-xl bg-brand-green hover:bg-brand-green/90 text-white touch-manipulation lg:h-10"
                 onClick={() => setStep((s) => s + 1)}
                 disabled={saving}
               >
@@ -376,7 +384,7 @@ export default function OnboardingPage() {
             ) : (
               <Button
                 type="button"
-                className="h-11 flex-1 rounded-xl bg-brand-green hover:bg-brand-green/90 text-white touch-manipulation"
+                className="h-11 flex-1 rounded-xl bg-brand-green hover:bg-brand-green/90 text-white touch-manipulation lg:h-10"
                 onClick={handleFinish}
                 disabled={saving}
               >
@@ -388,7 +396,7 @@ export default function OnboardingPage() {
             type="button"
             onClick={handleSkip}
             disabled={saving}
-            className="min-h-11 w-full text-center text-sm text-muted-foreground transition-colors active:text-foreground touch-manipulation sm:text-left"
+            className="min-h-11 w-full text-center text-sm text-muted-foreground transition-colors active:text-foreground touch-manipulation sm:text-left lg:min-h-0 lg:w-auto lg:shrink-0 lg:whitespace-nowrap"
           >
             <span className="sm:hidden">Skip for now</span>
             <span className="hidden sm:inline">Skip for now — I’ll explore first</span>
