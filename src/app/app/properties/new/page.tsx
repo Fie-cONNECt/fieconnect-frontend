@@ -28,10 +28,23 @@ import {
   Loader2,
 } from 'lucide-react';
 import Link from 'next/link';
+import { isLandlord } from '../../../../lib/utils';
 
 export default function NewPropertyPage() {
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
   const router = useRouter();
+
+  React.useEffect(() => {
+    if (userLoading) return;
+    if (!user) {
+      router.replace('/login');
+      return;
+    }
+    if (!isLandlord(user)) {
+      toast.error('Only landlords can list properties.');
+      router.replace('/app/properties');
+    }
+  }, [user, userLoading, router]);
 
   // React Hook Form initialization
   const form = useForm({
@@ -160,6 +173,14 @@ export default function NewPropertyPage() {
     toast.success('Property details saved as draft!');
     router.push('/app/properties');
   };
+
+  if (userLoading || !user || !isLandlord(user)) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center text-muted-foreground text-sm">
+        Checking access…
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto animate-in fade-in duration-500 text-left">

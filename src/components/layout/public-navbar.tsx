@@ -4,12 +4,13 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { LogOut, Menu, X, LayoutDashboard, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { cn, isLandlord } from '@/lib/utils';
 import { BrandLogoLink } from '@/components/layout/brand-logo';
 
 export interface PublicNavbarUser {
   firstName: string;
   lastName?: string;
+  userType?: string;
 }
 
 interface PublicNavbarProps {
@@ -33,6 +34,7 @@ export function PublicNavbar({
 }: PublicNavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const canListProperty = !user || isLandlord(user);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -97,13 +99,15 @@ export function PublicNavbar({
 
           {/* Desktop actions */}
           <div className="hidden md:flex items-center gap-2 shrink-0">
-            <Link
-              href={user ? '/app/properties/new' : '/signup'}
-              className="hidden lg:inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-ui px-3 py-2 rounded-full hover:bg-muted/60"
-            >
-              <Building2 size={15} aria-hidden />
-              List Property
-            </Link>
+            {canListProperty && (
+              <Link
+                href={user ? '/app/properties/new' : '/signup'}
+                className="hidden lg:inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-ui px-3 py-2 rounded-full hover:bg-muted/60"
+              >
+                <Building2 size={15} aria-hidden />
+                List Property
+              </Link>
+            )}
 
             {user ? (
               <>
@@ -224,14 +228,16 @@ export function PublicNavbar({
                 );
               })}
 
-              <Link
-                href={user ? '/app/properties/new' : '/signup'}
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-2 rounded-xl px-4 py-3.5 text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-ui"
-              >
-                <Building2 size={16} aria-hidden />
-                List Property
-              </Link>
+              {canListProperty && (
+                <Link
+                  href={user ? '/app/properties/new' : '/signup'}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2 rounded-xl px-4 py-3.5 text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-ui"
+                >
+                  <Building2 size={16} aria-hidden />
+                  List Property
+                </Link>
+              )}
             </nav>
 
             {/* Drawer footer / auth */}

@@ -40,12 +40,14 @@ import {
 import { propertiesDb } from '@/data/properties';
 import { PublicNavbar, PublicNavbarSkeleton, PublicFooter, EmptyState } from '@/components/layout';
 import { PropertyCard } from '@/components/property/property-card';
+import { isLandlord } from '@/lib/utils';
 
 interface User {
   id: string;
   firstName: string;
   lastName: string;
   email: string;
+  userType?: string;
   createdAt: string;
 }
 
@@ -583,11 +585,19 @@ export default function Home() {
                 ))}
               </ul>
               <div className="flex flex-wrap gap-3 pt-2">
-                <Link href={user ? '/app/properties/new' : '/signup'}>
-                  <Button className="h-11 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-md transition-ui cursor-pointer">
-                    {user ? 'Add a Listing' : 'Become a Landlord'}
-                  </Button>
-                </Link>
+                {isLandlord(user) ? (
+                  <Link href="/app/properties/new">
+                    <Button className="h-11 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-md transition-ui cursor-pointer">
+                      Add a Listing
+                    </Button>
+                  </Link>
+                ) : !user ? (
+                  <Link href="/signup">
+                    <Button className="h-11 px-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-md transition-ui cursor-pointer">
+                      Become a Landlord
+                    </Button>
+                  </Link>
+                ) : null}
                 <Link href="/app/properties">
                   <Button
                     variant="outline"
