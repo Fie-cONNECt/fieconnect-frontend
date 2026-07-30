@@ -347,6 +347,7 @@ export default function TenantPropertiesPage() {
             {displayedProperties.map((p) => (
               <PropertyCard
                 key={p.id}
+                href={`/app/property/${p.id}`}
                 property={{
                   id: p.id,
                   title: p.title,
@@ -418,6 +419,7 @@ export default function TenantPropertiesPage() {
                   <div key={p.id} className="shrink-0 w-64">
                     <PropertyCard
                       compact
+                      href={`/app/property/${p.id}`}
                       reasons={item.reasons}
                       stars={item.stars}
                       property={{
@@ -474,7 +476,7 @@ export default function TenantPropertiesPage() {
 
 function RecentRow({ property: p }: { property: PropertyItem }) {
   return (
-    <Link href={`/property/${p.id}`}>
+    <Link href={`/app/property/${p.id}`}>
       <div className="flex items-center gap-4 p-4 hover:bg-muted/40 transition-ui cursor-pointer group">
         <div className="relative h-14 w-20 rounded-xl overflow-hidden shrink-0 border border-border">
           <Image src={p.image} alt={p.title} fill className="object-cover" />
@@ -570,6 +572,7 @@ function LandlordPropertiesPage() {
           {properties.map((p) => (
             <PropertyCard
               key={p.id}
+              href={`/app/property/${p.id}`}
               property={{
                 id: p.id,
                 title: p.title,
