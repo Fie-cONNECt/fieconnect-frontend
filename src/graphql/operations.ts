@@ -153,6 +153,7 @@ export const RECOMMENDED_PROPERTIES_QUERY = graphql(`
       maxPrice: $maxPrice
     ) {
       score
+      stars
       reasons
       property {
         id

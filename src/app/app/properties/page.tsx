@@ -81,6 +81,7 @@ interface FilterFormValues {
 interface RecommendedItem {
   property: PropertyItem;
   score: number;
+  stars: number;
   reasons: string[];
 }
 
@@ -418,6 +419,7 @@ export default function TenantPropertiesPage() {
                     <PropertyCard
                       compact
                       reasons={item.reasons}
+                      stars={item.stars}
                       property={{
                         id: p.id,
                         title: p.title,

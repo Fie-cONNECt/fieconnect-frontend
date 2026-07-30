@@ -328,6 +328,7 @@ export type RecommendedProperty = {
   property: Property;
   reasons: Array<Scalars['String']['output']>;
   score: Scalars['Float']['output'];
+  stars: Scalars['Int']['output'];
 };
 
 export type User = {
@@ -520,6 +521,7 @@ export type RecommendedPropertiesQuery = {
   recommendedProperties: Array<{
     __typename?: 'RecommendedProperty';
     score: number;
+    stars: number;
     reasons: Array<string>;
     property: {
       __typename?: 'Property';
@@ -1570,6 +1572,7 @@ export const RecommendedPropertiesDocument = {
               kind: 'SelectionSet',
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'score' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'stars' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'reasons' } },
                 {
                   kind: 'Field',
@@ -1829,6 +1832,7 @@ export const CreatePropertyDocument = {
                   },
                 },
                 { kind: 'Field', name: { kind: 'Name', value: 'agreementUrl' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'videoUrl' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
               ],
             },
@@ -1886,6 +1890,7 @@ export const PropertyDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'about' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'amenities' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'mapDescription' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'videoUrl' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'lat' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'lng' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'image' } },

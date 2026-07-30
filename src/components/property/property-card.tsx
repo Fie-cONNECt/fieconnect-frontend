@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MapPin, Bed, Bath, Heart } from 'lucide-react';
+import { MapPin, Bed, Bath, Heart, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { cn } from '@/lib/utils';
@@ -31,12 +31,39 @@ interface PropertyCardProps {
   ctaLabel?: string;
   compact?: boolean;
   reasons?: string[];
+  /** Preference match rating 0–5 from the recommender */
+  stars?: number;
 }
 
 function formatPrice(price?: string | number) {
   if (price === undefined || price === null || price === '') return null;
   if (typeof price === 'string') return price;
   return `GH₵ ${price.toLocaleString()}`;
+}
+
+function MatchStars({ stars, compact }: { stars: number; compact?: boolean }) {
+  const filled = Math.max(0, Math.min(5, Math.round(stars)));
+  if (filled <= 0) return null;
+  return (
+    <div
+      className="flex items-center gap-0.5"
+      title={`${filled} of 5 match`}
+      aria-label={`${filled} out of 5 star match`}
+    >
+      {Array.from({ length: 5 }, (_, i) => (
+        <Star
+          key={i}
+          size={compact ? 12 : 14}
+          className={cn(
+            i < filled
+              ? 'fill-amber-400 text-amber-400'
+              : 'fill-transparent text-muted-foreground/35',
+          )}
+          aria-hidden
+        />
+      ))}
+    </div>
+  );
 }
 
 export function PropertyCard({
@@ -49,6 +76,7 @@ export function PropertyCard({
   ctaLabel = 'View Details',
   compact = false,
   reasons,
+  stars,
 }: PropertyCardProps) {
   const detailHref = href ?? `/property/${property.id}`;
   const priceLabel = formatPrice(property.price);
@@ -111,6 +139,12 @@ export function PropertyCard({
               {priceLabel}
               <span className="text-[10px] font-medium opacity-80 ml-1">/mo</span>
             </span>
+          </div>
+        )}
+
+        {stars != null && stars > 0 && (
+          <div className="absolute bottom-3 right-3 pointer-events-none rounded-lg bg-background/90 backdrop-blur-sm border border-border/60 px-1.5 py-1 shadow-sm">
+            <MatchStars stars={stars} compact={compact} />
           </div>
         )}
       </div>
