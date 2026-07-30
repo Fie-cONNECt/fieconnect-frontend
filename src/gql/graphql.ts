@@ -83,6 +83,7 @@ export type CreatePropertyInput = {
   size: Scalars['String']['input'];
   title: Scalars['String']['input'];
   type: Scalars['String']['input'];
+  videoUrl?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Dispute = {
@@ -270,6 +271,7 @@ export type Property = {
   type: Scalars['String']['output'];
   updatedAt: Scalars['String']['output'];
   verified: Scalars['Boolean']['output'];
+  videoUrl?: Maybe<Scalars['String']['output']>;
 };
 
 export type PropertyImages = {
@@ -624,6 +626,7 @@ export type CreatePropertyMutation = {
     lng?: number | null;
     image: string;
     agreementUrl?: string | null;
+    videoUrl?: string | null;
     createdAt: string;
     images: {
       __typename?: 'PropertyImages';
@@ -658,6 +661,7 @@ export type PropertyQuery = {
     about: string;
     amenities: Array<string>;
     mapDescription?: string | null;
+    videoUrl?: string | null;
     lat?: number | null;
     lng?: number | null;
     image: string;

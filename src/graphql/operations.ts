@@ -246,6 +246,7 @@ export const CREATE_PROPERTY_MUTATION = graphql(`
         bathroom
       }
       agreementUrl
+      videoUrl
       createdAt
     }
   }
@@ -269,6 +270,7 @@ export const PROPERTY_QUERY = graphql(`
       about
       amenities
       mapDescription
+      videoUrl
       lat
       lng
       image

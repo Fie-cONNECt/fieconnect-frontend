@@ -33,6 +33,8 @@ import {
   Clock,
   ArrowLeft,
   X,
+  Video,
+  ExternalLink,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -42,6 +44,7 @@ import {
   EmptyState,
 } from '@/components/layout';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { getVideoEmbedUrl, isTikTokVideoUrl } from '@/lib/utils';
 
 interface User {
   id: string;
@@ -68,6 +71,7 @@ interface PropertyDetails {
   about: string;
   amenities: string[];
   mapDescription?: string | null;
+  videoUrl?: string | null;
   lat?: number | null;
   lng?: number | null;
   images: {
@@ -647,6 +651,58 @@ export default function PropertyPage() {
                 </div>
               </div>
             </div>
+
+            {property.videoUrl && (
+              <div className="bg-card border border-border p-6 rounded-2xl shadow-xs space-y-4">
+                <div className="flex items-center justify-between gap-3 border-b border-border/65 pb-2">
+                  <h2 className="text-lg sm:text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+                    <Video size={18} className="text-primary shrink-0" aria-hidden />
+                    Property tour
+                  </h2>
+                  <a
+                    href={property.videoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:opacity-85 transition-opacity"
+                  >
+                    Open link
+                    <ExternalLink size={12} aria-hidden />
+                  </a>
+                </div>
+                {getVideoEmbedUrl(property.videoUrl) ? (
+                  <div
+                    className={
+                      isTikTokVideoUrl(property.videoUrl)
+                        ? 'relative mx-auto aspect-[9/16] w-full max-w-sm overflow-hidden rounded-2xl border border-border bg-muted'
+                        : 'relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-muted'
+                    }
+                  >
+                    <iframe
+                      src={getVideoEmbedUrl(property.videoUrl)!}
+                      title={`Video tour of ${property.title}`}
+                      className="absolute inset-0 h-full w-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                ) : (
+                  <a
+                    href={property.videoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 rounded-xl border border-border bg-muted/40 px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted transition-ui"
+                  >
+                    <Video size={16} className="text-primary shrink-0" aria-hidden />
+                    <span className="min-w-0 truncate">{property.videoUrl}</span>
+                    <ExternalLink
+                      size={14}
+                      className="shrink-0 text-muted-foreground"
+                      aria-hidden
+                    />
+                  </a>
+                )}
+              </div>
+            )}
 
             {/* Mock Vector Location Details Map */}
             <div className="bg-card border border-border p-6 rounded-2xl shadow-xs space-y-4">
