@@ -192,7 +192,7 @@ export default function TenantApplicationPage() {
 
       if (response.createApplication) {
         toast.success('Your tenancy application has been submitted successfully!');
-        router.push(`/property/${idStr}`);
+        router.push(`/app/property/${idStr}`);
       }
     } catch (err: any) {
       toast.error(err.message || 'Failed to submit tenancy application.');
@@ -244,7 +244,7 @@ export default function TenantApplicationPage() {
       <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto flex h-16 items-center px-4 sm:px-6 lg:px-8">
           <Link
-            href={`/property/${property.id}`}
+            href={`/app/property/${property.id}`}
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mr-6"
           >
             <ArrowLeft size={16} />
@@ -351,7 +351,7 @@ export default function TenantApplicationPage() {
                   </p>
                 </div>
                 <div className="pt-3">
-                  <Link href={`/property/${property.id}`}>
+                  <Link href={`/app/property/${property.id}`}>
                     <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl text-xs px-5 py-2 cursor-pointer">
                       Back to Property
                     </Button>

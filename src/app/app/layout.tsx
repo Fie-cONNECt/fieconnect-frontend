@@ -240,6 +240,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     if (itemHref === '/app') {
       return pathname === '/app';
     }
+    if (itemHref === '/app/properties') {
+      return pathname.startsWith('/app/properties') || pathname.startsWith('/app/property/');
+    }
     return pathname.startsWith(itemHref);
   };
 
