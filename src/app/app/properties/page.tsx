@@ -315,56 +315,6 @@ export default function TenantPropertiesPage() {
         </div>
       </div>
 
-      {/* ── Featured Properties ── */}
-      <section className="px-4 sm:px-6 lg:px-8 space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-h3 text-foreground">
-            {showAll ? 'All Matching Properties' : 'Featured Properties'}
-          </h2>
-          <button
-            onClick={() => setShowAll(!showAll)}
-            className="text-xs font-bold text-primary hover:underline cursor-pointer"
-          >
-            {showAll ? 'Show Featured Only' : 'View All'}
-          </button>
-        </div>
-
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-64 rounded-2xl bg-muted" />
-            ))}
-          </div>
-        ) : displayedProperties.length === 0 ? (
-          <EmptyState
-            icon={<Building2 size={18} />}
-            title="No properties found"
-            description="No properties match your current filters. Try adjusting region, type, or rent range."
-            className="py-10"
-          />
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayedProperties.map((p) => (
-              <PropertyCard
-                key={p.id}
-                href={`/app/property/${p.id}`}
-                property={{
-                  id: p.id,
-                  title: p.title,
-                  type: p.type,
-                  location: p.location,
-                  price: p.price,
-                  image: p.image,
-                  verified: p.verified,
-                  bedrooms: p.bedrooms,
-                  bathrooms: p.bathrooms,
-                }}
-              />
-            ))}
-          </div>
-        )}
-      </section>
-
       {/* ── Recommended ── */}
       {!showAll && recommended.length > 0 && (
         <section className="relative mx-4 sm:mx-6 lg:mx-8 overflow-hidden rounded-2xl border border-brand-green/20 bg-gradient-to-br from-brand-green-light/80 via-background to-brand-green-light/30 py-5 sm:py-6 shadow-[0_0_48px_-14px_rgba(5,67,43,0.45)]">
@@ -439,6 +389,56 @@ export default function TenantPropertiesPage() {
           </div>
         </section>
       )}
+
+      {/* ── Featured Properties ── */}
+      <section className="px-4 sm:px-6 lg:px-8 space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-h3 text-foreground">
+            {showAll ? 'All Matching Properties' : 'Featured Properties'}
+          </h2>
+          <button
+            onClick={() => setShowAll(!showAll)}
+            className="text-xs font-bold text-primary hover:underline cursor-pointer"
+          >
+            {showAll ? 'Show Featured Only' : 'View All'}
+          </button>
+        </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-64 rounded-2xl bg-muted" />
+            ))}
+          </div>
+        ) : displayedProperties.length === 0 ? (
+          <EmptyState
+            icon={<Building2 size={18} />}
+            title="No properties found"
+            description="No properties match your current filters. Try adjusting region, type, or rent range."
+            className="py-10"
+          />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {displayedProperties.map((p) => (
+              <PropertyCard
+                key={p.id}
+                href={`/app/property/${p.id}`}
+                property={{
+                  id: p.id,
+                  title: p.title,
+                  type: p.type,
+                  location: p.location,
+                  price: p.price,
+                  image: p.image,
+                  verified: p.verified,
+                  bedrooms: p.bedrooms,
+                  bathrooms: p.bathrooms,
+                }}
+              />
+            ))}
+          </div>
+        )}
+      </section>
 
       {/* ── Recent Listings ── */}
       {!showAll && recent.length > 0 && (
