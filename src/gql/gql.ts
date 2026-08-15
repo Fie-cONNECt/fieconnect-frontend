@@ -22,6 +22,7 @@ type Documents = {
   '\n  query Properties($region: String, $type: String, $minPrice: Float, $maxPrice: Float) {\n    properties(region: $region, type: $type, minPrice: $minPrice, maxPrice: $maxPrice) {\n      id\n      title\n      type\n      location\n      region\n      district\n      price\n      verified\n      bedrooms\n      bathrooms\n      size\n      image\n      about\n      createdAt\n    }\n  }\n': typeof types.PropertiesDocument;
   '\n  query RecommendedProperties(\n    $limit: Int\n    $region: String\n    $type: String\n    $minPrice: Float\n    $maxPrice: Float\n  ) {\n    recommendedProperties(\n      limit: $limit\n      region: $region\n      type: $type\n      minPrice: $minPrice\n      maxPrice: $maxPrice\n    ) {\n      score\n      stars\n      reasons\n      property {\n        id\n        title\n        type\n        location\n        region\n        district\n        price\n        verified\n        bedrooms\n        bathrooms\n        size\n        image\n        about\n        createdAt\n      }\n    }\n  }\n': typeof types.RecommendedPropertiesDocument;
   '\n  mutation TrackPropertyView($propertyId: ID!, $durationSec: Float) {\n    trackPropertyView(propertyId: $propertyId, durationSec: $durationSec)\n  }\n': typeof types.TrackPropertyViewDocument;
+  '\n  query MyRecentActivity($limit: Int) {\n    myRecentActivity(limit: $limit) {\n      id\n      type\n      title\n      subtitle\n      status\n      link\n      createdAt\n      property {\n        id\n        title\n        location\n        image\n        price\n      }\n    }\n  }\n': typeof types.MyRecentActivityDocument;
   '\n  mutation SavePreferences($input: PreferencesInput!) {\n    savePreferences(input: $input) {\n      id\n      preferences {\n        regions\n        districts\n        types\n        minPrice\n        maxPrice\n        bedrooms\n        amenities\n        parking\n        onboardingStatus\n      }\n    }\n  }\n': typeof types.SavePreferencesDocument;
   '\n  mutation SkipPreferences($input: PreferencesInput) {\n    skipPreferences(input: $input) {\n      id\n      preferences {\n        regions\n        districts\n        types\n        minPrice\n        maxPrice\n        bedrooms\n        amenities\n        parking\n        onboardingStatus\n      }\n    }\n  }\n': typeof types.SkipPreferencesDocument;
   '\n  mutation CreateProperty($input: CreatePropertyInput!) {\n    createProperty(input: $input) {\n      id\n      title\n      type\n      location\n      region\n      district\n      price\n      verified\n      bedrooms\n      bathrooms\n      size\n      parking\n      about\n      amenities\n      lat\n      lng\n      image\n      images {\n        main\n        kitchen\n        bedroom\n        bathroom\n      }\n      agreementUrl\n      videoUrl\n      createdAt\n    }\n  }\n': typeof types.CreatePropertyDocument;
@@ -31,6 +32,7 @@ type Documents = {
   '\n  query MyApplications {\n    myApplications {\n      id\n      property {\n        id\n        title\n        image\n        location\n        price\n        bedrooms\n        bathrooms\n      }\n      nationalIdUrl\n      supportingDocsUrl\n      employerName\n      jobTitle\n      monthlyIncome\n      lengthOfEmployment\n      personalStatement\n      status\n      furtherDetailsRequest\n      furtherDetailsResponse\n      agreementUrl\n      signedAgreementUrl\n      createdAt\n    }\n  }\n': typeof types.MyApplicationsDocument;
   '\n  query ReceivedApplications {\n    receivedApplications {\n      id\n      property {\n        id\n        title\n        image\n        location\n        price\n      }\n      tenant {\n        id\n        firstName\n        lastName\n        email\n        phone\n      }\n      nationalIdUrl\n      supportingDocsUrl\n      employerName\n      jobTitle\n      monthlyIncome\n      lengthOfEmployment\n      personalStatement\n      status\n      furtherDetailsRequest\n      furtherDetailsResponse\n      agreementUrl\n      signedAgreementUrl\n      createdAt\n    }\n  }\n': typeof types.ReceivedApplicationsDocument;
   '\n  mutation UpdateApplicationStatus($id: ID!, $status: String!) {\n    updateApplicationStatus(id: $id, status: $status) {\n      id\n      status\n    }\n  }\n': typeof types.UpdateApplicationStatusDocument;
+  '\n  mutation CancelApplication($id: ID!) {\n    cancelApplication(id: $id) {\n      id\n      status\n    }\n  }\n': typeof types.CancelApplicationDocument;
   '\n  mutation RequestFurtherDetails($id: ID!, $message: String!) {\n    requestFurtherDetails(id: $id, message: $message) {\n      id\n      status\n      furtherDetailsRequest\n    }\n  }\n': typeof types.RequestFurtherDetailsDocument;
   '\n  mutation SubmitFurtherDetails($id: ID!, $response: String!) {\n    submitFurtherDetails(id: $id, response: $response) {\n      id\n      status\n      furtherDetailsResponse\n    }\n  }\n': typeof types.SubmitFurtherDetailsDocument;
   '\n  query MyNotifications {\n    myNotifications {\n      id\n      title\n      message\n      read\n      link\n      createdAt\n    }\n  }\n': typeof types.MyNotificationsDocument;
@@ -63,6 +65,8 @@ const documents: Documents = {
     types.RecommendedPropertiesDocument,
   '\n  mutation TrackPropertyView($propertyId: ID!, $durationSec: Float) {\n    trackPropertyView(propertyId: $propertyId, durationSec: $durationSec)\n  }\n':
     types.TrackPropertyViewDocument,
+  '\n  query MyRecentActivity($limit: Int) {\n    myRecentActivity(limit: $limit) {\n      id\n      type\n      title\n      subtitle\n      status\n      link\n      createdAt\n      property {\n        id\n        title\n        location\n        image\n        price\n      }\n    }\n  }\n':
+    types.MyRecentActivityDocument,
   '\n  mutation SavePreferences($input: PreferencesInput!) {\n    savePreferences(input: $input) {\n      id\n      preferences {\n        regions\n        districts\n        types\n        minPrice\n        maxPrice\n        bedrooms\n        amenities\n        parking\n        onboardingStatus\n      }\n    }\n  }\n':
     types.SavePreferencesDocument,
   '\n  mutation SkipPreferences($input: PreferencesInput) {\n    skipPreferences(input: $input) {\n      id\n      preferences {\n        regions\n        districts\n        types\n        minPrice\n        maxPrice\n        bedrooms\n        amenities\n        parking\n        onboardingStatus\n      }\n    }\n  }\n':
@@ -81,6 +85,8 @@ const documents: Documents = {
     types.ReceivedApplicationsDocument,
   '\n  mutation UpdateApplicationStatus($id: ID!, $status: String!) {\n    updateApplicationStatus(id: $id, status: $status) {\n      id\n      status\n    }\n  }\n':
     types.UpdateApplicationStatusDocument,
+  '\n  mutation CancelApplication($id: ID!) {\n    cancelApplication(id: $id) {\n      id\n      status\n    }\n  }\n':
+    types.CancelApplicationDocument,
   '\n  mutation RequestFurtherDetails($id: ID!, $message: String!) {\n    requestFurtherDetails(id: $id, message: $message) {\n      id\n      status\n      furtherDetailsRequest\n    }\n  }\n':
     types.RequestFurtherDetailsDocument,
   '\n  mutation SubmitFurtherDetails($id: ID!, $response: String!) {\n    submitFurtherDetails(id: $id, response: $response) {\n      id\n      status\n      furtherDetailsResponse\n    }\n  }\n':
@@ -179,6 +185,12 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
+  source: '\n  query MyRecentActivity($limit: Int) {\n    myRecentActivity(limit: $limit) {\n      id\n      type\n      title\n      subtitle\n      status\n      link\n      createdAt\n      property {\n        id\n        title\n        location\n        image\n        price\n      }\n    }\n  }\n',
+): (typeof documents)['\n  query MyRecentActivity($limit: Int) {\n    myRecentActivity(limit: $limit) {\n      id\n      type\n      title\n      subtitle\n      status\n      link\n      createdAt\n      property {\n        id\n        title\n        location\n        image\n        price\n      }\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
   source: '\n  mutation SavePreferences($input: PreferencesInput!) {\n    savePreferences(input: $input) {\n      id\n      preferences {\n        regions\n        districts\n        types\n        minPrice\n        maxPrice\n        bedrooms\n        amenities\n        parking\n        onboardingStatus\n      }\n    }\n  }\n',
 ): (typeof documents)['\n  mutation SavePreferences($input: PreferencesInput!) {\n    savePreferences(input: $input) {\n      id\n      preferences {\n        regions\n        districts\n        types\n        minPrice\n        maxPrice\n        bedrooms\n        amenities\n        parking\n        onboardingStatus\n      }\n    }\n  }\n'];
 /**
@@ -229,6 +241,12 @@ export function graphql(
 export function graphql(
   source: '\n  mutation UpdateApplicationStatus($id: ID!, $status: String!) {\n    updateApplicationStatus(id: $id, status: $status) {\n      id\n      status\n    }\n  }\n',
 ): (typeof documents)['\n  mutation UpdateApplicationStatus($id: ID!, $status: String!) {\n    updateApplicationStatus(id: $id, status: $status) {\n      id\n      status\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  mutation CancelApplication($id: ID!) {\n    cancelApplication(id: $id) {\n      id\n      status\n    }\n  }\n',
+): (typeof documents)['\n  mutation CancelApplication($id: ID!) {\n    cancelApplication(id: $id) {\n      id\n      status\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

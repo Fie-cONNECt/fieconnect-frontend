@@ -9,6 +9,7 @@ import {
   MY_APPLICATIONS_QUERY,
   RECEIVED_APPLICATIONS_QUERY,
   UPDATE_APPLICATION_STATUS_MUTATION,
+  CANCEL_APPLICATION_MUTATION,
   REQUEST_FURTHER_DETAILS_MUTATION,
   SUBMIT_FURTHER_DETAILS_MUTATION,
   APPROVE_APPLICATION_WITH_AGREEMENT_MUTATION,
@@ -33,10 +34,23 @@ import {
   Upload,
   Download,
   Loader2,
+  XCircle,
+  AlertTriangle,
 } from 'lucide-react';
 import { Skeleton } from '../../../components/ui/skeleton';
 import { PageHeader, EmptyState } from '@/components/layout';
 import { StatusBadge } from '@/components/ui/status-badge';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface Property {
   id: string;
@@ -100,19 +114,32 @@ export default function ApplicationsPage() {
   const [activeSignAppId, setActiveSignAppId] = useState<string | null>(null);
   const [uploadedSignedUrl, setUploadedSignedUrl] = useState('');
   const [uploadingSigned, setUploadingSigned] = useState(false);
+  const [cancellingAppId, setCancellingAppId] = useState<string | null>(null);
+  const [cancelTargetApp, setCancelTargetApp] = useState<Application | null>(null);
 
   const agreementInputRef = useRef<HTMLInputElement>(null);
   const signedInputRef = useRef<HTMLInputElement>(null);
+
+  const canTenantCancel = (status: string) =>
+    ['PENDING', 'INFORMATION_REQUESTED', 'APPROVED_PENDING_SIGNATURE', 'APPROVED'].includes(status);
+
+  const cancelTargetApproved =
+    cancelTargetApp?.status === 'APPROVED' ||
+    cancelTargetApp?.status === 'APPROVED_PENDING_SIGNATURE';
 
   // Load applications
   const loadApplications = async () => {
     try {
       if (landlordMode) {
         const data = await requestGQL(RECEIVED_APPLICATIONS_QUERY);
-        setApplications(data.receivedApplications as Application[]);
+        setApplications(
+          (data.receivedApplications as Application[]).filter((a) => a.status !== 'CANCELLED'),
+        );
       } else {
         const data = await requestGQL(MY_APPLICATIONS_QUERY);
-        setApplications(data.myApplications as Application[]);
+        setApplications(
+          (data.myApplications as Application[]).filter((a) => a.status !== 'CANCELLED'),
+        );
       }
     } catch (err) {
       console.error('Failed to load applications:', err);
@@ -135,6 +162,24 @@ export default function ApplicationsPage() {
       loadApplications();
     } catch (err: any) {
       toast.error(err.message || 'Failed to update application status.');
+    }
+  };
+
+  const handleConfirmCancelApplication = async () => {
+    if (!cancelTargetApp) return;
+    const app = cancelTargetApp;
+    const approved = app.status === 'APPROVED' || app.status === 'APPROVED_PENDING_SIGNATURE';
+
+    setCancellingAppId(app.id);
+    try {
+      await requestGQL(CANCEL_APPLICATION_MUTATION, { id: app.id });
+      toast.success(approved ? 'Approved application cancelled.' : 'Application withdrawn.');
+      setCancelTargetApp(null);
+      loadApplications();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to cancel application.');
+    } finally {
+      setCancellingAppId(null);
     }
   };
 
@@ -252,9 +297,14 @@ export default function ApplicationsPage() {
   const getStatusBadge = (status: string) => {
     const config: Record<
       string,
-      { variant: 'APPROVED' | 'PENDING' | 'REJECTED'; label: string; pulse?: boolean }
+      {
+        variant: 'APPROVED' | 'PENDING' | 'REJECTED' | 'CANCELLED';
+        label: string;
+        pulse?: boolean;
+      }
     > = {
       APPROVED: { variant: 'APPROVED', label: 'Active Lease' },
+      CANCELLED: { variant: 'CANCELLED', label: 'Cancelled' },
       APPROVED_PENDING_SIGNATURE: {
         variant: 'PENDING',
         label: 'Pending Signature',
@@ -819,6 +869,35 @@ export default function ApplicationsPage() {
                     </div>
                   )}
 
+                  {/* Tenant: cancel / withdraw application */}
+                  {!landlordMode && canTenantCancel(app.status) && (
+                    <div className="pt-4 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <p className="text-[11px] text-muted-foreground font-medium leading-relaxed">
+                        {app.status === 'APPROVED' || app.status === 'APPROVED_PENDING_SIGNATURE'
+                          ? 'Changed your mind after approval? You can cancel this application. The landlord will be notified.'
+                          : 'You can withdraw this application before a final decision is made.'}
+                      </p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={cancellingAppId === app.id}
+                        onClick={() => setCancelTargetApp(app)}
+                        className="h-10 px-5 border-rose-200 text-rose-700 hover:bg-rose-50 text-xs font-bold rounded-xl cursor-pointer shrink-0"
+                      >
+                        {cancellingAppId === app.id ? (
+                          <Loader2 size={13} className="animate-spin" />
+                        ) : (
+                          <XCircle size={13} />
+                        )}
+                        <span className="ml-1.5">
+                          {app.status === 'APPROVED' || app.status === 'APPROVED_PENDING_SIGNATURE'
+                            ? 'Cancel application'
+                            : 'Withdraw application'}
+                        </span>
+                      </Button>
+                    </div>
+                  )}
+
                   {/* Tenant Lease Signing action panel */}
                   {!landlordMode && app.status === 'APPROVED_PENDING_SIGNATURE' && (
                     <div className="pt-4 border-t border-border text-left">
@@ -913,6 +992,48 @@ export default function ApplicationsPage() {
           ))}
         </div>
       )}
+
+      <AlertDialog
+        open={!!cancelTargetApp}
+        onOpenChange={(open) => {
+          if (!open && !cancellingAppId) setCancelTargetApp(null);
+        }}
+      >
+        <AlertDialogContent size="default">
+          <AlertDialogHeader>
+            <AlertDialogMedia className="bg-destructive/10 text-destructive">
+              <AlertTriangle />
+            </AlertDialogMedia>
+            <AlertDialogTitle>
+              {cancelTargetApproved ? 'Cancel approved application?' : 'Withdraw application?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {cancelTargetApproved
+                ? `Cancel your approved application for "${cancelTargetApp?.property.title}"? The landlord will be notified and this cannot be undone.`
+                : `Withdraw your application for "${cancelTargetApp?.property.title}"? This cannot be undone.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={!!cancellingAppId}>Keep application</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={!!cancellingAppId}
+              onClick={handleConfirmCancelApplication}
+            >
+              {cancellingAppId ? (
+                <>
+                  <Loader2 className="animate-spin" />
+                  Cancelling…
+                </>
+              ) : cancelTargetApproved ? (
+                'Yes, cancel application'
+              ) : (
+                'Yes, withdraw'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

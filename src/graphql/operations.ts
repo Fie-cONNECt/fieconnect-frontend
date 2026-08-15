@@ -181,6 +181,27 @@ export const TRACK_PROPERTY_VIEW_MUTATION = graphql(`
   }
 `);
 
+export const MY_RECENT_ACTIVITY_QUERY = graphql(`
+  query MyRecentActivity($limit: Int) {
+    myRecentActivity(limit: $limit) {
+      id
+      type
+      title
+      subtitle
+      status
+      link
+      createdAt
+      property {
+        id
+        title
+        location
+        image
+        price
+      }
+    }
+  }
+`);
+
 export const SAVE_PREFERENCES_MUTATION = graphql(`
   mutation SavePreferences($input: PreferencesInput!) {
     savePreferences(input: $input) {
@@ -382,6 +403,15 @@ export const RECEIVED_APPLICATIONS_QUERY = graphql(`
 export const UPDATE_APPLICATION_STATUS_MUTATION = graphql(`
   mutation UpdateApplicationStatus($id: ID!, $status: String!) {
     updateApplicationStatus(id: $id, status: $status) {
+      id
+      status
+    }
+  }
+`);
+
+export const CANCEL_APPLICATION_MUTATION = graphql(`
+  mutation CancelApplication($id: ID!) {
+    cancelApplication(id: $id) {
       id
       status
     }

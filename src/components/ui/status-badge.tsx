@@ -10,6 +10,7 @@ const statusBadgeVariants = cva(
         PENDING: 'bg-warning/15 text-warning-foreground border-warning/30',
         APPROVED: 'bg-success/10 text-success border-success/25',
         REJECTED: 'bg-destructive/10 text-destructive border-destructive/25',
+        CANCELLED: 'bg-muted text-muted-foreground border-border',
         ACTIVE: 'bg-success/10 text-success border-success/25',
         OPEN: 'bg-primary/20 text-primary-foreground border-primary/40',
         RESOLVED: 'bg-muted text-muted-foreground border-border',
@@ -28,6 +29,7 @@ export type StatusKey =
   | 'PENDING'
   | 'APPROVED'
   | 'REJECTED'
+  | 'CANCELLED'
   | 'ACTIVE'
   | 'OPEN'
   | 'RESOLVED'
@@ -48,6 +50,7 @@ function normalizeStatus(status?: string): StatusKey {
     'PENDING',
     'APPROVED',
     'REJECTED',
+    'CANCELLED',
     'ACTIVE',
     'OPEN',
     'RESOLVED',

@@ -19,6 +19,36 @@ export type Scalars = {
   Float: { input: number; output: number };
 };
 
+export type ActivityItem = {
+  __typename?: 'ActivityItem';
+  createdAt: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  link: Scalars['String']['output'];
+  property?: Maybe<ActivityProperty>;
+  status?: Maybe<Scalars['String']['output']>;
+  subtitle?: Maybe<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+  type: ActivityType;
+};
+
+export type ActivityProperty = {
+  __typename?: 'ActivityProperty';
+  id: Scalars['ID']['output'];
+  image: Scalars['String']['output'];
+  location: Scalars['String']['output'];
+  price: Scalars['Float']['output'];
+  title: Scalars['String']['output'];
+};
+
+export enum ActivityType {
+  ApplicationUpdated = 'APPLICATION_UPDATED',
+  Applied = 'APPLIED',
+  DisputeOpened = 'DISPUTE_OPENED',
+  DisputeUpdated = 'DISPUTE_UPDATED',
+  SavedProperty = 'SAVED_PROPERTY',
+  ViewedProperty = 'VIEWED_PROPERTY',
+}
+
 export type Application = {
   __typename?: 'Application';
   agreementUrl?: Maybe<Scalars['String']['output']>;
@@ -106,6 +136,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   addDisputeComment: Dispute;
   approveApplicationWithAgreement: Application;
+  cancelApplication: Application;
   changePassword: Scalars['Boolean']['output'];
   createApplication: Application;
   createDispute: Dispute;
@@ -133,6 +164,10 @@ export type MutationAddDisputeCommentArgs = {
 
 export type MutationApproveApplicationWithAgreementArgs = {
   agreementUrl: Scalars['String']['input'];
+  id: Scalars['ID']['input'];
+};
+
+export type MutationCancelApplicationArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -290,6 +325,7 @@ export type Query = {
   myDisputes: Array<Dispute>;
   myNotifications: Array<Notification>;
   myProperties: Array<Property>;
+  myRecentActivity: Array<ActivityItem>;
   myTenancies: Array<Application>;
   properties: Array<Property>;
   property?: Maybe<Property>;
@@ -300,6 +336,10 @@ export type Query = {
 
 export type QueryDisputeArgs = {
   id: Scalars['ID']['input'];
+};
+
+export type QueryMyRecentActivityArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type QueryPropertiesArgs = {
@@ -552,6 +592,32 @@ export type TrackPropertyViewMutationVariables = Exact<{
 
 export type TrackPropertyViewMutation = { __typename?: 'Mutation'; trackPropertyView: boolean };
 
+export type MyRecentActivityQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+export type MyRecentActivityQuery = {
+  __typename?: 'Query';
+  myRecentActivity: Array<{
+    __typename?: 'ActivityItem';
+    id: string;
+    type: ActivityType;
+    title: string;
+    subtitle?: string | null;
+    status?: string | null;
+    link: string;
+    createdAt: string;
+    property?: {
+      __typename?: 'ActivityProperty';
+      id: string;
+      title: string;
+      location: string;
+      image: string;
+      price: number;
+    } | null;
+  }>;
+};
+
 export type SavePreferencesMutationVariables = Exact<{
   input: PreferencesInput;
 }>;
@@ -787,6 +853,15 @@ export type UpdateApplicationStatusMutationVariables = Exact<{
 export type UpdateApplicationStatusMutation = {
   __typename?: 'Mutation';
   updateApplicationStatus: { __typename?: 'Application'; id: string; status: string };
+};
+
+export type CancelApplicationMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export type CancelApplicationMutation = {
+  __typename?: 'Mutation';
+  cancelApplication: { __typename?: 'Application'; id: string; status: string };
 };
 
 export type RequestFurtherDetailsMutationVariables = Exact<{
@@ -1655,6 +1730,65 @@ export const TrackPropertyViewDocument = {
     },
   ],
 } as unknown as DocumentNode<TrackPropertyViewMutation, TrackPropertyViewMutationVariables>;
+export const MyRecentActivityDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'MyRecentActivity' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'limit' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'myRecentActivity' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'limit' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'limit' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'subtitle' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'link' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'property' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'location' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'image' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'price' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<MyRecentActivityQuery, MyRecentActivityQueryVariables>;
 export const SavePreferencesDocument = {
   kind: 'Document',
   definitions: [
@@ -2208,6 +2342,49 @@ export const UpdateApplicationStatusDocument = {
   UpdateApplicationStatusMutation,
   UpdateApplicationStatusMutationVariables
 >;
+export const CancelApplicationDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CancelApplication' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'cancelApplication' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<CancelApplicationMutation, CancelApplicationMutationVariables>;
 export const RequestFurtherDetailsDocument = {
   kind: 'Document',
   definitions: [

@@ -11,8 +11,8 @@ import {
   RECEIVED_APPLICATIONS_QUERY,
   MY_APPLICATIONS_QUERY,
   MY_TENANCIES_QUERY,
-  MY_DISPUTES_QUERY,
   MY_NOTIFICATIONS_QUERY,
+  MY_RECENT_ACTIVITY_QUERY,
   MARK_NOTIFICATION_READ_MUTATION,
 } from '../../graphql/operations';
 import { Button } from '../../components/ui/button';
@@ -20,10 +20,12 @@ import { Skeleton } from '../../components/ui/skeleton';
 import { StatCard, EmptyState } from '@/components/layout';
 import { StatusBadge } from '@/components/ui/status-badge';
 import {
-  FileText,
+  RecentActivityFeed,
+  type RecentActivityItem,
+} from '@/components/dashboard/recent-activity-feed';
+import {
   Wrench,
   DollarSign,
-  ChevronRight,
   Plus,
   ArrowRight,
   MapPin,
@@ -62,7 +64,7 @@ export default function DashboardPage() {
   const [tenantActiveTenanciesCount, setTenantActiveTenanciesCount] = useState(0);
   const [tenantPendingApplicationsCount, setTenantPendingApplicationsCount] = useState(0);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
-  const [recentActivities, setRecentActivities] = useState<any[]>([]);
+  const [recentActivities, setRecentActivities] = useState<RecentActivityItem[]>([]);
   const [currentTenancy, setCurrentTenancy] = useState<any>(null);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotificationsModal, setShowNotificationsModal] = useState(false);
@@ -97,7 +99,7 @@ export default function DashboardPage() {
         setRecentApplications(receivedApps.slice(0, 4));
       } else {
         // Fetch Tenant data
-        const [myAppsRes, tenanciesRes, notificationsRes, disputesRes] = await Promise.all([
+        const [myAppsRes, tenanciesRes, notificationsRes, activityRes] = await Promise.all([
           requestGQL(MY_APPLICATIONS_QUERY).catch(() => ({
             myApplications: [],
           })),
@@ -105,51 +107,25 @@ export default function DashboardPage() {
           requestGQL(MY_NOTIFICATIONS_QUERY).catch(() => ({
             myNotifications: [],
           })),
-          requestGQL(MY_DISPUTES_QUERY).catch(() => ({ myDisputes: [] })),
+          requestGQL(MY_RECENT_ACTIVITY_QUERY, { limit: 21 }).catch(() => ({
+            myRecentActivity: [],
+          })),
         ]);
 
         const myApps = myAppsRes?.myApplications || [];
         const myTenancies = tenanciesRes?.myTenancies || [];
         const myNotifications = notificationsRes?.myNotifications || [];
-        const myDisputes = disputesRes?.myDisputes || [];
+        const activities = (activityRes?.myRecentActivity || []) as RecentActivityItem[];
 
         setTenantActiveTenanciesCount(myTenancies.length);
         setTenantPendingApplicationsCount(myApps.filter((a: any) => a.status === 'PENDING').length);
         setUnreadNotificationsCount(myNotifications.filter((n: any) => !n.read).length);
         setNotifications(myNotifications);
+        setRecentActivities(activities);
 
         if (myTenancies.length > 0) {
           setCurrentTenancy(myTenancies[0]);
         }
-
-        // Build a dynamic list of recent activities for tenant
-        const activities: any[] = [];
-
-        myApps.slice(0, 2).forEach((app: any) => {
-          activities.push({
-            id: app.id,
-            type: 'APPLICATION',
-            title: `Application for ${app.property.title}`,
-            subtitle: `Submitted on ${new Date(app.createdAt).toLocaleDateString()}`,
-            status: app.status,
-            link: '/app/applications',
-            icon: <FileText size={16} />,
-          });
-        });
-
-        myDisputes.slice(0, 2).forEach((disp: any) => {
-          activities.push({
-            id: disp.id,
-            type: 'DISPUTE',
-            title: `Dispute: ${disp.title}`,
-            subtitle: `Created on ${new Date(disp.createdAt).toLocaleDateString()}`,
-            status: disp.status,
-            link: `/app/disputes/${disp.id}`,
-            icon: <AlertTriangle size={16} className="text-amber-500" />,
-          });
-        });
-
-        setRecentActivities(activities.slice(0, 4));
       }
     } catch (err) {
       console.error('Failed to load dashboard data:', err);
@@ -420,59 +396,27 @@ export default function DashboardPage() {
       {/* 3. Main Dashboard Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left column: Recent Activity */}
-        <div className="lg:col-span-2 card-surface p-5 sm:p-6 shadow-2xs flex flex-col justify-between text-left">
-          <div className="space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-border">
+        <div className="lg:col-span-2 min-w-0 w-full card-surface p-5 sm:p-6 shadow-2xs flex flex-col text-left">
+          <div className="flex items-center justify-between pb-4 border-b border-border mb-4 shrink-0">
+            <div className="min-w-0">
               <h3 className="text-base font-bold text-foreground">Recent Activity</h3>
+              <p className="text-[11px] text-muted-foreground font-medium mt-0.5">
+                Views, saves, applications, and dispute updates
+              </p>
             </div>
-
-            {recentActivities.length === 0 ? (
-              <div className="text-center py-12 text-xs text-muted-foreground font-semibold">
-                No recent activity to show. Explore and apply for properties to get started!
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {recentActivities.map((act) => (
-                  <Link key={act.id} href={act.link}>
-                    <div className="group flex items-center justify-between p-3.5 rounded-xl border border-border bg-muted/50/50 hover:bg-muted/50 hover:border-border transition-all cursor-pointer mb-2">
-                      <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-lg bg-zinc-200/60 text-zinc-600 flex items-center justify-center shrink-0 group-hover:bg-zinc-200 transition-colors">
-                          {act.icon}
-                        </div>
-                        <div>
-                          <h4 className="text-xs font-bold text-foreground leading-snug">
-                            {act.title}
-                          </h4>
-                          <span className="text-[10px] text-muted-foreground font-medium">
-                            {act.subtitle}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
-                            act.status === 'PENDING' || act.status === 'OPEN'
-                              ? 'bg-amber-50 text-[#e69312] border-amber-100'
-                              : 'bg-primary/10 text-primary border-primary/20'
-                          }`}
-                        >
-                          {act.status}
-                        </span>
-                        <ChevronRight
-                          size={14}
-                          className="text-muted-foreground group-hover:translate-x-0.5 transition-transform"
-                        />
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
+            <Link
+              href="/app/properties"
+              className="text-xs font-bold text-primary hover:underline hidden sm:inline-flex shrink-0"
+            >
+              Browse more
+            </Link>
           </div>
 
-          <div className="mt-8 border-t border-border pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <RecentActivityFeed items={recentActivities} pageSize={4} className="min-w-0" />
+
+          <div className="mt-4 border-t border-border pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
             <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">
-              Need assistance? Support team is online
+              Timeline updates as you browse and apply
             </span>
           </div>
         </div>
